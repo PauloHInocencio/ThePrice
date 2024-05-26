@@ -7,8 +7,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "expenses")
 data class ExpenseEntity(
     @PrimaryKey(autoGenerate = true)
-    val id:Long = 0,
+    val id:Int = 0,
     val title:String,
-    val invoiceDueDate:String,
-    val description:String? = null
+    val description:String? = null,
+    val value:Float,
+    val type:String,
+    val status:String,
+    val invoiceDueDate:Long,
 )

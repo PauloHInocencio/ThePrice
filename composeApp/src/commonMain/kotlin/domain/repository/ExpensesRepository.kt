@@ -1,7 +1,7 @@
 package domain.repository
 
 import domain.model.Expense
-import domain.model.ExpenseEntry
+import domain.model.Payment
 import kotlinx.coroutines.flow.Flow
 import util.Resource
 
@@ -15,14 +15,14 @@ interface ExpensesRepository {
         description:String? = null,
     )
 
-    fun getAllEntriesByMonth(
+    fun getAllPaymentsByMonth(
         month:Int,
         year:Int
-    ) : Flow<Resource<List<ExpenseEntry>>>
+    ) : Flow<Resource<List<Payment>>>
 
-    fun getAllEntriesOf(
+    fun getAllPaymentsOf(
         expenseId:Long
-    ) : Flow<Resource<List<ExpenseEntry>>>
+    ) : Flow<Resource<List<Payment>>>
 
     suspend fun insert(
         expenseId:Long,

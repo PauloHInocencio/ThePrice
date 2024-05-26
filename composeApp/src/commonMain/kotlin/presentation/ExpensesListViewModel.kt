@@ -5,13 +5,12 @@ package presentation
 import domain.repository.ExpensesRepository
 import androidx.lifecycle.ViewModel
 import domain.model.Expense
-import domain.model.ExpenseEntry
+import domain.model.Payment
 import domain.usecases.IGetDateMonthAndYear
 import domain.usecases.IGetTodayDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import util.DateUtil
 
 data class ExpenseListUiState(
     val expenses: List<Expense> = listOf(),
@@ -23,7 +22,7 @@ data class ExpenseListUiState(
 
 sealed class ExpenseListEvent {
 
-    data class OnExpenseEntryClicked(val entry: ExpenseEntry) : ExpenseListEvent()
+    data class OnExpenseEntryClicked(val entry: Payment) : ExpenseListEvent()
 
     data object OnNextDayClicked : ExpenseListEvent()
 
@@ -39,7 +38,7 @@ class ExpensesListViewModel(
 ) : ViewModel() {
 
     private data class InternalState(
-        val lastModifiedEntry: ExpenseEntry? = null,
+        val lastModifiedEntry: Payment? = null,
         val date:String
     )
 
@@ -48,9 +47,9 @@ class ExpensesListViewModel(
     private val _entries = _internalState.flatMapLatest { internalState ->
         val date = getDateMonthAndYear(internalState.date)
         repository
-            .getAllEntriesByMonth(
+            .getAllPaymentsByMonth(
                 month = date.month,
-                year =date.year
+                year = date.year
             )
     }
 }

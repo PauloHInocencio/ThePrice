@@ -1,11 +1,11 @@
 package data.datasource
 
-import data.entities.ExpenseEntryEntity
+import data.entities.PaymentEntity
 import kotlinx.coroutines.flow.Flow
 
-interface ExpenseEntryDataSource {
+interface PaymentDataSource {
 
-    fun getAll() : Flow<List<ExpenseEntryEntity>>
+    fun getAll() : Flow<List<PaymentEntity>>
 
     suspend fun insert(
         expenseId:Long,
