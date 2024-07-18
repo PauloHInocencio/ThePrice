@@ -1,0 +1,4 @@
+<resources>
+    <string name="home">Payments List</string>
+    <string name="new_bill">Add New Bill</string>
+</resources>

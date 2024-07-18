@@ -1,25 +1,21 @@
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import br.com.noartcode.theprice.ui.navigation.AppNavGraph
+import br.com.noartcode.theprice.ui.presentation.home.PaymentsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinContext
+import org.koin.compose.currentKoinScope
+import org.koin.compose.viewmodel.koinViewModel
 
-import theprice.composeapp.generated.resources.Res
-import theprice.composeapp.generated.resources.compose_multiplatform
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-
+        KoinContext {
+            AppNavGraph()
+        }
     }
 }

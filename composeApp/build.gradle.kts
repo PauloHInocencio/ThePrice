@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
 }
 
@@ -46,18 +46,21 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.compose.navigation)
 
             // Koin
-            api(libs.koin.core)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             // Kotlinx Date Time
             implementation(libs.kotlinx.datetime)
 
-            // Lifecycle
+            // ViewModel
             implementation(libs.lifecycle.viewmodel)
 
             // Room
@@ -67,7 +70,14 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
         }
+
+        commonMain {
+            // Fixes RoomDB unresolved reference 'instantiateImpl' in iosMain
+            // Due to https://issuetracker.google.com/u/0/issues/342905180
+            kotlin.srcDir("build/generated/ksp/metadata")
+        }
     }
+    task("testClasses") // work-around of the bug 'Cannot locate tasks that match :shared:testClasses'
 }
 
 android {
@@ -118,10 +128,14 @@ compose.desktop {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
+    // Update: https://issuetracker.google.com/u/0/issues/342905180
+    //add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
+
+
 
 room {
     schemaDirectory("$projectDir/schemas")
