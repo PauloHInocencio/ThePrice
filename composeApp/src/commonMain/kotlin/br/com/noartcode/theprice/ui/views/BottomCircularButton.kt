@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.ui.views
 
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,14 +32,17 @@ fun BottomCircularButton(
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         Button(
             modifier = Modifier
                 .padding(30.dp)
                 .size(80.dp),
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors().copy(contentColor = color),
+            colors = ButtonDefaults.buttonColors().copy(
+                containerColor = color,
+                contentColor = Color.White
+            ),
             enabled = isEnable,
             onClick = onClick
         ) {
