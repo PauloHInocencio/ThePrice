@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.newBill
+package br.com.noartcode.theprice.ui.presentation.newbill
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +15,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
+import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillUiState
 import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.views.NormalEditField
 
 @Composable
 fun NewBillScreen(
     modifier: Modifier = Modifier,
+    state:NewBillUiState,
+    onEvent: (event:NewBillEvent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold { innerPadding ->

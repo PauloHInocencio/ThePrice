@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.noartcode.theprice.ui.presentation.home.PaymentsScreen
 import br.com.noartcode.theprice.ui.presentation.home.PaymentsViewModel
-import br.com.noartcode.theprice.ui.presentation.newBill.NewBillScreen
-import br.com.noartcode.theprice.ui.presentation.newBill.NewBillViewModel
+import br.com.noartcode.theprice.ui.presentation.newbill.NewBillScreen
+import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -55,6 +56,8 @@ fun AppNavGraph(
         ) {
             val viewModel = koinViewModel<NewBillViewModel>()
             NewBillScreen(
+                state = viewModel.uiState.collectAsState().value,
+                onEvent = viewModel::onEvent,
                 onNavigateBack = {
                     navController.popBackStack()
                 }

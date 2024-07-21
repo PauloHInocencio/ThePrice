@@ -9,7 +9,7 @@ import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.ui.presentation.home.PaymentsViewModel
-import br.com.noartcode.theprice.ui.presentation.newBill.NewBillViewModel
+import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

@@ -63,6 +63,9 @@ kotlin {
             // ViewModel
             implementation(libs.lifecycle.viewmodel)
 
+            // Coroutines
+            implementation(libs.kotlinx.coroutines)
+
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
@@ -71,11 +74,19 @@ kotlin {
             implementation(compose.desktop.currentOs)
         }
 
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.coroutines.test)
+        }
+
         commonMain {
             // Fixes RoomDB unresolved reference 'instantiateImpl' in iosMain
             // Due to https://issuetracker.google.com/u/0/issues/342905180
             kotlin.srcDir("build/generated/ksp/metadata")
         }
+
+
     }
     task("testClasses") // work-around of the bug 'Cannot locate tasks that match :shared:testClasses'
 }
