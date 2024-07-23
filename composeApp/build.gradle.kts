@@ -39,6 +39,8 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.mockk)
         }
         commonMain.dependencies {
 
@@ -78,6 +80,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.turbine)
             implementation(libs.coroutines.test)
+            implementation(libs.koin.test)
         }
 
         commonMain {
