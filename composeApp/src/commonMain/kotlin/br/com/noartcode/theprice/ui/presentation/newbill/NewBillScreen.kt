@@ -37,10 +37,10 @@ fun NewBillScreen(
                 modifier = Modifier.padding(20.dp),
                 fieldName = "Price",
                 fieldLabel = "enter the bill's price",
-                value = "",
-                onValueChanged = {},
+                value = state.price,
+                onValueChanged = {  },
                 keyboardOptions = KeyboardOptions().copy(
-                    keyboardType = KeyboardType.Decimal,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
                 )
             )
@@ -49,8 +49,8 @@ fun NewBillScreen(
                 modifier = Modifier.padding(20.dp),
                 fieldName = "Name",
                 fieldLabel = "enter the bill's name",
-                value = "",
-                onValueChanged = {},
+                value = state.name,
+                onValueChanged = { onEvent(NewBillEvent.OnNameChanged(name = it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     imeAction = ImeAction.Next
                 )
@@ -60,10 +60,10 @@ fun NewBillScreen(
                 modifier = Modifier.padding(20.dp),
                 fieldName = "Due date",
                 fieldLabel = "enter the bill's due date",
-                value = "",
+                value = state.dueDate.toString(),
                 onValueChanged = {},
                 keyboardOptions = KeyboardOptions().copy(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Done
                 )
             )
@@ -72,8 +72,8 @@ fun NewBillScreen(
                 modifier = Modifier.padding(20.dp),
                 fieldName = "Description",
                 fieldLabel = "enter the description (optional)",
-                value = "",
-                onValueChanged = {},
+                value = state.description ?: "",
+                onValueChanged = { onEvent(NewBillEvent.OnDescriptionChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     imeAction = ImeAction.Done
                 )

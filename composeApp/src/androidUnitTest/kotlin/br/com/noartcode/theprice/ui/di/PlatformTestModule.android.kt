@@ -1,12 +1,12 @@
+
+
 package br.com.noartcode.theprice.ui.di
 
 import android.icu.text.DecimalFormatSymbols
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
-import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import io.mockk.every
 import io.mockk.mockk
-import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 actual fun platformTestModule() = module {
@@ -22,5 +22,4 @@ actual fun platformTestModule() = module {
             }.value
         )
     }
-    viewModel { NewBillViewModel(formatter = get()) }
 }

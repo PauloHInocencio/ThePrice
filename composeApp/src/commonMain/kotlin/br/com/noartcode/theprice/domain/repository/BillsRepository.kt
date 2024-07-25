@@ -6,11 +6,10 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface BillsRepository {
-
-    fun getAllBills() : Flow<Resource<List<Bill>>>
-
-    fun getBillsBy(status:String) : Flow<Resource<List<Bill>>>
+    fun getAllBills() : Flow<List<Bill>>
+    fun getBillsBy(status:String) : Flow<List<Bill>>
     suspend fun insert(bill: Bill)
-    suspend fun getBill(id:Int) : Resource<Bill>
+    suspend fun getBill(id:Int) : Bill?
+    suspend fun getBill(name:String) : Bill?
     suspend fun delete(id:Int)
 }

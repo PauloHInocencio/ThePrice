@@ -5,5 +5,5 @@ sealed class NewBillEvent {
     data class OnNameChanged(val name:String) : NewBillEvent()
     data class OnDueDateChanged(val dueDate:Int) : NewBillEvent()
     data class OnDescriptionChanged(val description:String) : NewBillEvent()
-    data object OnSaveClicked : NewBillEvent()
+    data object OnSave : NewBillEvent()
 }

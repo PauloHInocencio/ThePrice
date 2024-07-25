@@ -1,33 +1,32 @@
 package br.com.noartcode.theprice.data.repository
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
-import br.com.noartcode.theprice.data.local.dao.BillDao
+import br.com.noartcode.theprice.data.local.localdatasource.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
-import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 
 class BillsRepositoryImp(
-    private val database: ThePrinceDatabase,
+    private val datasource: BillLocalDataSource,
 ) : BillsRepository {
 
-    private val dao:BillDao by lazy {
-        database.getExpenseDao()
-    }
-    override fun getAllBills(): Flow<Resource<List<Bill>>> {
+    override fun getAllBills(): Flow<List<Bill>> {
         TODO("Not yet implemented")
     }
 
-    override fun getBillsBy(status: String): Flow<Resource<List<Bill>>> {
+    override fun getBillsBy(status: String): Flow<List<Bill>> {
         TODO("Not yet implemented")
     }
 
     override suspend fun insert(bill: Bill) {
+
+    }
+
+    override suspend fun getBill(id: Int): Bill? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getBill(id: Int): Resource<Bill> {
+    override suspend fun getBill(name: String): Bill? {
         TODO("Not yet implemented")
     }
 

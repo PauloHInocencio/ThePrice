@@ -16,7 +16,7 @@ interface BillDao {
     suspend fun getBillsBy(status:String): List<BillEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExpense(expense: BillEntity)
+    suspend fun insert(expense: BillEntity) : Long
 
     @Query("SELECT * FROM bills WHERE id == :id")
     suspend fun getExpense(id:Int) : BillEntity?

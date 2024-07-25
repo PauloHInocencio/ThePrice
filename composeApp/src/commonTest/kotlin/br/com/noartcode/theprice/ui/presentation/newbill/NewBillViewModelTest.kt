@@ -1,9 +1,15 @@
 package br.com.noartcode.theprice.ui.presentation.newbill
 
 import app.cash.turbine.test
+import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
@@ -13,17 +19,20 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class NewBillViewModelTest : KoinTest {
 
     private val viewModel:NewBillViewModel by inject()
 
     @BeforeTest
     fun before() {
-        startKoin { modules(platformTestModule()) }
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        startKoin { modules(commonTestModule(),  platformTestModule()) }
     }
 
     @AfterTest
     fun after() {
+        Dispatchers.resetMain()
         stopKoin()
     }
 
@@ -40,7 +49,7 @@ class NewBillViewModelTest : KoinTest {
             with(initialUiState) {
                 assertEquals("", name)
                 assertEquals(1, dueDate)
-                assertEquals(null, price)
+                assertEquals("R$ 0,00", price)
                 assertEquals(null, description)
             }
 
@@ -56,17 +65,13 @@ class NewBillViewModelTest : KoinTest {
         // GIVEN
         viewModel.uiState.test {
 
-            skipItems(1)
-
             // WHEN
             with(viewModel){
                 onEvent(NewBillEvent.OnNameChanged("internet"))
-                skipItems(1)
                 onEvent(NewBillEvent.OnPriceChanged(9990))
-                skipItems(1)
                 onEvent(NewBillEvent.OnDueDateChanged(5))
-                skipItems(1)
                 onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
+                skipItems(4)
             }
 
             // THEN
@@ -82,4 +87,37 @@ class NewBillViewModelTest : KoinTest {
         }
     }
 
+    @Test
+    fun `OnSaveEvent should add the new bill into the database`() = runTest {
+
+        // GIVEN
+        viewModel.uiState.test {
+
+            // WHEN
+            with(viewModel){
+                onEvent(NewBillEvent.OnNameChanged("internet"))
+                onEvent(NewBillEvent.OnPriceChanged(9990))
+                onEvent(NewBillEvent.OnDueDateChanged(5))
+                onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
+                skipItems(5)
+            }
+
+
+            viewModel.onEvent(NewBillEvent.OnSave)
+
+            // THEN
+            with(awaitItem()) {
+                assertEquals(true, isSaving)
+                assertEquals(false, isSaved)
+            }
+
+            with(awaitItem()) {
+                assertEquals(false, isSaving)
+                assertEquals(true, isSaved)
+            }
+
+            // Making sure that is not more emissions.
+            ensureAllEventsConsumed()
+        }
+    }
 }

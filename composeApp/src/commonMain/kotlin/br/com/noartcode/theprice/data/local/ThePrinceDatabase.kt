@@ -13,7 +13,7 @@ import br.com.noartcode.theprice.data.local.entities.PaymentEntity
     exportSchema = false
 )
 abstract class ThePrinceDatabase : RoomDatabase() {
-    abstract fun getExpenseDao (): BillDao
+    abstract fun getBillDao (): BillDao
     abstract fun getPaymentDao() : PaymentDao
 }
 

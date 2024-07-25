@@ -3,8 +3,8 @@ package br.com.noartcode.theprice.util
 sealed class Resource<out T> {
     class Success<out T>(val data:T) : Resource<T>()
     class Error(
+        val message: String,
         val code: Int? = null,
-        val message: String? = null,
         val exception: Throwable? = null
     ) : Resource<Nothing>()
 }

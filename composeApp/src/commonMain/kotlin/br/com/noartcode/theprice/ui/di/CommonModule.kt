@@ -1,5 +1,7 @@
 package br.com.noartcode.theprice.ui.di
 
+import br.com.noartcode.theprice.data.local.localdatasource.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.localdatasource.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
 import br.com.noartcode.theprice.data.repository.PaymentRepositoryImp
 import br.com.noartcode.theprice.domain.repository.BillsRepository
@@ -18,8 +20,9 @@ import org.koin.dsl.module
 fun appModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
-    single<BillsRepository> { BillsRepositoryImp(database = get())}
-    single<PaymentRepository> { PaymentRepositoryImp(database = get())}
+    single<BillLocalDataSource> { BillLocalDataSourceImp(database = get())}
+    //single<BillsRepository> { BillsRepositoryImp(database = get())}
+    //single<PaymentRepository> { PaymentRepositoryImp(database = get())}
     viewModel { PaymentsViewModel() }
-    viewModel { NewBillViewModel(formatter = get()) }
+    viewModel { NewBillViewModel(formatter = get(), insertNewBill = get()) }
 }

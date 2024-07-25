@@ -1,13 +1,13 @@
 package br.com.noartcode.theprice.domain.model
 
 data class Bill(
-    val id:Int,
-    val title:String,
-    val description:String?,
-    val value:Float,
-    val type: Type,
-    val status: Status,
-    val invoiceDueDate:String
+    val id:Long = -1,
+    val name:String = "",
+    val description:String? = null,
+    val price:Int = 0,
+    val type: Type = Type.MONTHLY,
+    val status: Status = Status.ACTIVE,
+    val invoiceDueDate:Int = 1
 ) {
     enum class Status {
         ACTIVE,
