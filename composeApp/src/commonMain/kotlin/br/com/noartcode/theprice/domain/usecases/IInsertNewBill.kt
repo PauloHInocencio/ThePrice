@@ -19,15 +19,7 @@ class InsertNewBill(
 
     override suspend fun invoke(bill: Bill): Resource<Long> = withContext(dispatcher) {
         try {
-            val normalizedName = bill.name.trim().lowercase()
-            val id = localDataSource.insert(
-                name = normalizedName,
-                description = bill.description,
-                price = bill.price,
-                type = bill.type.name,
-                status = bill.status.name,
-                invoiceDueDate = bill.invoiceDueDate
-            )
+            val id = localDataSource.insert(bill)
             return@withContext Resource.Success(id)
         } catch (e:Throwable) {
             return@withContext Resource.Error(

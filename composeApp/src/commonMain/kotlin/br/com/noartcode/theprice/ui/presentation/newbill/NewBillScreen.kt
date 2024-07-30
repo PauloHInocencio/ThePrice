@@ -38,7 +38,7 @@ fun NewBillScreen(
                 fieldName = "Price",
                 fieldLabel = "enter the bill's price",
                 value = state.price,
-                onValueChanged = {  },
+                onValueChanged = { onEvent(NewBillEvent.OnPriceChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
@@ -61,7 +61,7 @@ fun NewBillScreen(
                 fieldName = "Due date",
                 fieldLabel = "enter the bill's due date",
                 value = state.dueDate.toString(),
-                onValueChanged = {},
+                onValueChanged = { onEvent(NewBillEvent.OnDueDateChanged(it.toInt()))},
                 keyboardOptions = KeyboardOptions().copy(
                     keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Done

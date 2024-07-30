@@ -27,7 +27,7 @@ class NewBillViewModel(
     val uiState: StateFlow<NewBillUiState> = combine(state, bill) {
         s, b ->
         NewBillUiState(
-            price = formatter(b.price),
+            price = formatter.format(b.price),
             name = b.name,
             dueDate = b.invoiceDueDate,
             description = b.description,
@@ -54,7 +54,7 @@ class NewBillViewModel(
                 bill.update { it.copy(name = event.name) }
             }
             is NewBillEvent.OnPriceChanged -> {
-                bill.update { it.copy(price = event.value) }
+                bill.update { it.copy(price = formatter.clenup(event.value)) }
             }
             NewBillEvent.OnSave -> {
                 viewModelScope.launch {

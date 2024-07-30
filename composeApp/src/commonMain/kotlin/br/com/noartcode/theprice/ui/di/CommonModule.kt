@@ -12,6 +12,8 @@ import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
+import br.com.noartcode.theprice.domain.usecases.InsertNewBill
 import br.com.noartcode.theprice.ui.presentation.home.PaymentsViewModel
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -21,6 +23,7 @@ fun appModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get())}
+    single<IInsertNewBill> { InsertNewBill(localDataSource = get()) }
     //single<BillsRepository> { BillsRepositoryImp(database = get())}
     //single<PaymentRepository> { PaymentRepositoryImp(database = get())}
     viewModel { PaymentsViewModel() }

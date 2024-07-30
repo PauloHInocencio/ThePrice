@@ -21,22 +21,17 @@ class BillLocalDataSourceImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun insert(
-        name: String,
-        description: String?,
-        price: Int,
-        type: String,
-        status: String,
-        invoiceDueDate: Int
-    ) : Long {
+    override suspend fun insert(bill: Bill) : Long {
+        val normalizedName = bill.name.trim().lowercase()
+
         return dao.insert(
             BillEntity(
-                name = name,
-                description = description,
-                price = price,
-                type = type,
-                status = status,
-                invoiceDueDate = invoiceDueDate
+                name = normalizedName,
+                description = bill.description,
+                price = bill.price,
+                type = bill.type.name,
+                status = bill.status.name,
+                invoiceDueDate = bill.invoiceDueDate
             )
         )
     }

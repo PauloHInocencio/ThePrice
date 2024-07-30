@@ -68,7 +68,7 @@ class NewBillViewModelTest : KoinTest {
             // WHEN
             with(viewModel){
                 onEvent(NewBillEvent.OnNameChanged("internet"))
-                onEvent(NewBillEvent.OnPriceChanged(9990))
+                onEvent(NewBillEvent.OnPriceChanged("9990"))
                 onEvent(NewBillEvent.OnDueDateChanged(5))
                 onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(4)
@@ -96,7 +96,7 @@ class NewBillViewModelTest : KoinTest {
             // WHEN
             with(viewModel){
                 onEvent(NewBillEvent.OnNameChanged("internet"))
-                onEvent(NewBillEvent.OnPriceChanged(9990))
+                onEvent(NewBillEvent.OnPriceChanged("9990"))
                 onEvent(NewBillEvent.OnDueDateChanged(5))
                 onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(5)
