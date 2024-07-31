@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.data.localdatasource
 
-import br.com.noartcode.theprice.data.local.localdatasource.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
 import kotlinx.coroutines.flow.Flow
 

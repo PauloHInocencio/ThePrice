@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.data.local.localdatasource
+package br.com.noartcode.theprice.data.local.localdatasource.bill
 
 import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.entities.BillEntity

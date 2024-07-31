@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.noartcode.theprice.ui.presentation.home.PaymentsScreen
-import br.com.noartcode.theprice.ui.presentation.home.PaymentsViewModel
+import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillScreen
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -31,7 +31,7 @@ fun AppNavGraph(
         composable(
             route = Routes.HOME.name
         ) {
-            val viewModel = koinViewModel<PaymentsViewModel>()
+            val viewModel = koinViewModel<HomeViewModel>()
             PaymentsScreen(
                 onNavigateToNewBill = {
                     navController.navigate(Routes.NEW_BILL.name)

@@ -1,5 +1,18 @@
 package br.com.noartcode.theprice.domain.usecases
 
-actual class GetMonthName : IGetMonthName {
-    override operator fun invoke(month:Int, year: Int) : String? = null
+import java.util.Calendar
+import java.util.Locale
+
+actual class GetMonthName(
+    private val calendar: Calendar,
+    private val locale: Locale = Locale.getDefault()
+) : IGetMonthName {
+    override fun invoke(month: Int): String? {
+        calendar.set(Calendar.MONTH, month)
+        return calendar
+            .getDisplayName(Calendar.MONTH, Calendar.LONG_FORMAT, locale)
+            ?.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            }
+    }
 }
