@@ -76,6 +76,14 @@ kotlin {
             implementation(compose.desktop.currentOs)
         }
 
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(libs.androidx.test.core)
+                implementation(libs.junit)
+                implementation(libs.roboletric)
+            }
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.turbine)

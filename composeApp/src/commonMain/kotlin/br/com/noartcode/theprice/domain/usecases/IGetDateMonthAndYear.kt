@@ -12,7 +12,7 @@ class GetDateMonthAndYear : IGetDateMonthAndYear {
     override fun invoke(date: String): MonthAndYear {
         val ld = date.toLocalDate()
         return MonthAndYear(
-            month = ld.monthNumber,
+            month = ld.monthNumber - 1,
             year = ld.year
         )
     }

@@ -1,18 +1,18 @@
-package br.com.noartcode.theprice.data.localdatasource
+package br.com.noartcode.theprice.data.localdatasource.helpers
 
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
-import kotlinx.coroutines.flow.Flow
 
 class BillLocalDataSourceFakeImp : BillLocalDataSource {
     private val store = mutableListOf<Bill>()
-    override fun getAllBills(): Flow<List<Bill>> {
+    override suspend fun getAllBills(): List<Bill> {
         TODO("Not yet implemented")
     }
 
-    override fun getBillsBy(status: String): Flow<List<Bill>> {
+    override suspend fun getBillsBy(status: Bill.Status): List<Bill> {
         TODO("Not yet implemented")
     }
+
 
     override suspend fun insert(bill: Bill): Long {
         return bill.copy(id = 1).also { store.add(it) }.id

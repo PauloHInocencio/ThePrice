@@ -1,12 +1,10 @@
 package br.com.noartcode.theprice.domain.model
 
 data class Payment(
-    val id:Int,
+    val id:Long = 0L,
     val billId:Long,
     val billTitle:String,
-    val billInvoiceDueDate:Long,
-    val paidValue:Float,
-    val status: Status,
+    val paidValue:Int? = null,
     val paidAt:Long? = null,
     val overdueDays:Int? = null
 ) {

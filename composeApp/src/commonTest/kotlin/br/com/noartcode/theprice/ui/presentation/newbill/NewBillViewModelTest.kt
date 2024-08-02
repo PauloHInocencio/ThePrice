@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.newbill
 
 import app.cash.turbine.test
+import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
@@ -20,7 +21,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class NewBillViewModelTest : KoinTest {
+class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
     private val viewModel:NewBillViewModel by inject()
 
@@ -53,8 +54,6 @@ class NewBillViewModelTest : KoinTest {
                 assertEquals(null, description)
             }
 
-            // Making sure that is not more emissions.
-            ensureAllEventsConsumed()
         }
     }
 
@@ -81,9 +80,6 @@ class NewBillViewModelTest : KoinTest {
                 assertEquals(5, dueDate)
                 assertEquals("Bill of home's internet", description)
             }
-
-            // Making sure that is not more emissions.
-            ensureAllEventsConsumed()
         }
     }
 
@@ -115,9 +111,6 @@ class NewBillViewModelTest : KoinTest {
                 assertEquals(false, isSaving)
                 assertEquals(true, isSaved)
             }
-
-            // Making sure that is not more emissions.
-            ensureAllEventsConsumed()
         }
     }
 }

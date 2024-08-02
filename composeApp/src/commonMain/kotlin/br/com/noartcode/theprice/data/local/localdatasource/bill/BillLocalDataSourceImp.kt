@@ -9,17 +9,15 @@ class BillLocalDataSourceImp(
     private val database: ThePrinceDatabase
 ) : BillLocalDataSource {
 
-    private val dao by lazy {
-        database.getBillDao()
-    }
-
-    override fun getAllBills(): Flow<List<Bill>> {
+    private val dao by lazy { database.getBillDao() }
+    override suspend fun getAllBills(): List<Bill> {
         TODO("Not yet implemented")
     }
 
-    override fun getBillsBy(status: String): Flow<List<Bill>> {
+    override suspend fun getBillsBy(status: Bill.Status): List<Bill> {
         TODO("Not yet implemented")
     }
+
 
     override suspend fun insert(bill: Bill) : Long {
         val normalizedName = bill.name.trim().lowercase()

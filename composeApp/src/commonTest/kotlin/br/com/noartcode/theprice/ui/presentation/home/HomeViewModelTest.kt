@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.home
 
 import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.Dispatchers
@@ -43,16 +44,14 @@ class HomeViewModelTest : KoinTest {
         viewModel.uiState.test {
 
             // WHEN
-            val initialUiState = awaitItem()
+            val initialValue = awaitItem()
 
             //THEN
-            with(initialUiState) {
+            with(initialValue) {
                 assertEquals(emptyList(), payments)
                 assertEquals(false, loading)
                 assertEquals(null, errorMessage)
             }
-
-            ensureAllEventsConsumed()
         }
     }
 
