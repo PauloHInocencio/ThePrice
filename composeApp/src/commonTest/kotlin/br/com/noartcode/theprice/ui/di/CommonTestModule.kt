@@ -1,8 +1,14 @@
 package br.com.noartcode.theprice.ui.di
 
+import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.data.localdatasource.helpers.BillLocalDataSourceFakeImp
+import br.com.noartcode.theprice.data.localdatasource.helpers.PaymentLocalDataSourceFakeImp
+import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -17,9 +23,10 @@ import org.koin.dsl.module
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun commonTestModule() = module {
-    //single<BillLocalDataSource> { BillLocalDataSourceFakeImp() }
-    //single<PaymentLocalDataSource> { PaymentLocalDataSourceFakeImp() }
+    single<BillLocalDataSource> { BillLocalDataSourceFakeImp() }
+    single<PaymentLocalDataSource> { PaymentLocalDataSourceFakeImp() }
     single<IGetTodayDate> { GetTodayDate() }
+    single<IGetDateFormat> { GetDateFormat() }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<IInsertNewBill> { InsertNewBill(localDataSource = get(), dispatcher = UnconfinedTestDispatcher()) }
     single<IGetPayments> {
@@ -27,15 +34,6 @@ fun commonTestModule() = module {
             billLDS = get(),
             paymentLDS = get(),
             dispatcher = UnconfinedTestDispatcher()
-        )
-    }
-    viewModel { NewBillViewModel(formatter = get(), insertNewBill = get()) }
-    viewModel {
-        HomeViewModel(
-            getTodayDay = get(),
-            getPayments = get(),
-            getMonthName = get(),
-            getDateMonthAndYear = get()
         )
     }
 }

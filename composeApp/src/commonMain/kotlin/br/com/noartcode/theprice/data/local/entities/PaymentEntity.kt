@@ -22,11 +22,11 @@ import androidx.room.PrimaryKey
 )
 data class PaymentEntity(
     @PrimaryKey(autoGenerate = true)
-    val id:Int = 0,
-    val billId:Int,
-    val status:String,
+    val id:Long = 0,
+    val billId:Long,
+    val day:Int,
     val month:Int,
     val year:Int,
-    val paidValue:Float,
+    val paidValue:Int? = null,
     val paidAt:String? = null
 )

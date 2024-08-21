@@ -29,7 +29,7 @@ class NewBillViewModel(
         NewBillUiState(
             price = formatter.format(b.price),
             name = b.name,
-            dueDate = b.invoiceDueDate,
+            dueDate = b.invoiceDueDay,
             description = b.description,
             isSaved = b.id != -1L,
             isSaving = s.isSaving,
@@ -48,7 +48,7 @@ class NewBillViewModel(
                 bill.update { it.copy(description = event.description) }
             }
             is NewBillEvent.OnDueDateChanged -> {
-                bill.update { it.copy(invoiceDueDate = event.dueDate) }
+                bill.update { it.copy(invoiceDueDay = event.dueDate) }
             }
             is NewBillEvent.OnNameChanged -> {
                 bill.update { it.copy(name = event.name) }

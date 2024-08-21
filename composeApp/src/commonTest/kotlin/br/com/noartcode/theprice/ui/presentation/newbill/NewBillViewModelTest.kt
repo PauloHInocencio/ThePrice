@@ -1,6 +1,10 @@
 package br.com.noartcode.theprice.ui.presentation.newbill
 
 import app.cash.turbine.test
+import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
+import br.com.noartcode.theprice.domain.usecases.InsertNewBill
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -11,8 +15,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.AfterTest
@@ -23,12 +29,30 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
+    private val database: ThePrinceDatabase by inject()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
     private val viewModel:NewBillViewModel by inject()
 
     @BeforeTest
     fun before() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        startKoin { modules(commonTestModule(),  platformTestModule()) }
+        startKoin {
+            modules(
+                commonTestModule(),
+                platformTestModule(),
+                module {
+                    viewModel {
+                        NewBillViewModel(
+                            formatter = get(),
+                            insertNewBill = InsertNewBill(
+                                localDataSource = billDataSource,
+                                dispatcher = UnconfinedTestDispatcher()
+                            )
+                        )
+                    }
+                }
+            )
+        }
     }
 
     @AfterTest

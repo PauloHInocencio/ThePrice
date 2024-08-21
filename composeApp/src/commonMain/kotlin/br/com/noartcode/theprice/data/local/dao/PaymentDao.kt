@@ -13,13 +13,16 @@ interface PaymentDao {
     suspend fun getMonthPayments(month:Int, year:Int) : List<PaymentEntity>
 
     @Query("SELECT * FROM payments WHERE billId == :billId")
-    suspend fun getBillPayments(billId:Int) : List<PaymentEntity>
+    suspend fun getBillPayments(billId:Long) : List<PaymentEntity>
 
     @Query("SELECT * FROM payments WHERE billId == :billId AND month == :month AND year == :year")
-    suspend fun getPayment(billId:Int, month:Int, year:Int) : PaymentEntity?
+    suspend fun getPayment(billId:Long, month:Int, year:Int) : PaymentEntity?
+
+    @Query("SELECT * FROM payments WHERE id == :id")
+    suspend fun getPayment(id:Long) : PaymentEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(payment: PaymentEntity)
+    suspend fun insert(payment: PaymentEntity) : Long
 
     @Query("DELETE FROM payments WHERE id == :id")
     suspend fun delete(id:Int)

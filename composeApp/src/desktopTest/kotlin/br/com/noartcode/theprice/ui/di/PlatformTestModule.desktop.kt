@@ -11,8 +11,6 @@ import java.util.Calendar
 import java.util.Locale
 
 actual fun platformTestModule() = module {
-    single<BillLocalDataSource> { BillLocalDataSourceFakeImp() }
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceFakeImp() }
     single<IGetMonthName>{
         GetMonthName(calendar = Calendar.getInstance(), Locale("pt", "BR"))
     }

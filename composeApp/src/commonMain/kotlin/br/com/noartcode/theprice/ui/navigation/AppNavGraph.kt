@@ -33,6 +33,8 @@ fun AppNavGraph(
         ) {
             val viewModel = koinViewModel<HomeViewModel>()
             PaymentsScreen(
+                state = viewModel.uiState.collectAsState().value,
+                onEvent = {},
                 onNavigateToNewBill = {
                     navController.navigate(Routes.NEW_BILL.name)
                 }

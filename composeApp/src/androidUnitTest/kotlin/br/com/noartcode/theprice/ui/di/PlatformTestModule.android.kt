@@ -26,7 +26,6 @@ import org.robolectric.RobolectricTestRunner
 
 
 actual fun platformTestModule() = module {
-
     single<ThePrinceDatabase> {
         run {
             val context = ApplicationProvider.getApplicationContext<Context>()
@@ -37,8 +36,6 @@ actual fun platformTestModule() = module {
             ).build()
         }
     }
-    single<BillLocalDataSource> { BillLocalDataSourceImp(database = get())}
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get()) }
     single<IGetMonthName>{ GetMonthName(calendar = Calendar.getInstance(), Locale("pt", "BR"))}
     single<ICurrencyFormatter> {
         CurrencyFormatter(

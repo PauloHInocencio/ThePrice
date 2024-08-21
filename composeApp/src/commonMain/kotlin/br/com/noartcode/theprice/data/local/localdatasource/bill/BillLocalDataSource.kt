@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface BillLocalDataSource {
     suspend fun getAllBills() : List<Bill>
-    suspend fun getBillsBy(status:Bill.Status) : List<Bill>
+    fun getBillsBy(status:Bill.Status) : Flow<List<Bill>>
     suspend fun insert(bill: Bill) : Long
-    suspend fun getBill(id:Int) : Bill?
-    suspend fun delete(id:Int)
+    suspend fun getBill(id:Long) : Bill?
+    suspend fun delete(id:Long)
 }

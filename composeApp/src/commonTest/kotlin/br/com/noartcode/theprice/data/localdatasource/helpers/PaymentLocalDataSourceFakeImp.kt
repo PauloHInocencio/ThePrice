@@ -2,9 +2,9 @@ package br.com.noartcode.theprice.data.localdatasource.helpers
 
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.Payment
-import kotlinx.coroutines.flow.Flow
 
 class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
+    private val store = mutableListOf<Payment>()
     override suspend fun getMonthPayments(month: Int, year: Int): List<Payment> {
         TODO("Not yet implemented")
     }
@@ -17,16 +17,24 @@ class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getPayment(id: Long): Payment? {
+    override suspend fun getPayment(id: Long, billID: Long): Payment? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun insert(payment: Payment): Long {
+    override suspend fun insert(
+        billID: Long,
+        day: Int,
+        month: Int,
+        year: Int,
+        paidValue: Int?,
+        paidAt: String?
+    ): Long {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(id: Long) {
         TODO("Not yet implemented")
     }
 
 
-    override suspend fun delete(id: Int) {
-        TODO("Not yet implemented")
-    }
 }

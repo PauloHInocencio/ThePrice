@@ -4,9 +4,11 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -19,9 +21,10 @@ import org.koin.dsl.module
 
 fun appModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
+    single<IGetDateFormat> { GetDateFormat() }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
+    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get(), dateFormat = get())}
     single<IInsertNewBill> { InsertNewBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     viewModel {

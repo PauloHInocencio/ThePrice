@@ -10,6 +10,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
@@ -81,8 +82,12 @@ fun NewBillScreen(
             BottomCircularButton(
                 icon = Icons.Filled.Check,
                 color = Color.Magenta,
-                onClick = onNavigateBack
+                onClick = { onEvent(NewBillEvent.OnSave) }
             )
         }
+    }
+
+    LaunchedEffect(state.isSaved) {
+        if (state.isSaved) onNavigateBack()
     }
 }

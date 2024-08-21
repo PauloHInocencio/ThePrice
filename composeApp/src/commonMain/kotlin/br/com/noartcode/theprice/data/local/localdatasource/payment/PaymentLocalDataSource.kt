@@ -7,7 +7,14 @@ interface PaymentLocalDataSource {
     suspend fun getMonthPayments(month:Int, year:Int) : List<Payment>
     suspend fun getBillPayments(billID:Long) : List<Payment>
     suspend fun getPayment(billID:Long, month:Int, year:Int) : Payment?
-    suspend fun getPayment(id:Long) : Payment?
-    suspend fun insert(payment: Payment) : Long
-    suspend fun delete(id:Int)
+    suspend fun getPayment(id:Long, billID:Long) : Payment?
+    suspend fun insert(
+        billID:Long,
+        day:Int,
+        month:Int,
+        year:Int,
+        paidValue:Int? = null,
+        paidAt:String? = null
+    ) : Long
+    suspend fun delete(id:Long)
 }

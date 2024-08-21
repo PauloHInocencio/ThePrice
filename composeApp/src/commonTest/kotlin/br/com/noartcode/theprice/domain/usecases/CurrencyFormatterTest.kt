@@ -83,4 +83,13 @@ class CurrencyFormatterTest : KoinTest {
         )
     }
 
+
+    @Test
+    fun `should return currency with correct group separator`() {
+        assertEquals(
+            expected = "R$ 1.111,11",
+            actual = formatter.format(111111)
+        )
+    }
+
 }
