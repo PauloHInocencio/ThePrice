@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.localdatasource.helpers
 
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 
 val stubBills:List<Bill> by lazy {
@@ -67,43 +68,35 @@ val stubPayments:List<Payment> by lazy {
     listOf(
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/01/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 1, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/02/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 2, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/03/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/04/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 4, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/05/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 5, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate =  "05/06/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 6, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/07/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 7, year = 2024)
         ),
         Payment(
             billId = 1L,
-            billTitle = "Internet",
-            dueDate = "05/08/2024"
+            dueDate = DayMonthAndYear(day = 5, month = 8, year = 2024)
         )
     )
 }

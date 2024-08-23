@@ -4,17 +4,23 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.ui.mapper.Mapper
+import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
+import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -22,17 +28,27 @@ import org.koin.dsl.module
 fun appModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateFormat> { GetDateFormat() }
+    single<IGetDaysUntil> { GetDaysUntil() }
+    single<Mapper<Payment, PaymentUi?>> {
+        PaymentDomainToUiMapper(
+            dataSource = get(),
+            formatter = get(),
+            getTodayDate = get(),
+            dateFormat = get(),
+            getDaysUntil = get()
+        )
+    }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get(), dateFormat = get())}
+    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<IInsertNewBill> { InsertNewBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     viewModel {
         HomeViewModel(
             getPayments = get(),
             getMonthName = get(),
-            getDateMonthAndYear = get(),
-            getTodayDay = get()
+            getTodayDay = get(),
+            paymentUiMapper = get()
         )
     }
     viewModel { NewBillViewModel(formatter = get(), insertNewBill = get()) }

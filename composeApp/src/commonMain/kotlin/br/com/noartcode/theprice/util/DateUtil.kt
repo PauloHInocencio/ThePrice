@@ -1,6 +1,5 @@
 package br.com.noartcode.theprice.util
 
-import br.com.noartcode.theprice.domain.model.MonthAndYear
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -33,11 +32,12 @@ object DateUtil {
         return Clock.System.todayIn(timeZone).toString()
     }
 
-    fun getDateMonthAndYear(date: String) : br.com.noartcode.theprice.domain.model.MonthAndYear {
+    fun getDateMonthAndYear(date: String) : br.com.noartcode.theprice.domain.model.DayMonthAndYear {
         val ld = date.toLocalDate()
-        return br.com.noartcode.theprice.domain.model.MonthAndYear(
+        return br.com.noartcode.theprice.domain.model.DayMonthAndYear(
             month = ld.monthNumber,
-            year = ld.year
+            year = ld.year,
+            day = ld.dayOfMonth
         )
     }
 

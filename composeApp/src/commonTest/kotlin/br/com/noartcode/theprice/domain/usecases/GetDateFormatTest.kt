@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases
 
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -29,7 +30,7 @@ class GetDateFormatTest : KoinTest {
 
         assertEquals(
             expected = "01/08/1990",
-            actual = getDateFormat(day = 1, month = 8, year = 1990)
+            actual = getDateFormat(DayMonthAndYear( day = 1, month = 8, year = 1990))
         )
 
     }

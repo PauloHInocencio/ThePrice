@@ -24,9 +24,11 @@ data class PaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Long = 0,
     val billId:Long,
-    val day:Int,
-    val month:Int,
-    val year:Int,
-    val paidValue:Int? = null,
-    val paidAt:String? = null
+    val dueDay:Int,
+    val dueMonth:Int,
+    val dueYear:Int,
+    val paidDay:Int? = null,
+    val paidMonth:Int? = null,
+    val paidYear:Int? = null,
+    val paidValue:Int? = null
 )

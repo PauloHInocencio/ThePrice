@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.domain.usecases
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -43,9 +44,11 @@ class GetPayments(
                             if (this != null) return@with this
                             val id = paymentLDS.insert(
                                 billID = bill.id,
-                                day = bill.invoiceDueDay,
-                                month = month,
-                                year = year
+                                dueDate = DayMonthAndYear(
+                                    day = bill.invoiceDueDay,
+                                    month = month,
+                                    year = year
+                                )
                             )
                             return@with paymentLDS.getPayment(id, bill.id)!!
                         }

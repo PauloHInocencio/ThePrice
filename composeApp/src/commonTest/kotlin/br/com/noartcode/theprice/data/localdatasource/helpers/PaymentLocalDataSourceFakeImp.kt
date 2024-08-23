@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.localdatasource.helpers
 
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 
 class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
@@ -23,11 +24,9 @@ class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
 
     override suspend fun insert(
         billID: Long,
-        day: Int,
-        month: Int,
-        year: Int,
+        dueDate: DayMonthAndYear,
         paidValue: Int?,
-        paidAt: String?
+        paidAt: DayMonthAndYear?
     ): Long {
         TODO("Not yet implemented")
     }

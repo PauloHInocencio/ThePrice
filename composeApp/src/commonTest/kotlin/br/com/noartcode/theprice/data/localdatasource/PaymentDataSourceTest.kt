@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocal
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubPayments
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -30,8 +31,7 @@ import kotlin.test.assertEquals
 class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
     private val database:ThePrinceDatabase by inject()
-    private val dateFormat:IGetDateFormat by inject()
-    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database, dateFormat) }
+    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
 
 
@@ -53,9 +53,10 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
         billDataSource.insert(stubBills[0])
 
-        assertEquals(expected = 1, paymentDataSource.insert(billID = 1L, day = 5, month = 1, year = 2024))
-        assertEquals(expected = 2, paymentDataSource.insert(billID = 1L, day = 5, month = 2, year = 2024))
-        assertEquals(expected = 3, paymentDataSource.insert(billID = 1L, day = 5, month = 3, year = 2024))
+
+        assertEquals(expected = 1, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024)))
+        assertEquals(expected = 2, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024)))
+        assertEquals(expected = 3, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024)))
         assertEquals(expected = 3, paymentDataSource.getBillPayments(1).size)
     }
 }

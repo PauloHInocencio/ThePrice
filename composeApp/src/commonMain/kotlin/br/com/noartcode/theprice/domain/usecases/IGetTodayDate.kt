@@ -1,17 +1,18 @@
 package br.com.noartcode.theprice.domain.usecases
 
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 interface IGetTodayDate {
-    operator fun invoke() : String
+    operator fun invoke() : DayMonthAndYear
 }
 
 class GetTodayDate : IGetTodayDate {
-    override fun invoke(): String {
+    override fun invoke(): DayMonthAndYear {
         val timeZone = TimeZone.currentSystemDefault()
-        return Clock.System.todayIn(timeZone).toString()
+        val date = Clock.System.todayIn(timeZone)
+        return DayMonthAndYear(day = date.dayOfMonth, month = date.monthNumber, year = date.year)
     }
-
 }

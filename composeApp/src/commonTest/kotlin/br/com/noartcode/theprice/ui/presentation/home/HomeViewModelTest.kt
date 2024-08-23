@@ -32,8 +32,7 @@ import kotlin.test.assertEquals
 class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     private val database: ThePrinceDatabase by inject()
-    private val dateFormat: IGetDateFormat by inject()
-    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database, dateFormat) }
+    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
     private val viewModel:HomeViewModel by inject()
 
@@ -54,7 +53,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                                 dispatcher = UnconfinedTestDispatcher()
                             ),
                             getMonthName = get(),
-                            getDateMonthAndYear = get()
+                            paymentUiMapper = get(),
                         )
                     }
                 }
