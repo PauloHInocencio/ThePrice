@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.domain.usecases.GetPayments
+import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -32,8 +33,9 @@ import kotlin.test.assertEquals
 class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     private val database: ThePrinceDatabase by inject()
+    private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
     private val viewModel:HomeViewModel by inject()
 
     @BeforeTest

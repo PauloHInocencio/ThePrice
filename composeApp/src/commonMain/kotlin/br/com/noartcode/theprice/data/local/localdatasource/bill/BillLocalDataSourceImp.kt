@@ -4,22 +4,23 @@ import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.usecases.GetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transform
 
 class BillLocalDataSourceImp(
     private val database: ThePrinceDatabase,
+    private val epochFormatter:IEpochMillisecondsFormatter
 ) : BillLocalDataSource {
 
     private val dao by lazy { database.getBillDao() }
-    override suspend fun getAllBills(): List<Bill> {
-        return dao.getAllBills().map { it.toDomain() }
-    }
+    override fun getAllBills(): Flow<List<Bill>> =
+         dao.getAllBills().map { bills ->  bills.map { it.toDomain(epochFormatter) } }
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,7 +28,7 @@ class BillLocalDataSourceImp(
             .getBillsBy(status.name)
             .flatMapLatest { list ->
                 flow{
-                    emit(list.map { entity ->  entity.toDomain() })
+                    emit(list.map { entity ->  entity.toDomain(epochFormatter) })
                 }
             }
 
@@ -36,7 +37,6 @@ class BillLocalDataSourceImp(
 
     override suspend fun insert(bill: Bill) : Long {
         val normalizedName = bill.name.trim().lowercase()
-
         return dao.insert(
             BillEntity(
                 name = normalizedName,
@@ -44,13 +44,14 @@ class BillLocalDataSourceImp(
                 price = bill.price,
                 type = bill.type.name,
                 status = bill.status.name,
-                invoiceDueDate = bill.invoiceDueDay
+                invoiceDueDay = bill.invoiceDueDay,
+                createdAt = bill.createAt.let { epochFormatter.from(it) }
             )
         )
     }
 
     override suspend fun getBill(id: Long): Bill? {
-        return dao.getBill(id)?.toDomain()
+        return dao.getBill(id)?.toDomain(epochFormatter)
     }
 
     override suspend fun delete(id: Long) {

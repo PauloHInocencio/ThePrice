@@ -9,7 +9,7 @@ import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.ui.mapper.Mapper
+import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.util.Resource
@@ -30,7 +30,7 @@ class HomeViewModel(
     private val getPayments: IGetPayments,
     private val getTodayDay: IGetTodayDate,
     private val getMonthName: IGetMonthName,
-    private val paymentUiMapper: Mapper<Payment, PaymentUi?>
+    private val paymentUiMapper: UiMapper<Payment, PaymentUi?>
 ): ViewModel() {
 
 
@@ -45,7 +45,7 @@ class HomeViewModel(
     private val paymentsResultFlow = internalState
         .flatMapLatest {internalState ->
             val date = internalState.date
-            monthName.update { getMonthName(date.month) }
+            monthName.update { getMonthName(date.month)?.plus(" - ${date.year}") }
             getPayments(date.month, date.year, billStatus = Bill.Status.ACTIVE)
                 .onStart { isLoading.update { true } }
                 .onCompletion { isLoading.update { false } }

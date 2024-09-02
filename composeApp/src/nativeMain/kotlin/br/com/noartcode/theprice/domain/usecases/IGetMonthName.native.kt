@@ -10,7 +10,7 @@ actual class GetMonthName(
 ) : IGetMonthName {
     override fun invoke(month: Int): String? {
         calendar.setLocale(locale)
-        return calendar.monthSymbols()[month]?.toString()?.replaceFirstChar {
+        return calendar.monthSymbols()[month - 1]?.toString()?.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase() else it.toString()
             }
     }

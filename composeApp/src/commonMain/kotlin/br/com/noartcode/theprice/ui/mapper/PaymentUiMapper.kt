@@ -10,7 +10,7 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlin.math.abs
 
 
-interface Mapper<F,T> {
+interface UiMapper<F,T> {
     suspend fun mapFrom(from:F):T
 }
 
@@ -20,7 +20,7 @@ class PaymentDomainToUiMapper (
     private val getTodayDate: IGetTodayDate,
     private val dateFormat: IGetDateFormat,
     private val getDaysUntil: IGetDaysUntil,
-) : Mapper<Payment, PaymentUi?> {
+) : UiMapper<Payment, PaymentUi?> {
 
     override suspend fun mapFrom(from: Payment): PaymentUi? {
         val bill = dataSource.getBill(from.billId) ?: return null

@@ -2,11 +2,11 @@ package br.com.noartcode.theprice.ui.presentation.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,14 +16,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
+import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
 import br.com.noartcode.theprice.ui.views.BottomCircularButton
-import br.com.noartcode.theprice.ui.views.PaymentItemView
+import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
 import kotlinx.coroutines.launch
 
 @Composable
-fun PaymentsScreen(
+fun HomeScreen(
     modifier: Modifier = Modifier,
     state:HomeUiState,
     onEvent: () -> Unit,
@@ -39,8 +41,18 @@ fun PaymentsScreen(
         Column(
             modifier = modifier
             .padding(innerPadding)
+            .padding(6.dp)
             .fillMaxSize()
         ) {
+            HomeHeaderView(
+                modifier = Modifier.fillMaxWidth(),
+                title = state.monthName,
+                currentMonth = {},
+                nextMonth = {},
+                previousMonth = {},
+                canGoNext = true,
+                canGoBack = true
+            )
             LazyColumn {
                 itemsIndexed(
                     items = state.payments,

@@ -10,7 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.noartcode.theprice.ui.presentation.home.PaymentsScreen
+import br.com.noartcode.theprice.ui.presentation.home.HomeScreen
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillScreen
 import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
@@ -32,7 +32,7 @@ fun AppNavGraph(
             route = Routes.HOME.name
         ) {
             val viewModel = koinViewModel<HomeViewModel>()
-            PaymentsScreen(
+            HomeScreen(
                 state = viewModel.uiState.collectAsState().value,
                 onEvent = {},
                 onNavigateToNewBill = {

@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.views
+package br.com.noartcode.theprice.ui.presentation.home.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -23,21 +23,20 @@ fun CheckButtonView(
 ) {
     Box(
         modifier = modifier
-            .padding(horizontal = 4.dp)
             .size(26.dp)
-            .clip(CircleShape)
-            .background(
-                if (isChecked) Color.Black else Color.White
-            )
             .border(
                 border = BorderStroke(
-                    2.dp,
-                    SolidColor(Color.LightGray)
+                    1.dp,
+                    SolidColor(Color.Black)
                 ),
                 shape = CircleShape
             )
-            .clickable {
-                onClick()
-            },
+            .clickable { onClick() }
+            .clip(CircleShape)
+            .padding(4.dp)
+            .background(
+                if (isChecked) Color.Black else Color.White,
+                shape = CircleShape
+            ),
     )
 }

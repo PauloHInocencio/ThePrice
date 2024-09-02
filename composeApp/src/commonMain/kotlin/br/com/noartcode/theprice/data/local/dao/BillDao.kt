@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface BillDao {
 
     @Query("SELECT * FROM bills")
-    suspend fun getAllBills(): List<BillEntity>
+    fun getAllBills(): Flow<List<BillEntity>>
 
     @Query("SELECT * FROM bills WHERE status == :status")
     fun getBillsBy(status:String): Flow<List<BillEntity>>

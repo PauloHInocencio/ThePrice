@@ -30,12 +30,12 @@ class GetMonthNameTest : KoinTest {
 
         assertEquals(
             expected = "Janeiro",
-            actual = getMonthName(month = 0)
+            actual = getMonthName(month = 1)
         )
 
         assertEquals(
             expected = "Dezembro",
-            actual = getMonthName(month = 11)
+            actual = getMonthName(month = 12)
         )
     }
 

@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
+import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -33,7 +34,8 @@ import kotlin.test.assertEquals
 class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
     private val database: ThePrinceDatabase by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
+    private val epochFormatter: IEpochMillisecondsFormatter by inject()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
     private val formatter:ICurrencyFormatter by inject()
     private val getTodayDate:IGetTodayDate = GetTodayDateStub()
     private val dateFormat:IGetDateFormat by inject()

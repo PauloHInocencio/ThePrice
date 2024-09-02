@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.flow
 
 class BillLocalDataSourceFakeImp : BillLocalDataSource {
     private val store = mutableListOf<Bill>()
-    override suspend fun getAllBills(): List<Bill> {
-        return store
+    override fun getAllBills(): Flow<List<Bill>> = flow {
+        emit(store)
     }
 
     override fun getBillsBy(status: Bill.Status): Flow<List<Bill>> = flow {

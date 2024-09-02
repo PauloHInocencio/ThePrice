@@ -4,7 +4,10 @@ import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
+import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -30,7 +33,8 @@ import kotlin.test.assertEquals
 class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
     private val database: ThePrinceDatabase by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database) }
+    private val epochFormatter: IEpochMillisecondsFormatter by inject()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
     private val viewModel:NewBillViewModel by inject()
 
     @BeforeTest
@@ -46,8 +50,9 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                             formatter = get(),
                             insertNewBill = InsertNewBill(
                                 localDataSource = billDataSource,
-                                dispatcher = UnconfinedTestDispatcher()
-                            )
+                                dispatcher = UnconfinedTestDispatcher(),
+                            ),
+                            getTodayDate = get()
                         )
                     }
                 }

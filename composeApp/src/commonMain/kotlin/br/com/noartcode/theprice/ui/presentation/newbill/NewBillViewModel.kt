@@ -3,7 +3,9 @@ package br.com.noartcode.theprice.ui.presentation.newbill
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillUiState
@@ -19,10 +21,11 @@ import kotlinx.coroutines.launch
 
 class NewBillViewModel(
     private val formatter: ICurrencyFormatter,
-    private val insertNewBill: IInsertNewBill
+    private val insertNewBill: IInsertNewBill,
+    private val getTodayDate: IGetTodayDate
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill())
+    private val bill = MutableStateFlow(Bill(createAt = getTodayDate()))
     private val state = MutableStateFlow(NewBillUiState())
     val uiState: StateFlow<NewBillUiState> = combine(state, bill) {
         s, b ->

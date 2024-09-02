@@ -1,12 +1,10 @@
-package br.com.noartcode.theprice.data.localdatasource
+package br.com.noartcode.theprice.domain.usecases
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
-import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -26,18 +24,22 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class BillDataSourceTest : KoinTest, RobolectricTests() {
+class GetFirstPaymentRecordDateTest:KoinTest, RobolectricTests() {
 
-    private val database:ThePrinceDatabase by inject()
+
+    private val database: ThePrinceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val dataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
-
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
+    private val getFirstPaymentDate:IGetFirstPaymentRecordDate by lazy {
+        GetFirstPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
+    }
     @BeforeTest
     fun before() {
-        startKoin { modules(platformTestModule(), commonTestModule()) }
         Dispatchers.setMain(UnconfinedTestDispatcher())
+        startKoin {
+            modules(platformTestModule(),  commonTestModule())
+        }
     }
-
 
     @AfterTest
     fun after() {
@@ -46,32 +48,23 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
         database.close()
     }
 
-
     @Test
-    fun `Should successfully add new items into the database`() = runTest {
+    fun `Should return the oldest bill record from the database`() = runTest {
 
-        assertEquals(1, dataSource.insert(stubBills[0]))
-        assertEquals(2, dataSource.insert(stubBills[1]))
-        assertEquals(3, dataSource.insert(stubBills[2]))
-
-        dataSource.getAllBills().test {
-            assertEquals(3, awaitItem().size)
-        }
-
-    }
-
-    @Test
-    fun `Should successfully return items by status`() = runTest {
-
-        dataSource.insert(stubBills[0])
-        dataSource.insert(stubBills[1])
-        dataSource.insert(stubBills[2])
-
-        dataSource.getBillsBy(Bill.Status.ACTIVE).test {
-            assertEquals(3, awaitItem().size)
+        // GIVEN
+        billDataSource.apply {
+            insert(stubBills[0])
+            insert(stubBills[1])
+            insert(stubBills[2])
         }
 
 
+        //WHEN
+        getFirstPaymentDate().test {
+            with(awaitItem()) {
+                assertEquals(7, this?.month ?: 1)
+            }
+        }
     }
 
 }
