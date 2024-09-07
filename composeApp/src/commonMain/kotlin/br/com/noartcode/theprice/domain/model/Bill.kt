@@ -7,7 +7,6 @@ data class Bill(
     val price:Int = 0,
     val type: Type = Type.MONTHLY,
     val status: Status = Status.ACTIVE,
-    val invoiceDueDay:Int = 1,
     val createAt:DayMonthAndYear,
 ) {
     enum class Status {

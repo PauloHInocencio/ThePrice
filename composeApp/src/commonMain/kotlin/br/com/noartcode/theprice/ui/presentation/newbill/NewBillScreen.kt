@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
 import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillUiState
 import br.com.noartcode.theprice.ui.views.BottomCircularButton
+import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
 
 @Composable
@@ -39,6 +40,7 @@ fun NewBillScreen(
                 fieldName = "Price",
                 fieldLabel = "enter the bill's price",
                 value = state.price,
+                hasError = state.priceHasError,
                 onValueChanged = { onEvent(NewBillEvent.OnPriceChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     keyboardType = KeyboardType.NumberPassword,
@@ -51,22 +53,19 @@ fun NewBillScreen(
                 fieldName = "Name",
                 fieldLabel = "enter the bill's name",
                 value = state.name,
+                hasError = state.nameHasError,
                 onValueChanged = { onEvent(NewBillEvent.OnNameChanged(name = it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     imeAction = ImeAction.Next
                 )
             )
             Spacer(Modifier.height(10.dp))
-            NormalEditField(
+            DateEditFieldView(
                 modifier = Modifier.padding(20.dp),
-                fieldName = "Due date",
-                fieldLabel = "enter the bill's due date",
-                value = state.dueDate.toString(),
-                onValueChanged = { onEvent(NewBillEvent.OnDueDateChanged(it.toInt()))},
-                keyboardOptions = KeyboardOptions().copy(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
-                )
+                title = "Vencimento",
+                dateTitle = state.selectedDateTitle,
+                selectedDate = state.selectedDate,
+                onSelectDate = { date -> onEvent(NewBillEvent.OnCratedAtDateChanged(date)) },
             )
             Spacer(Modifier.height(10.dp))
             NormalEditField(
@@ -80,6 +79,7 @@ fun NewBillScreen(
                 )
             )
             BottomCircularButton(
+                isEnable = state.canSave,
                 icon = Icons.Filled.Check,
                 color = Color.Magenta,
                 onClick = { onEvent(NewBillEvent.OnSave) }

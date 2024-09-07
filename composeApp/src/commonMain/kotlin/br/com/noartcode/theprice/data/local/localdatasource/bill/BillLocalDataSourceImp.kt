@@ -32,9 +32,6 @@ class BillLocalDataSourceImp(
                 }
             }
 
-
-
-
     override suspend fun insert(bill: Bill) : Long {
         val normalizedName = bill.name.trim().lowercase()
         return dao.insert(
@@ -44,7 +41,6 @@ class BillLocalDataSourceImp(
                 price = bill.price,
                 type = bill.type.name,
                 status = bill.status.name,
-                invoiceDueDay = bill.invoiceDueDay,
                 createdAt = bill.createAt.let { epochFormatter.from(it) }
             )
         )

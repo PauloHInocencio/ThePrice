@@ -45,7 +45,7 @@ class GetPayments(
                             val id = paymentLDS.insert(
                                 billID = bill.id,
                                 dueDate = DayMonthAndYear(
-                                    day = bill.invoiceDueDay,
+                                    day = bill.createAt.day,
                                     month = month,
                                     year = year
                                 )

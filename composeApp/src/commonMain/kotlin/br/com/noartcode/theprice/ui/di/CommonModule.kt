@@ -8,12 +8,14 @@ import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.GetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.IGetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -41,6 +43,7 @@ fun appModule() = module {
         )
     }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
+    single<IGetDaysInMonth> { GetDaysInMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
     single<BillLocalDataSource> {
         BillLocalDataSourceImp(
@@ -60,9 +63,11 @@ fun appModule() = module {
     }
     viewModel {
         NewBillViewModel(
-            formatter = get(),
+            currencyFormatter = get(),
             insertNewBill = get(),
-            getTodayDate = get()
+            getTodayDate = get(),
+            epochFormatter = get(),
+            getMonthName = get(),
         )
     }
 }

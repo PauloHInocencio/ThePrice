@@ -15,13 +15,13 @@ interface IEpochMillisecondsFormatter {
 class EpochMillisecondsFormatter: IEpochMillisecondsFormatter {
     override fun from(date: DayMonthAndYear): Long {
         val ld = LocalDate(dayOfMonth = date.day, monthNumber = date.month, year = date.year)
-        return ld.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+        return ld.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
     }
 
     override fun to(epoch: Long): DayMonthAndYear {
         val ld = Instant
             .fromEpochMilliseconds(epoch)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .toLocalDateTime(TimeZone.UTC)
         return DayMonthAndYear(day = ld.dayOfMonth, month = ld.monthNumber, year = ld.year)
     }
 }

@@ -15,7 +15,6 @@ fun BillEntity.toDomain(
         price = this.price,
         type = Bill.Type.valueOf(this.type),
         status = Bill.Status.valueOf(this.status),
-        invoiceDueDay = this.invoiceDueDay,
         createAt = epochFormatter.to(this.createdAt)
     )
 }

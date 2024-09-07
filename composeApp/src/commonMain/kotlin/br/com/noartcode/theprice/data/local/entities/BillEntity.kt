@@ -13,6 +13,5 @@ data class BillEntity(
     val price:Int,
     val type:String,
     val status:String,
-    val invoiceDueDay:Int,
     val createdAt:Long,
 )

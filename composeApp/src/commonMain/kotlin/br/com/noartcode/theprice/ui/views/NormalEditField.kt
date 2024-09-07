@@ -25,6 +25,7 @@ fun NormalEditField(
     value:String,
     fieldName: String,
     fieldLabel:String,
+    hasError:Boolean = false,
     onValueChanged:(String) -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.None,
@@ -46,6 +47,7 @@ fun NormalEditField(
         )
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(
+            isError = hasError,
             modifier = Modifier.fillMaxWidth(),
             value = value,
             onValueChange = { onValueChanged(it) },

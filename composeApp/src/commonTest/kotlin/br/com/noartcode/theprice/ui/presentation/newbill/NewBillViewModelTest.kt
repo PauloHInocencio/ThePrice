@@ -5,9 +5,7 @@ import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
-import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -47,7 +45,7 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                 module {
                     viewModel {
                         NewBillViewModel(
-                            formatter = get(),
+                            currencyFormatter = get(),
                             insertNewBill = InsertNewBill(
                                 localDataSource = billDataSource,
                                 dispatcher = UnconfinedTestDispatcher(),
