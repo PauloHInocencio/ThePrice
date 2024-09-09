@@ -34,7 +34,7 @@ fun AppNavGraph(
             val viewModel = koinViewModel<HomeViewModel>()
             HomeScreen(
                 state = viewModel.uiState.collectAsState().value,
-                onEvent = {},
+                onEvent = viewModel::onEvent,
                 onNavigateToNewBill = {
                     navController.navigate(Routes.NEW_BILL.name)
                 }

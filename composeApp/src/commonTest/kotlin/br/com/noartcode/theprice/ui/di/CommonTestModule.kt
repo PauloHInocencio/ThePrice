@@ -17,7 +17,9 @@ import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
+import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
@@ -30,6 +32,7 @@ fun commonTestModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateFormat> { GetDateFormat() }
     single<IGetDaysUntil> { GetDaysUntil() }
+    single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter()}
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<IInsertNewBill> { InsertNewBill(localDataSource = get(), dispatcher = UnconfinedTestDispatcher()) }

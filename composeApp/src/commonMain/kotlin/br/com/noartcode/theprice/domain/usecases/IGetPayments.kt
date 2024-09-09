@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.transform
 
 interface IGetPayments {
     operator fun invoke(
-        month:Int,
-        year:Int,
+        date:DayMonthAndYear,
         billStatus: Bill.Status
     ) : Flow<Resource<List<Payment>>>
 }
@@ -31,23 +30,23 @@ class GetPayments(
 ) : IGetPayments {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(
-        month: Int,
-        year: Int,
+        date: DayMonthAndYear,
         billStatus: Bill.Status
     ): Flow<Resource<List<Payment>>> = billLDS
         .getBillsBy(billStatus)
         .flatMapLatest { bills ->
             flow {
                 try {
-                    val payments = bills.map { bill ->
-                        with(paymentLDS.getPayment(bill.id, month, year))  {
+                    val payments = bills.mapNotNull { bill ->
+                        if (bill.createAt > date) return@mapNotNull null
+                        with(paymentLDS.getPayment(bill.id, date.month, date.year))  {
                             if (this != null) return@with this
                             val id = paymentLDS.insert(
                                 billID = bill.id,
                                 dueDate = DayMonthAndYear(
                                     day = bill.createAt.day,
-                                    month = month,
-                                    year = year
+                                    month = date.month,
+                                    year = date.year
                                 )
                             )
                             return@with paymentLDS.getPayment(id, bill.id)!!
@@ -60,7 +59,6 @@ class GetPayments(
                         exception = e
                     ))
                 }
-
             }
         }.flowOn(dispatcher)
 }

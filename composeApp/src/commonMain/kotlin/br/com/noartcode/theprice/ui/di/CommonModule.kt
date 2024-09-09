@@ -10,6 +10,7 @@ import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.GetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
@@ -17,10 +18,13 @@ import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
+import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
@@ -44,6 +48,7 @@ fun appModule() = module {
     }
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
     single<IGetDaysInMonth> { GetDaysInMonth() }
+    single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
     single<BillLocalDataSource> {
         BillLocalDataSourceImp(
@@ -53,12 +58,17 @@ fun appModule() = module {
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<IInsertNewBill> { InsertNewBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
+    single<IGetOldestPaymentRecordDate> {
+        GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
+    }
     viewModel {
         HomeViewModel(
             getPayments = get(),
             getMonthName = get(),
             getTodayDay = get(),
-            paymentUiMapper = get()
+            paymentUiMapper = get(),
+            moveMonth = get(),
+            getFirstPaymentDate = get(),
         )
     }
     viewModel {

@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     modifier: Modifier = Modifier,
     state:HomeUiState,
-    onEvent: () -> Unit,
+    onEvent: (HomeEvent) -> Unit,
     onNavigateToNewBill: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -48,10 +49,10 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = state.monthName,
                 currentMonth = {},
-                nextMonth = {},
-                previousMonth = {},
-                canGoNext = true,
-                canGoBack = true
+                nextMonth = { onEvent(HomeEvent.OnGoToNexMonth) },
+                previousMonth = {onEvent(HomeEvent.OnBackToPreviousMonth) },
+                canGoNext = state.canGoNext,
+                canGoBack = state.canGoBack
             )
             LazyColumn {
                 itemsIndexed(

@@ -50,7 +50,9 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                                 localDataSource = billDataSource,
                                 dispatcher = UnconfinedTestDispatcher(),
                             ),
-                            getTodayDate = get()
+                            getTodayDate = get(),
+                            epochFormatter = get(),
+                            getMonthName = get(),
                         )
                     }
                 }
@@ -76,7 +78,6 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
             // THEN
             with(initialUiState) {
                 assertEquals("", name)
-                assertEquals(1, dueDate)
                 assertEquals("R$ 0,00", price)
                 assertEquals(null, description)
             }
@@ -95,7 +96,6 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
             with(viewModel){
                 onEvent(NewBillEvent.OnNameChanged("internet"))
                 onEvent(NewBillEvent.OnPriceChanged("9990"))
-                onEvent(NewBillEvent.OnDueDateChanged(5))
                 onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(4)
             }
@@ -104,7 +104,6 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
             with(awaitItem()) {
                 assertEquals("internet", name)
                 assertEquals("R$ 99,90", price)
-                assertEquals(5, dueDate)
                 assertEquals("Bill of home's internet", description)
             }
         }
@@ -120,7 +119,6 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
             with(viewModel){
                 onEvent(NewBillEvent.OnNameChanged("internet"))
                 onEvent(NewBillEvent.OnPriceChanged("9990"))
-                onEvent(NewBillEvent.OnDueDateChanged(5))
                 onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(5)
             }

@@ -24,14 +24,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetFirstPaymentRecordDateTest:KoinTest, RobolectricTests() {
+class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
 
 
     private val database: ThePrinceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
-    private val getFirstPaymentDate:IGetFirstPaymentRecordDate by lazy {
-        GetFirstPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
+    private val getFirstPaymentDate:IGetOldestPaymentRecordDate by lazy {
+        GetOldestPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
     }
     @BeforeTest
     fun before() {

@@ -5,14 +5,14 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-interface IGetFirstPaymentRecordDate {
+interface IGetOldestPaymentRecordDate {
     operator fun invoke() : Flow<DayMonthAndYear?>
 }
 
-class GetFirstPaymentRecordDate(
+class GetOldestPaymentRecordDate(
     private val localDataSource: BillLocalDataSource,
     private val epochFormatter: IEpochMillisecondsFormatter,
-) : IGetFirstPaymentRecordDate {
+) : IGetOldestPaymentRecordDate {
     override fun invoke(): Flow<DayMonthAndYear?> = localDataSource
         .getAllBills()
         .map { bills -> bills.minOfOrNull { epochFormatter.from(it.createAt) }}
