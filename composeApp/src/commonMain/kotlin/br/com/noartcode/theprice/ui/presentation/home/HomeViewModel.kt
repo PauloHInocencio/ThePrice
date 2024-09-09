@@ -71,7 +71,7 @@ class HomeViewModel(
     ) { result, isLoading, internal, monthName, oldestDate ->
         HomeUiState(
             payments = if (result is Resource.Success) {
-                result.data.mapNotNull { paymentUiMapper.mapFrom(it) }
+                result.data.mapNotNull { paymentUiMapper.mapFrom(it) }.sortedBy { it.status }
             } else listOf(),
             monthName = monthName ?: "",
             loading = isLoading,
@@ -97,7 +97,9 @@ class HomeViewModel(
             }
 
             HomeEvent.OnGoToCurrentMonth -> {
-
+                internalState.update {
+                    it.copy(date = getTodayDay())
+                }
             }
 
             HomeEvent.OnGoToNexMonth -> {

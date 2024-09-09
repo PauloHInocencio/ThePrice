@@ -48,7 +48,7 @@ fun HomeScreen(
             HomeHeaderView(
                 modifier = Modifier.fillMaxWidth(),
                 title = state.monthName,
-                currentMonth = {},
+                currentMonth = { onEvent(HomeEvent.OnGoToCurrentMonth) },
                 nextMonth = { onEvent(HomeEvent.OnGoToNexMonth) },
                 previousMonth = {onEvent(HomeEvent.OnBackToPreviousMonth) },
                 canGoNext = state.canGoNext,

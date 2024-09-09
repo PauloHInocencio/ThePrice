@@ -9,9 +9,9 @@ data class PaymentUi(
 
 ) {
     enum class Status {
-        PAYED,
-        PENDING,
         OVERDUE,
+        PENDING,
+        PAYED,
     }
 }
 
