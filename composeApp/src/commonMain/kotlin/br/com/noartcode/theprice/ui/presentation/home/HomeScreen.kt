@@ -60,7 +60,14 @@ fun HomeScreen(
                     key = { _, payment:PaymentUi-> payment.id }) { _, payment ->
                     PaymentItemView(
                         payment = payment,
-                        onStatusClicked = {},
+                        onStatusClicked = {
+                            onEvent(
+                                HomeEvent.OnPaymentStatusClicked(
+                                    id = payment.id,
+                                    status = payment.status,
+                                    price = payment.price
+                                )
+                            )},
                         onPaymentClicked = {}
                     )
                 }

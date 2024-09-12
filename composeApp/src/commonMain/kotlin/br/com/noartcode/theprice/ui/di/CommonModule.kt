@@ -23,8 +23,10 @@ import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.InsertNewBill
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
+import br.com.noartcode.theprice.domain.usecases.UpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
@@ -58,6 +60,7 @@ fun appModule() = module {
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<IInsertNewBill> { InsertNewBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
+    single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
     }
@@ -69,6 +72,7 @@ fun appModule() = module {
             paymentUiMapper = get(),
             moveMonth = get(),
             getFirstPaymentDate = get(),
+            updatePayment = get(),
         )
     }
     viewModel {

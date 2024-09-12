@@ -51,7 +51,7 @@ class GetPayments(
                                     year = date.year
                                 )
                             )
-                            return@with paymentLDS.getPayment(id, bill.id)!!
+                            return@with paymentLDS.getPayment(id)!!
                         }
                     }
                     emit(Resource.Success(payments))

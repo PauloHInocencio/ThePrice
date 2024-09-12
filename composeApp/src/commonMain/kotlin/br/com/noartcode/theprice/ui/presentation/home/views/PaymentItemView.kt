@@ -86,15 +86,12 @@ fun PaymentItemStatusView(
     status:PaymentUi.Status
 ) {
 
-    val backgroundColor by remember {
-        derivedStateOf {
-            when(status) {
-                PaymentUi.Status.PAYED -> PaidStatus
-                PaymentUi.Status.PENDING -> PendingStatus
-                PaymentUi.Status.OVERDUE -> OverdueStatus
-            }
-         }
+    val backgroundColor = when(status) {
+        PaymentUi.Status.PAYED -> PaidStatus
+        PaymentUi.Status.PENDING -> PendingStatus
+        PaymentUi.Status.OVERDUE -> OverdueStatus
     }
+
 
     Box(
         modifier = Modifier

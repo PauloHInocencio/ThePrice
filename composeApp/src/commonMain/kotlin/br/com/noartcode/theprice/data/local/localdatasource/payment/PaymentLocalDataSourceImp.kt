@@ -19,18 +19,29 @@ class PaymentLocalDataSourceImp (
         return dao
             .getBillPayments(billID)
             .map {
-                it.toDomain(billID)
+                it.toDomain()
             }
     }
 
     override suspend fun getPayment(billID: Long, month: Int, year: Int): Payment? {
         return dao
             .getPayment(billId = billID, month = month, year = year)
-            ?.toDomain(billID)
+            ?.toDomain()
     }
 
-    override suspend fun getPayment(id: Long, billID: Long): Payment? {
-        return dao.getPayment(id)?.toDomain(billID)
+    override suspend fun getPayment(id: Long): Payment? {
+        return dao.getPayment(id)?.toDomain()
+    }
+
+    override suspend fun updatePayment(id:Long, paidValue: Int?, paidAt: DayMonthAndYear?) : Payment? {
+        dao.updatePayment(
+            paymentId = id,
+            paidValue = paidValue,
+            paidDay = paidAt?.day,
+            paidMonth = paidAt?.month,
+            paidYear = paidAt?.year
+        )
+        return dao.getPayment(id)?.toDomain()
     }
 
     override suspend fun insert(

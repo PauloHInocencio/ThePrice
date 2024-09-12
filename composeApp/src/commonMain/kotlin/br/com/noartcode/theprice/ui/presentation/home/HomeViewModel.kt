@@ -11,10 +11,12 @@ import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
+import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +24,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,6 +39,7 @@ class HomeViewModel(
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val moveMonth: IMoveMonth,
     private val getFirstPaymentDate: IGetOldestPaymentRecordDate,
+    private val updatePayment: IUpdatePayment,
 ): ViewModel() {
 
 
@@ -108,8 +111,16 @@ class HomeViewModel(
                 }
             }
 
-            is HomeEvent.OnPaymentChecked -> {
-
+            is HomeEvent.OnPaymentStatusClicked -> {
+                viewModelScope.launch {
+                    val updatedPayment =
+                        updatePayment(
+                            id = event.id,
+                            paidAt = if (event.status != PAYED) internalState.value.date else null,
+                            payedValue = if (event.status != PAYED)  event.price else null,
+                        )
+                    internalState.update { it.copy(lastUpdatePayment = updatedPayment) }
+                }
             }
         }
     }

@@ -21,6 +21,14 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE id == :id")
     suspend fun getPayment(id:Long) : PaymentEntity?
 
+    @Query("UPDATE payments SET paidValue = :paidValue, paidDay = :paidDay, paidMonth = :paidMonth, paidYear = :paidYear WHERE id == :paymentId")
+    suspend fun updatePayment(
+        paymentId:Long,
+        paidValue:Int?,
+        paidDay:Int?,
+        paidMonth:Int?,
+        paidYear:Int?
+    )
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(payment: PaymentEntity) : Long
 
