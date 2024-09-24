@@ -30,7 +30,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     state:HomeUiState,
     onEvent: (HomeEvent) -> Unit,
-    onNavigateToNewBill: () -> Unit
+    onNavigateToNewBill: () -> Unit,
+    onNavigateToEditPayment: (paymentId:Long) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -68,7 +69,7 @@ fun HomeScreen(
                                     price = payment.price
                                 )
                             )},
-                        onPaymentClicked = {}
+                        onPaymentClicked = onNavigateToEditPayment
                     )
                 }
             }

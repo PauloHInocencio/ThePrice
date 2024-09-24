@@ -6,7 +6,6 @@ import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
