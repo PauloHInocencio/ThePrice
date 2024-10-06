@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditUiState
-import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
 
@@ -42,36 +39,20 @@ fun PaymentEditScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
+                .padding(20.dp)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
-           /* Text(
-                state.billName,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            PaymentEditInfoContainer(
-                description = "Valor original",
-                value = state.billOriginalPrice
-            )
-            Spacer(modifier = Modifier.height(5.dp))
-            PaymentEditInfoContainer(
-                description = "Vencimento",
-                value = state.billOverDueDate
-            )
-            Spacer(modifier = Modifier.height(10.dp))*/
             Text(
                 state.billName,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             NormalEditField(
-                modifier = Modifier.padding(20.dp),
-                fieldName = "Payed amount",
-                fieldLabel = "enter the payed amount",
-                value =if (state.paidAtDate != null) state.payedValue!! else state.billOriginalPrice,
+                fieldName = if (state.paidAtDate != null)  "Payed amount" else "Amount to pay",
+                fieldLabel = if (state.paidAtDate != null) "Enter the payed amount" else "Enter the amount to pay",
+                value = if (state.paidAtDate != null) state.payedValue!! else state.billOriginalPrice,
                 hasError = state.priceHasError,
                 onValueChanged = { onEvent(PaymentEditEvent.OnPriceChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
@@ -81,23 +62,21 @@ fun PaymentEditScreen(
             )
             Spacer(Modifier.height(10.dp))
             DateEditFieldView(
-                modifier = Modifier.padding(20.dp),
-                title = "Pago em",
+                title = if (state.paidAtDate != null)  "Paid on" else "Due date",
                 dateTitle = state.paidDateTitle ?: state.billDueDateTitle,
                 selectedDate = state.paidAtDate ?: state.billDueDate,
                 onSelectDate = { date -> onEvent(PaymentEditEvent.OnPaidAtDateChanged(date)) },
             )
-            IconButton(onClick = {})  {
-                Icon(imageVector = Icons.Filled.ThumbUp, contentDescription = null)
-            }
-
             Spacer(Modifier.height(10.dp))
-            BottomCircularButton(
-                isEnable = state.canSave,
-                icon = Icons.Filled.Check,
-                color = Color.Magenta,
-                onClick = { onEvent(PaymentEditEvent.OnSave) }
-            )
+            Button(
+                onClick = {},
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (state.paidAtDate != null) Color.Magenta else Color.LightGray
+                )
+            ) {
+                Text(if (state.paidAtDate != null) "Paid" else "Unpaid")
+            }
         }
     }
 
