@@ -64,7 +64,6 @@ kotlin {
 
             // ViewModel
             implementation(libs.lifecycle.viewmodel)
-            implementation(libs.lifecycle.savedState)
             //implementation(libs.lifecycle.compose)
 
             // Coroutines

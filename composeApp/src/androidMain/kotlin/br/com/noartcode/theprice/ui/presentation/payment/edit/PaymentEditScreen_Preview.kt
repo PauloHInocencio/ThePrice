@@ -10,8 +10,8 @@ fun PaymentEditScreen_Preview() {
     PaymentEditScreen(
         state = PaymentEditUiState(
             billName = "Internet",
-            billOriginalPrice = "R$ 110,00",
-            billDueDate = 1727168591813,
+            payedValue = "R$ 110,00",
+            paidAtDate = 1727168591813,
         ),
         onEvent = {},
         onNavigateBack = {},

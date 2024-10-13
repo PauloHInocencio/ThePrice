@@ -12,6 +12,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,8 +25,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditUiState
+import br.com.noartcode.theprice.ui.views.BottomCircularButton
+import br.com.noartcode.theprice.ui.views.ConfirmPaymentChangeDialog
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
 
@@ -50,9 +55,9 @@ fun PaymentEditScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             NormalEditField(
-                fieldName = if (state.paidAtDate != null)  "Payed amount" else "Amount to pay",
-                fieldLabel = if (state.paidAtDate != null) "Enter the payed amount" else "Enter the amount to pay",
-                value = if (state.paidAtDate != null) state.payedValue!! else state.billOriginalPrice,
+                fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Payed amount" else "Amount to pay",
+                fieldLabel = if (state.paymentStatus == PaymentUi.Status.PAYED) "Enter the payed amount" else "Enter the amount to pay",
+                value = state.payedValue,
                 hasError = state.priceHasError,
                 onValueChanged = { onEvent(PaymentEditEvent.OnPriceChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
@@ -60,23 +65,36 @@ fun PaymentEditScreen(
                     imeAction = ImeAction.Next
                 )
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(20.dp))
             DateEditFieldView(
-                title = if (state.paidAtDate != null)  "Paid on" else "Due date",
-                dateTitle = state.paidDateTitle ?: state.billDueDateTitle,
-                selectedDate = state.paidAtDate ?: state.billDueDate,
+                title = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Paid on" else "Due date",
+                dateTitle = state.paidDateTitle,
+                selectedDate = state.paidAtDate,
                 onSelectDate = { date -> onEvent(PaymentEditEvent.OnPaidAtDateChanged(date)) },
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(20.dp))
             Button(
-                onClick = {},
+                onClick = { onEvent(PaymentEditEvent.OnStatusChanged) },
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (state.paidAtDate != null) Color.Magenta else Color.LightGray
+                    backgroundColor = if (state.paymentStatus == PaymentUi.Status.PAYED) Color.Magenta else Color.LightGray
                 )
             ) {
-                Text(if (state.paidAtDate != null) "Paid" else "Unpaid")
+                Text(if (state.paymentStatus == PaymentUi.Status.PAYED) "Paid" else "Unpaid")
             }
+            BottomCircularButton(
+                isEnable = state.canSave,
+                icon = Icons.Filled.Check,
+                color = Color.Magenta,
+                onClick = { onEvent(PaymentEditEvent.OnSave) }
+            )
+        }
+        if (state.askingConfirmation) {
+            ConfirmPaymentChangeDialog(
+                onDismiss = { onEvent(PaymentEditEvent.OnDismissConfirmationDialog) },
+                onConfirmToCurrent = { onEvent(PaymentEditEvent.OnChangeAllFuturePayments) },
+                onConfirmToAll = { onEvent(PaymentEditEvent.OnChangeOnlyCurrentPayment) }
+            )
         }
     }
 

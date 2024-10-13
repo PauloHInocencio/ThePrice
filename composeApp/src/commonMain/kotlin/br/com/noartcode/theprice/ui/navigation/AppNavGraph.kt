@@ -96,7 +96,6 @@ fun AppNavGraph(
                 )
             }
         ){
-            val paymentId = backStackEntry?.arguments?.getLong("paymentId") ?: return@composable
             val viewModel = koinViewModel<PaymentEditViewModel>()
             PaymentEditScreen(
                 state = viewModel.uiState.collectAsState().value,
@@ -104,6 +103,7 @@ fun AppNavGraph(
                 onNavigateBack = {}
             )
             LaunchedEffect(Unit){
+                val paymentId = checkNotNull(backStackEntry?.arguments?.getLong("paymentId"))
                 viewModel.onEvent(PaymentEditEvent.OnGetPayment(paymentId))
             }
         }

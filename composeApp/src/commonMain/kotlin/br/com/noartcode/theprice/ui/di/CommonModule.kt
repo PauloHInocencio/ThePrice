@@ -92,6 +92,8 @@ fun appModule() = module {
             epochFormatter = get(),
             dateFormatter = get(),
             currencyFormatter = get(),
+            updatePayment = get(),
+            paymentUiMapper = get(),
         )
     }
 }
