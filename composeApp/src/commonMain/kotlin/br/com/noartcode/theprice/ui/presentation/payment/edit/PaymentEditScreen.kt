@@ -92,8 +92,8 @@ fun PaymentEditScreen(
         if (state.askingConfirmation) {
             ConfirmPaymentChangeDialog(
                 onDismiss = { onEvent(PaymentEditEvent.OnDismissConfirmationDialog) },
-                onConfirmToCurrent = { onEvent(PaymentEditEvent.OnChangeAllFuturePayments) },
-                onConfirmToAll = { onEvent(PaymentEditEvent.OnChangeOnlyCurrentPayment) }
+                onConfirmToCurrent = { onEvent(PaymentEditEvent.OnChangeOnlyCurrentPayment) },
+                onConfirmToAll = { onEvent(PaymentEditEvent.OnChangeAllFuturePayments) }
             )
         }
     }

@@ -100,7 +100,9 @@ fun AppNavGraph(
             PaymentEditScreen(
                 state = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
-                onNavigateBack = {}
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
             )
             LaunchedEffect(Unit){
                 val paymentId = checkNotNull(backStackEntry?.arguments?.getLong("paymentId"))
