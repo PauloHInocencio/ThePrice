@@ -1,13 +1,13 @@
 package br.com.noartcode.theprice.data.local.localdatasource.payment
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 
 class PaymentLocalDataSourceImp (
-    private val database: ThePrinceDatabase
+    private val database: ThePriceDatabase
 ): PaymentLocalDataSource {
 
     private val dao by lazy { database.getPaymentDao() }

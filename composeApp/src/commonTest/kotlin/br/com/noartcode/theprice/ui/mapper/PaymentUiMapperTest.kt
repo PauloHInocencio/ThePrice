@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.ui.mapper
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
@@ -33,7 +33,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
-    private val database: ThePrinceDatabase by inject()
+    private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
     private val formatter:ICurrencyFormatter by inject()

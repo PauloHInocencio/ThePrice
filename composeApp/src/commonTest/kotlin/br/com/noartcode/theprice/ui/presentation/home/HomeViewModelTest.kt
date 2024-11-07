@@ -1,14 +1,13 @@
 package br.com.noartcode.theprice.ui.presentation.home
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -32,7 +31,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest : KoinTest, RobolectricTests() {
 
-    private val database: ThePrinceDatabase by inject()
+    private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }

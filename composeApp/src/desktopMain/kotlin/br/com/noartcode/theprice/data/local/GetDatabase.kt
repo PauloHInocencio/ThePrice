@@ -6,9 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 
-fun getDatabase(): ThePrinceDatabase {
+fun getDatabase(): ThePriceDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), dbFileName)
-    return Room.databaseBuilder<ThePrinceDatabase>(name = dbFile.absolutePath)
+    return Room.databaseBuilder<ThePriceDatabase>(name = dbFile.absolutePath)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()

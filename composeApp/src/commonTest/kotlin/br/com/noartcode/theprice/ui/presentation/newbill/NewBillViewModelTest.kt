@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.newbill
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
@@ -31,7 +31,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
-    private val database: ThePrinceDatabase by inject()
+    private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
     private val viewModel: AddBillViewModel by inject()

@@ -7,12 +7,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSHomeDirectory
 import platform.Foundation.NSUserDomainMask
 
-fun getDatabase(): ThePrinceDatabase {
+fun getDatabase(): ThePriceDatabase {
     val dbFilePath = documentDirectory() + "/$dbFileName"
-    return Room.databaseBuilder<ThePrinceDatabase>(
+    return Room.databaseBuilder<ThePriceDatabase>(
         name = dbFilePath,
     )
         .setDriver(BundledSQLiteDriver())

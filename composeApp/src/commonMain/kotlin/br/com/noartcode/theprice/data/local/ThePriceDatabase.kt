@@ -14,14 +14,14 @@ import br.com.noartcode.theprice.data.local.entities.PaymentEntity
     version = 1,
     exportSchema = false
 )
-@ConstructedBy(ThePrinceDatabaseConstructor::class)
-abstract class ThePrinceDatabase : RoomDatabase() {
+@ConstructedBy(ThePriceDatabaseConstructor::class)
+abstract class ThePriceDatabase : RoomDatabase() {
     abstract fun getBillDao (): BillDao
     abstract fun getPaymentDao() : PaymentDao
 }
 
 // The Room compiler generates the `actual` implementations.
 @Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object ThePrinceDatabaseConstructor : RoomDatabaseConstructor<ThePrinceDatabase>
+expect object ThePriceDatabaseConstructor : RoomDatabaseConstructor<ThePriceDatabase>
 
 internal const val dbFileName = "the_price_app.db"

@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.data.localdatasource
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
@@ -28,7 +28,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class BillDataSourceTest : KoinTest, RobolectricTests() {
 
-    private val database:ThePrinceDatabase by inject()
+    private val database:ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val dataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
 

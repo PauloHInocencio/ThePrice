@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
@@ -12,12 +12,11 @@ import org.koin.dsl.module
 import platform.Foundation.NSLocale
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterCurrencyStyle
-import platform.Foundation.NSNumberFormatterStyle
 import platform.Foundation.currentLocale
 
 
 actual fun platformModule() = module {
-    single<ThePrinceDatabase> { getDatabase() }
+    single<ThePriceDatabase> { getDatabase() }
     single<ICurrencyFormatter> {
         CurrencyFormatter(formatter = NSNumberFormatter().also {
             it.usesGroupingSeparator = true

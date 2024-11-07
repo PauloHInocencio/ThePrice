@@ -1,12 +1,10 @@
 package br.com.noartcode.theprice.data.local.localdatasource.bill
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -14,7 +12,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class BillLocalDataSourceImp(
-    private val database: ThePrinceDatabase,
+    private val database: ThePriceDatabase,
     private val epochFormatter:IEpochMillisecondsFormatter
 ) : BillLocalDataSource {
 

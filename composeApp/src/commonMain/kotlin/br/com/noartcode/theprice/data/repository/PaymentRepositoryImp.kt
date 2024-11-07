@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.data.repository
 
-import br.com.noartcode.theprice.data.local.ThePrinceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.dao.PaymentDao
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.PaymentRepository
@@ -8,7 +8,7 @@ import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 class PaymentRepositoryImp(
-    private val database: ThePrinceDatabase
+    private val database: ThePriceDatabase
 ) : PaymentRepository {
 
     private val dao: PaymentDao by lazy {

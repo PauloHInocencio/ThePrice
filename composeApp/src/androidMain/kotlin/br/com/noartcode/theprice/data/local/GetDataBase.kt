@@ -5,10 +5,10 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 
-fun getDatabase(context:Context) : ThePrinceDatabase {
+fun getDatabase(context:Context) : ThePriceDatabase {
     val appContext = context.applicationContext
     val dbFile = appContext.getDatabasePath(dbFileName)
-    return Room.databaseBuilder<ThePrinceDatabase>(
+    return Room.databaseBuilder<ThePriceDatabase>(
         context = appContext,
         name = dbFile.absolutePath
     )
