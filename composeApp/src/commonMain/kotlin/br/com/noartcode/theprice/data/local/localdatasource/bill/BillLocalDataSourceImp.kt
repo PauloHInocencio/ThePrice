@@ -34,8 +34,10 @@ class BillLocalDataSourceImp(
 
     override suspend fun insert(bill: Bill) : Long {
         val normalizedName = bill.name.trim().lowercase()
+
         return dao.insert(
             BillEntity(
+                id = bill.id,
                 name = normalizedName,
                 description = bill.description,
                 price = bill.price,
@@ -51,6 +53,6 @@ class BillLocalDataSourceImp(
     }
 
     override suspend fun delete(id: Long) {
-        TODO("Not yet implemented")
+        dao.deleteBill(id)
     }
 }

@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.newbill
+package br.com.noartcode.theprice.ui.presentation.bill.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,10 +8,10 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
+import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
-import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
-import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillUiState
+import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
+import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillUiState
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,24 +22,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class NewBillViewModel(
+class AddBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
-    private val insertNewBill: IInsertNewBill,
+    private val insertNewBill: IInsertOrReplaceBill,
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
 ) : ViewModel() {
 
     private val bill = MutableStateFlow(Bill(createAt = getTodayDate()))
-    private val state = MutableStateFlow(NewBillUiState())
-    val uiState: StateFlow<NewBillUiState> = combine(state, bill) {
+    private val state = MutableStateFlow(AddBillUiState())
+    val uiState: StateFlow<AddBillUiState> = combine(state, bill) {
         s, b ->
         val price = currencyFormatter.format(b.price)
-        NewBillUiState(
+        AddBillUiState(
             price = price,
             name = b.name,
             description = b.description,
-            isSaved = b.id != -1L,
+            isSaved = b.id != 0L,
             isSaving = s.isSaving,
             errorMessage = s.errorMessage,
             selectedDateTitle = formatTitle(b.createAt),
@@ -50,21 +50,21 @@ class NewBillViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = NewBillUiState()
+            initialValue = AddBillUiState()
         )
 
-    fun onEvent(event: NewBillEvent) {
+    fun onEvent(event: AddBillEvent) {
         when(event) {
-            is NewBillEvent.OnDescriptionChanged -> {
+            is AddBillEvent.OnDescriptionChanged -> {
                 bill.update { it.copy(description = event.description) }
             }
-            is NewBillEvent.OnNameChanged -> {
+            is AddBillEvent.OnNameChanged -> {
                 bill.update { it.copy(name = event.name) }
             }
-            is NewBillEvent.OnPriceChanged -> {
+            is AddBillEvent.OnPriceChanged -> {
                 bill.update { it.copy(price = currencyFormatter.clenup(event.value)) }
             }
-            NewBillEvent.OnSave -> {
+            AddBillEvent.OnSave -> {
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
                     insertNewBill(bill = bill.value)
@@ -79,7 +79,7 @@ class NewBillViewModel(
                 }
             }
 
-            is NewBillEvent.OnCratedAtDateChanged -> {
+            is AddBillEvent.OnCratedAtDateChanged -> {
                 bill.update {
                     it.copy(
                         createAt = epochFormatter.to(event.date),

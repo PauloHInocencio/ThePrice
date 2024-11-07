@@ -58,6 +58,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                             paymentUiMapper = get(),
                             moveMonth = get(),
                             getFirstPaymentDate = get(),
+                            updatePayment = get(),
                         )
                     }
                 }

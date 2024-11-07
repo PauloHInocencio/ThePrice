@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.domain.model
 
 data class Bill(
-    val id:Long = -1,
+    val id:Long = 0,
     val name:String = "",
     val description:String? = null,
     val price:Int = 0,

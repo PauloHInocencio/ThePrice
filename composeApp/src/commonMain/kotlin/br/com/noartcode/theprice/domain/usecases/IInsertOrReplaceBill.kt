@@ -8,14 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-interface IInsertNewBill {
+interface IInsertOrReplaceBill {
     suspend operator fun invoke(bill: Bill) : Resource<Long>
 }
 
-class InsertNewBill(
+class InsertOrReplaceBill(
     private val localDataSource: BillLocalDataSource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : IInsertNewBill {
+) : IInsertOrReplaceBill {
 
     override suspend fun invoke(bill: Bill): Resource<Long> = withContext(dispatcher) {
         try {

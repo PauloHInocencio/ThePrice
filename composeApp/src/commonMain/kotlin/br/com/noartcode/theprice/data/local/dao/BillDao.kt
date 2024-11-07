@@ -23,5 +23,5 @@ interface BillDao {
     suspend fun getBill(id:Long) : BillEntity?
 
     @Query("DELETE FROM bills WHERE id == :id")
-    suspend fun deleteExpense(id:Long)
+    suspend fun deleteBill(id:Long)
 }

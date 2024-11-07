@@ -11,7 +11,7 @@ import platform.Foundation.NSHomeDirectory
 import platform.Foundation.NSUserDomainMask
 
 fun getDatabase(): ThePrinceDatabase {
-    val dbFilePath = documentDirectory() + dbFileName
+    val dbFilePath = documentDirectory() + "/$dbFileName"
     return Room.databaseBuilder<ThePrinceDatabase>(
         name = dbFilePath,
     )

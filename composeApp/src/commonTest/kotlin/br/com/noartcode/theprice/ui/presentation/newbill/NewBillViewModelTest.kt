@@ -5,11 +5,12 @@ import br.com.noartcode.theprice.data.local.ThePrinceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import br.com.noartcode.theprice.ui.presentation.newbill.model.NewBillEvent
+import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
+import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -33,7 +34,7 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
     private val database: ThePrinceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
-    private val viewModel:NewBillViewModel by inject()
+    private val viewModel: AddBillViewModel by inject()
 
     @BeforeTest
     fun before() {
@@ -44,9 +45,9 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                 platformTestModule(),
                 module {
                     viewModel {
-                        NewBillViewModel(
+                        AddBillViewModel(
                             currencyFormatter = get(),
-                            insertNewBill = InsertNewBill(
+                            insertNewBill = InsertOrReplaceBill(
                                 localDataSource = billDataSource,
                                 dispatcher = UnconfinedTestDispatcher(),
                             ),
@@ -94,9 +95,9 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
             // WHEN
             with(viewModel){
-                onEvent(NewBillEvent.OnNameChanged("internet"))
-                onEvent(NewBillEvent.OnPriceChanged("9990"))
-                onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
+                onEvent(AddBillEvent.OnNameChanged("internet"))
+                onEvent(AddBillEvent.OnPriceChanged("9990"))
+                onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(4)
             }
 
@@ -117,14 +118,14 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
             // WHEN
             with(viewModel){
-                onEvent(NewBillEvent.OnNameChanged("internet"))
-                onEvent(NewBillEvent.OnPriceChanged("9990"))
-                onEvent(NewBillEvent.OnDescriptionChanged("Bill of home's internet"))
+                onEvent(AddBillEvent.OnNameChanged("internet"))
+                onEvent(AddBillEvent.OnPriceChanged("9990"))
+                onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
                 skipItems(5)
             }
 
 
-            viewModel.onEvent(NewBillEvent.OnSave)
+            viewModel.onEvent(AddBillEvent.OnSave)
 
             // THEN
             with(awaitItem()) {

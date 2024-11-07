@@ -18,9 +18,18 @@ class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getPayment(id: Long, billID: Long): Payment? {
+    override suspend fun getPayment(id: Long): Payment? {
         TODO("Not yet implemented")
     }
+
+    override suspend fun updatePayment(
+        id: Long,
+        paidValue: Int?,
+        paidAt: DayMonthAndYear?
+    ): Payment? {
+        TODO("Not yet implemented")
+    }
+
 
     override suspend fun insert(
         billID: Long,

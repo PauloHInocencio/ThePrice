@@ -16,9 +16,9 @@ import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertNewBill
+import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
-import br.com.noartcode.theprice.domain.usecases.InsertNewBill
+import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,7 +35,7 @@ fun commonTestModule() = module {
     single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter()}
     single<IGetDateMonthAndYear> { GetDateMonthAndYear() }
-    single<IInsertNewBill> { InsertNewBill(localDataSource = get(), dispatcher = UnconfinedTestDispatcher()) }
+    single<IInsertOrReplaceBill> { InsertOrReplaceBill(localDataSource = get(), dispatcher = UnconfinedTestDispatcher()) }
     single<IGetPayments> {
         GetPayments(
             billLDS = get(),

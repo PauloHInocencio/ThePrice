@@ -142,6 +142,7 @@ class PaymentEditViewModel(
         paymentUi = paymentUiMapper.mapFrom(payment!!)
         _state.update {
             it.copy(
+                billId = bill!!.id,
                 billName = bill!!.name,
                 payedValue = paymentUi!!.price,
                 paidAtDate = (payment!!.paidAt ?: payment!!.dueDate).let { date -> epochFormatter.from(date) },

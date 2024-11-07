@@ -17,8 +17,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.com.noartcode.theprice.ui.presentation.home.HomeScreen
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
-import br.com.noartcode.theprice.ui.presentation.newbill.NewBillScreen
-import br.com.noartcode.theprice.ui.presentation.newbill.NewBillViewModel
+import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillScreen
+import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
+import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillScreen
+import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
+import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditScreen
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
@@ -70,8 +73,8 @@ fun AppNavGraph(
                 )
             }
         ) {
-            val viewModel = koinViewModel<NewBillViewModel>()
-            NewBillScreen(
+            val viewModel = koinViewModel<AddBillViewModel>()
+            AddBillScreen(
                 state = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
                 onNavigateBack = {
@@ -100,6 +103,9 @@ fun AppNavGraph(
             PaymentEditScreen(
                 state = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
+                onNavigateToEditBill = { billId ->
+                    navController.navigate("${Routes.EDIT_BILL.name}?billId=$billId")
+                },
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -107,6 +113,40 @@ fun AppNavGraph(
             LaunchedEffect(Unit){
                 val paymentId = checkNotNull(backStackEntry?.arguments?.getLong("paymentId"))
                 viewModel.onEvent(PaymentEditEvent.OnGetPayment(paymentId))
+            }
+        }
+
+        composable(
+            route = "${Routes.EDIT_BILL.name}?billId={billId}",
+            arguments = listOf(navArgument("billId"){ type = NavType.LongType }),
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tween(500)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    tween(300)
+                )
+            }
+        ){
+            val viewModel = koinViewModel<EditBillViewModel>()
+            EditBillScreen(
+                state = viewModel.uiState.collectAsState().value,
+                onEvent = viewModel::onEvent,
+                onNavigateHome = {
+                    navController.navigate(Routes.HOME.name) {
+                        popUpTo(Routes.HOME.name) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+            LaunchedEffect(Unit){
+                val billId = checkNotNull(backStackEntry?.arguments?.getLong("billId"))
+                viewModel.onEvent(EditBillEvent.OnGetBill(billId))
             }
         }
     }

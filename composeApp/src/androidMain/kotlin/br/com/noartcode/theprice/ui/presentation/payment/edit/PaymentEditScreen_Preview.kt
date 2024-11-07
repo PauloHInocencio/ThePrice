@@ -14,6 +14,7 @@ fun PaymentEditScreen_Preview() {
             paidAtDate = 1727168591813,
         ),
         onEvent = {},
+        onNavigateToEditBill = {},
         onNavigateBack = {},
     )
 }

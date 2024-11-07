@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -11,9 +12,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,8 +42,10 @@ fun PaymentEditScreen(
     modifier: Modifier = Modifier,
     state: PaymentEditUiState,
     onEvent: (event: PaymentEditEvent) -> Unit,
+    onNavigateToEditBill : (Long) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+
     Scaffold { innerPadding ->
         Column(
             modifier = modifier
@@ -48,11 +54,24 @@ fun PaymentEditScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                state.billName,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
+            Row(modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically){
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = state.billName,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                IconButton(
+                    onClick = { onNavigateToEditBill(state.billId) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = null
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(20.dp))
             NormalEditField(
                 fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Payed amount" else "Amount to pay",
