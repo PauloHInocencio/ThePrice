@@ -11,6 +11,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
 import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillUiState
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class EditBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
-    private val replaceBill: IInsertOrReplaceBill,
+    private val updateBill: IUpdateBill,
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
@@ -70,17 +71,15 @@ class EditBillViewModel(
                 bill.update { it.copy(price = currencyFormatter.clenup(event.value)) }
             }
             EditBillEvent.OnSave -> {
-                    state.update { it.copy(isSaving = true) }
-                    replaceBill(bill = bill.value)
-                        .doIfSuccess { id ->
-                            bill.update { it.copy(id = id) }
-                        }
-                        .doIfError { error->
-                            state.update { it.copy(errorMessage = error.message) }
-                            println("${error.message}, ${error.exception.toString()}" )
-                        }
-                    state.update { it.copy(canClose = true) }
-
+                state.update { it.copy(isSaving = true) }
+                updateBill(bill = bill.value)
+                    .doIfSuccess {
+                        state.update { it.copy(canClose = true) }
+                    }
+                    .doIfError { error->
+                        state.update { it.copy(errorMessage = error.message) }
+                        println("${error.message}, ${error.exception.toString()}" )
+                    }
             }
 
             is EditBillEvent.OnCratedAtDateChanged -> {

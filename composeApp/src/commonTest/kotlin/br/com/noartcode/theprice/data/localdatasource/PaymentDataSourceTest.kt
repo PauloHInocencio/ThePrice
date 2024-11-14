@@ -59,4 +59,52 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
         assertEquals(expected = 3, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024)))
         assertEquals(expected = 3, paymentDataSource.getBillPayments(1).size)
     }
+
+
+    @Test
+    fun `When updating an existing bill previous bills paid shouldn't changed`() = runTest {
+
+        // Adding payments for a bill
+        val bill = stubBills[0]
+        val billId = billDataSource.insert(bill)
+        val paidValue = bill.price
+        val numOfPayments = 3
+        with(paymentDataSource) {
+            repeat(numOfPayments) { i ->
+                val paymentMonth = bill.createAt.month + i
+                insert(
+                    billID = billId,
+                    dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
+                    paidAt = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
+                    paidValue = paidValue
+                )
+            }
+        }
+
+
+        // Validate the total of payments for this bill
+        val paymentsBeforeBillUpdate = paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = numOfPayments,
+            actual = paymentsBeforeBillUpdate.size
+        )
+
+        // Updating existing bill
+        billDataSource.update(bill.copy(id = billId, price = 11111))
+
+        // Checking updated bill
+        val updatedBillResult = billDataSource.getBill(billId)
+        assertEquals(
+            updatedBillResult?.price,
+            actual = 11111
+        )
+
+
+        // Validate if the total of payments for this bill still the same
+        val resultAfterBillUpdate = paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = numOfPayments,
+            actual = resultAfterBillUpdate.size
+        )
+    }
 }

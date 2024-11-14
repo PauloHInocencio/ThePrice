@@ -26,9 +26,11 @@ import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
+import br.com.noartcode.theprice.domain.usecases.UpdateBill
 import br.com.noartcode.theprice.domain.usecases.UpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
@@ -62,6 +64,7 @@ fun appModule() = module {
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<IInsertOrReplaceBill> { InsertOrReplaceBill(localDataSource = get()) }
+    single<IUpdateBill> { UpdateBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}
@@ -91,7 +94,7 @@ fun appModule() = module {
     viewModel {
         EditBillViewModel(
             currencyFormatter = get(),
-            replaceBill = get(),
+            updateBill = get(),
             getTodayDate = get(),
             epochFormatter = get(),
             getMonthName = get(),

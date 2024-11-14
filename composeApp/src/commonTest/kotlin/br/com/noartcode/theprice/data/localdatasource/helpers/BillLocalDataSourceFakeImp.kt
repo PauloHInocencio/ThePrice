@@ -19,6 +19,10 @@ class BillLocalDataSourceFakeImp : BillLocalDataSource {
         return bill.copy(id = 1).also { store.add(it) }.id
     }
 
+    override suspend fun update(bill: Bill) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getBill(id: Long): Bill? {
         return store.singleOrNull { it.id == id }
     }

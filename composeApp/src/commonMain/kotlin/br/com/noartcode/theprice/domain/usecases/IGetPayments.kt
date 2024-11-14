@@ -39,7 +39,7 @@ class GetPayments(
                 try {
                     val payments = bills.mapNotNull { bill ->
                         if (
-                            bill.createAt.year > date.year ||
+                            bill.createAt.year > date.year &&
                             bill.createAt.month > date.month) return@mapNotNull null
                         with(paymentLDS.getPayment(bill.id, date.month, date.year))  {
                             if (this != null) return@with this
