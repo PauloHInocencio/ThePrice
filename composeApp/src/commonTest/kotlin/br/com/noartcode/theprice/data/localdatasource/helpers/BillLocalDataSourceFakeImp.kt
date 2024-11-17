@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.data.localdatasource.helpers
 
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,8 +16,15 @@ class BillLocalDataSourceFakeImp : BillLocalDataSource {
        emit(store.filter { it.status == status })
     }
 
-    override suspend fun insert(bill: Bill): Long {
-        return bill.copy(id = 1).also { store.add(it) }.id
+    override suspend fun insert(
+        name: String,
+        description: String?,
+        price: Int,
+        type: Bill.Type,
+        status: Bill.Status,
+        billingStartDate: DayMonthAndYear
+    ): Long {
+        return 1
     }
 
     override suspend fun update(bill: Bill) {

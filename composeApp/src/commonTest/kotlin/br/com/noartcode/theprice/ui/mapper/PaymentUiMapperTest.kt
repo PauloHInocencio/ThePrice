@@ -35,9 +35,9 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
-    private val formatter:ICurrencyFormatter by inject()
     private val getTodayDate:IGetTodayDate = GetTodayDateStub()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
+    private val formatter:ICurrencyFormatter by inject()
     private val dateFormat:IGetDateFormat by inject()
     private val getDaysUntil:IGetDaysUntil by inject()
 
@@ -74,14 +74,21 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
         // GIVEN
         val bill = stubBills[0]
-        billDataSource.insert(bill)
+        billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            type = bill.type,
+            status = bill.status,
+            billingStartDate = bill.billingStartDate,
+        )
 
         //WHEN
         val uiPayment = paymentUiMapper.mapFrom(
             Payment(
                 id = 1,
                 billId = 1,
-                dueDate = DayMonthAndYear(day = bill.createAt.day, month = 8, year = 2024),
+                dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
                 payedValue = bill.price,
                 paidAt = DayMonthAndYear(day = 3, month = 8, year = 2024)
             )
@@ -101,7 +108,14 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
         // GIVEN
         val bill = stubBills[0]
-        billDataSource.insert(bill)
+        billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            type = bill.type,
+            status = bill.status,
+            billingStartDate = bill.billingStartDate,
+        )
         (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 1, month = 8, year = 2024)
 
         //WHEN
@@ -109,7 +123,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
             Payment(
                 id = 1,
                 billId = 1,
-                dueDate = DayMonthAndYear(day = bill.createAt.day, month = 8, year = 2024),
+                dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
             )
         )
 
@@ -127,7 +141,14 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
         // GIVEN
         val bill = stubBills[0]
-        billDataSource.insert(bill)
+        billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            type = bill.type,
+            status = bill.status,
+            billingStartDate = bill.billingStartDate
+        )
         (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 7, month = 8, year = 2024)
 
         //WHEN
@@ -135,7 +156,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
             Payment(
                 id = 1,
                 billId = 1,
-                dueDate = DayMonthAndYear(day = bill.createAt.day, month = 8, year = 2024),
+                dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
             )
         )
 

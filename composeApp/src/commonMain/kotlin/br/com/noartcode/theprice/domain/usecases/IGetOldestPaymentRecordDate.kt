@@ -15,6 +15,6 @@ class GetOldestPaymentRecordDate(
 ) : IGetOldestPaymentRecordDate {
     override fun invoke(): Flow<DayMonthAndYear?> = localDataSource
         .getAllBills()
-        .map { bills -> bills.minOfOrNull { epochFormatter.from(it.createAt) }}
+        .map { bills -> bills.minOfOrNull { epochFormatter.from(it.billingStartDate) }}
         .map { epoch -> epoch?.let { epochFormatter.to(it) } }
 }

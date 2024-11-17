@@ -5,11 +5,13 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
+import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -29,7 +31,8 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
+    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
     private val getFirstPaymentDate:IGetOldestPaymentRecordDate by lazy {
         GetOldestPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
     }
@@ -49,13 +52,79 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
     }
 
     @Test
+    fun `When more the one bill have the same start date Return at least one of them`() = runTest {
+        // GIVEN
+        billDataSource.apply {
+            val bill = stubBills[0]
+            repeat(3) { i ->
+                insert(
+                    name = bill.name,
+                    description = bill.description,
+                    price = bill.price,
+                    type = bill.type,
+                    status = bill.status,
+                    billingStartDate = bill.billingStartDate,
+                )
+            }
+        }
+
+
+        // check if bills were inserted correctly
+       val bills = billDataSource.getAllBills().first()
+        assertEquals(
+            expected = 3,
+            actual = bills.size
+        )
+
+        //WHEN
+        getFirstPaymentDate().test {
+            with(awaitItem()) {
+                assertEquals(9, this?.month ?: 1)
+            }
+        }
+    }
+
+
+    @Test
+    fun `When oldest bills have the same start month and year Return the one with the smallest day`() = runTest {
+
+        with(billDataSource) {
+            val bill = stubBills[0]
+            repeat(3) { i ->
+                insert(
+                    name = bill.name,
+                    description = bill.description,
+                    price = bill.price,
+                    type = bill.type,
+                    status = bill.status,
+                    billingStartDate = bill.billingStartDate.copy(day = i + 1),
+                )
+            }
+        }
+
+        val date = getFirstPaymentDate().first()
+        assertEquals(
+            expected = 1,
+            actual = date?.day
+        )
+    }
+
+    @Test
     fun `Should return the oldest bill record from the database`() = runTest {
 
         // GIVEN
         billDataSource.apply {
-            insert(stubBills[0])
-            insert(stubBills[1])
-            insert(stubBills[2])
+            repeat(3) { i ->
+                val bill = stubBills[i]
+                insert(
+                    name = bill.name,
+                    description = bill.description,
+                    price = bill.price,
+                    type = bill.type,
+                    status = bill.status,
+                    billingStartDate = bill.billingStartDate,
+                )
+            }
         }
 
 

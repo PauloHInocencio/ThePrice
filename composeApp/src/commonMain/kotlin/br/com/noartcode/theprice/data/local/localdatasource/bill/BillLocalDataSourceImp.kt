@@ -4,7 +4,10 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -13,7 +16,8 @@ import kotlinx.coroutines.flow.map
 
 class BillLocalDataSourceImp(
     private val database: ThePriceDatabase,
-    private val epochFormatter:IEpochMillisecondsFormatter
+    private val epochFormatter:IEpochMillisecondsFormatter,
+    private val getTodayDate: IGetTodayDate,
 ) : BillLocalDataSource {
 
     private val dao by lazy { database.getBillDao() }
@@ -30,18 +34,24 @@ class BillLocalDataSourceImp(
                 }
             }
 
-    override suspend fun insert(bill: Bill) : Long {
-        val normalizedName = bill.name.trim()
-
+    override suspend fun insert(
+        name:String,
+        description:String?,
+        price:Int,
+        type:Bill.Type,
+        status:Bill.Status,
+        billingStartDate:DayMonthAndYear,
+    ) : Long {
         return dao.insert(
             BillEntity(
-                id = bill.id,
-                name = normalizedName,
-                description = bill.description,
-                price = bill.price,
-                type = bill.type.name,
-                status = bill.status.name,
-                createdAt = bill.createAt.let { epochFormatter.from(it) }
+                id = 0,
+                name = name.lowercase().trim(),
+                description = description,
+                price = price,
+                type = type.name,
+                status = status.name,
+                billingStartDate = billingStartDate.let { epochFormatter.from(it) },
+                createdAt = getTodayDate().let { epochFormatter.from(it) }
             )
         )
     }
@@ -53,7 +63,8 @@ class BillLocalDataSourceImp(
             description = bill.description,
             price = bill.price,
             type = bill.type.name,
-            status = bill.status.name
+            status = bill.status.name,
+            billingStartDate = bill.billingStartDate.let { epochFormatter.from(it) },
         )
     }
 

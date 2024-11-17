@@ -30,7 +30,7 @@ class AddBillViewModel(
     private val getMonthName: IGetMonthName,
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill(createAt = getTodayDate()))
+    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate()))
     private val state = MutableStateFlow(AddBillUiState())
     val uiState: StateFlow<AddBillUiState> = combine(state, bill) {
         s, b ->
@@ -42,8 +42,8 @@ class AddBillViewModel(
             isSaved = b.id != 0L,
             isSaving = s.isSaving,
             errorMessage = s.errorMessage,
-            selectedDateTitle = formatTitle(b.createAt),
-            selectedDate = epochFormatter.from(b.createAt),
+            billingStartDateTitle = formatTitle(b.billingStartDate),
+            billingStartDate = epochFormatter.from(b.billingStartDate),
             priceHasError = price == currencyFormatter.format(0)
         )
     }
@@ -67,22 +67,28 @@ class AddBillViewModel(
             AddBillEvent.OnSave -> {
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
-                    insertNewBill(bill = bill.value)
-                        .doIfSuccess { id ->
+                    insertNewBill(
+                        name = bill.value.name,
+                        description = bill.value.description,
+                        price = bill.value.price,
+                        type = bill.value.type,
+                        status = bill.value.status,
+                        billingStartDate = bill.value.billingStartDate,
+                    ).doIfSuccess { id ->
                             bill.update { it.copy(id = id) }
-                        }
-                        .doIfError { error->
-                            state.update { it.copy(errorMessage = error.message) }
-                            println("${error.message}, ${error.exception.toString()}" )
-                        }
+                    }
+                    .doIfError { error->
+                        state.update { it.copy(errorMessage = error.message) }
+                        println("${error.message}, ${error.exception.toString()}" )
+                    }
                     state.update { it.copy(isSaving = false) }
                 }
             }
 
-            is AddBillEvent.OnCratedAtDateChanged -> {
+            is AddBillEvent.OnBillingStartDateChanged -> {
                 bill.update {
                     it.copy(
-                        createAt = epochFormatter.to(event.date),
+                        billingStartDate = epochFormatter.to(event.date),
                     )
                 }
             }

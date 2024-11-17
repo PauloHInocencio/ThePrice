@@ -10,7 +10,6 @@ import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
@@ -35,7 +34,7 @@ class EditBillViewModel(
     private val deleteBill: IDeleteBill,
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill(createAt = getTodayDate()))
+    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate()))
     private val state = MutableStateFlow(EditBillUiState())
     val uiState: StateFlow<EditBillUiState> = combine(state, bill) {
         s, b ->
@@ -46,8 +45,8 @@ class EditBillViewModel(
             description = b.description,
             isSaving = s.isSaving,
             errorMessage = s.errorMessage,
-            selectedDateTitle = formatTitle(b.createAt),
-            selectedDate = epochFormatter.from(b.createAt),
+            billingStartDateTitle = formatTitle(b.billingStartDate),
+            billingStartDate = epochFormatter.from(b.billingStartDate),
             priceHasError = price == currencyFormatter.format(0),
             showingConfirmationDialog = s.showingConfirmationDialog,
             canClose = s.canClose,
@@ -82,10 +81,10 @@ class EditBillViewModel(
                     }
             }
 
-            is EditBillEvent.OnCratedAtDateChanged -> {
+            is EditBillEvent.OnBillingStartDateChanged -> {
                 bill.update {
                     it.copy(
-                        createAt = epochFormatter.to(event.date),
+                        billingStartDate = epochFormatter.to(event.date),
                     )
                 }
             }

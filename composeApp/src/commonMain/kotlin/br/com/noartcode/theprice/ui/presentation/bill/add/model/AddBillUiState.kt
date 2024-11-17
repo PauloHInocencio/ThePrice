@@ -3,8 +3,8 @@ package br.com.noartcode.theprice.ui.presentation.bill.add.model
 data class AddBillUiState(
     val price:String = "",
     val name:String = "",
-    val selectedDateTitle:String = "",
-    val selectedDate:Long = 0L,
+    val billingStartDateTitle:String = "",
+    val billingStartDate:Long = 0L,
     val description:String? = null,
     val isSaving:Boolean = false,
     val isSaved:Boolean = false,

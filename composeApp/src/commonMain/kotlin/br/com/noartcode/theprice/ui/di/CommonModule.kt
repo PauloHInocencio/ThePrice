@@ -59,7 +59,13 @@ fun appModule() = module {
     single<IGetDaysInMonth> { GetDaysInMonth() }
     single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
-    single<BillLocalDataSource> { BillLocalDataSourceImp(database = get(), epochFormatter = get()) }
+    single<BillLocalDataSource> {
+        BillLocalDataSourceImp(
+            database = get(),
+            epochFormatter = get(),
+            getTodayDate = get()
+        )
+    }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}

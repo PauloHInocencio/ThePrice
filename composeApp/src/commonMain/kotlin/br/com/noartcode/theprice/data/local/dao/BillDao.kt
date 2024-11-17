@@ -19,7 +19,18 @@ interface BillDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(expense: BillEntity) : Long
 
-    @Query("UPDATE bills SET name = :name, description = :description, price = :price, type = :type, status = :status WHERE id == :id")
+    @Query(
+        """
+            UPDATE bills 
+            SET name = :name, 
+                description = :description, 
+                price = :price, 
+                type = :type, 
+                status = :status, 
+                billingStartDate = :billingStartDate 
+            WHERE id == :id
+        """
+    )
     suspend fun update(
         id:Long,
         name:String,
@@ -27,6 +38,7 @@ interface BillDao {
         price:Int,
         type:String,
         status:String,
+        billingStartDate:Long
     )
 
     @Query("SELECT * FROM bills WHERE id == :id")

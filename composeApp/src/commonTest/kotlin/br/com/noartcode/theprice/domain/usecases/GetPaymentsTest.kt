@@ -9,6 +9,7 @@ import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -36,7 +37,8 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
+    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
 
     // The Unit Under Test
     private val getPayments: GetPayments by lazy {
@@ -60,5 +62,20 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         stopKoin()
         database.close()
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

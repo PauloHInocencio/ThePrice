@@ -39,14 +39,14 @@ class GetPayments(
                 try {
                     val payments = bills.mapNotNull { bill ->
                         if (
-                            bill.createAt.year > date.year &&
-                            bill.createAt.month > date.month) return@mapNotNull null
+                            bill.billingStartDate.year > date.year &&
+                            bill.billingStartDate.month > date.month) return@mapNotNull null
                         with(paymentLDS.getPayment(bill.id, date.month, date.year))  {
                             if (this != null) return@with this
                             val id = paymentLDS.insert(
                                 billID = bill.id,
                                 dueDate = DayMonthAndYear(
-                                    day = bill.createAt.day,
+                                    day = bill.billingStartDate.day,
                                     month = date.month,
                                     year = date.year
                                 )

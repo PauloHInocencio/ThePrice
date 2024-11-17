@@ -8,6 +8,8 @@ import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocal
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
@@ -32,7 +34,8 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     private val database:ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter) }
+    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
+    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
 
 
     @BeforeTest
@@ -50,8 +53,15 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
     @Test
     fun `Should successfully add new items into the database`() = runTest {
-
-        billDataSource.insert(stubBills[0])
+        val bill = stubBills[0]
+        billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            type = bill.type,
+            status = bill.status,
+            billingStartDate = bill.billingStartDate,
+        )
 
 
         assertEquals(expected = 1, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024)))
@@ -66,12 +76,19 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
         // Adding payments for a bill
         val bill = stubBills[0]
-        val billId = billDataSource.insert(bill)
+        val billId = billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            type = bill.type,
+            status = bill.status,
+            billingStartDate = bill.billingStartDate,
+        )
         val paidValue = bill.price
         val numOfPayments = 3
         with(paymentDataSource) {
             repeat(numOfPayments) { i ->
-                val paymentMonth = bill.createAt.month + i
+                val paymentMonth = bill.billingStartDate.month + i
                 insert(
                     billID = billId,
                     dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
