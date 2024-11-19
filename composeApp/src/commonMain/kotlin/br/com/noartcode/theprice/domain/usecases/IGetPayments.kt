@@ -38,9 +38,7 @@ class GetPayments(
             flow {
                 try {
                     val payments = bills.mapNotNull { bill ->
-                        if (
-                            bill.billingStartDate.year > date.year &&
-                            bill.billingStartDate.month > date.month) return@mapNotNull null
+                        if (date < bill.billingStartDate) return@mapNotNull null
                         with(paymentLDS.getPayment(bill.id, date.month, date.year))  {
                             if (this != null) return@with this
                             val id = paymentLDS.insert(

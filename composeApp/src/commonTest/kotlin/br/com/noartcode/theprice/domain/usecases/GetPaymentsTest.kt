@@ -16,6 +16,7 @@ import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -29,7 +30,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetPaymentsTest : KoinTest, RobolectricTests() {
@@ -64,18 +64,121 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     }
 
 
+    @Test
+    fun `Try To Get Payments of a Invalid Month should return an Empty list`() = runTest {
+        val numOfPayments = 3
+        val billId = populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
+            numOfPayments = numOfPayments
+        )
+
+        // check if the current bill has only the correct amount of payments
+        val payments =  paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = numOfPayments,
+            actual = payments.size
+        )
+
+        val result = getPayments(
+            date = DayMonthAndYear(day = 5, month = 9, year = 2024),
+            billStatus = Bill.Status.ACTIVE
+        ).first()
+
+
+        assertEquals(
+            expected = emptyList(),
+            actual = (result as Resource.Success<List<Payment>>).data
+        )
+    }
+
+    @Test
+    fun `Try To Get a Payments in a Valid Month With a Empty DB Should Create and Return Payments`() = runTest {
+        val numOfValidMonths = 3
+        val initialMonth = 10
+        val billId = populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = initialMonth, year = 2024),
+            numOfPayments = 0
+        )
+
+        // check if the current bill has no payments
+        var payments =  paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = 0,
+            actual = payments.size
+        )
+
+        // Calling getPayments numOfValidMonths times
+        repeat(numOfValidMonths) { i ->
+            getPayments(
+                date = DayMonthAndYear(day = 5, month = initialMonth + i, year = 2024),
+                billStatus = Bill.Status.ACTIVE
+            ).first()
+        }
+
+
+        payments = paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = numOfValidMonths,
+            actual = payments.size
+        )
+    }
+
+
+    @Test
+    fun `Try To Get a Payments in a Invalid Day should return an Empty list`() = runTest {
+
+        val billId = populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
+            numOfPayments = 0
+        )
+
+        // check if the current bill has no payments
+        val payments =  paymentDataSource.getBillPayments(billId)
+        assertEquals(
+            expected = 0,
+            actual = payments.size
+        )
+
+        val result = getPayments(
+            date = DayMonthAndYear(day = 3, month = 10, year = 2024),
+            billStatus = Bill.Status.ACTIVE
+        ).first()
+
+
+        assertEquals(
+            expected = emptyList(),
+            actual = (result as Resource.Success<List<Payment>>).data
+        )
+    }
 
 
 
+    private suspend fun populateDBWithAnBillAndFewPayments(bill:Bill, billingStartDate:DayMonthAndYear, numOfPayments:Int) : Long {
+        // Adding payments for a bill
+        val billId = billDataSource.insert(
+            name = bill.name,
+            description = bill.description,
+            price = bill.price,
+            status = bill.status,
+            type = bill.type,
+            billingStartDate = billingStartDate,
+        )
+        val paidValue = bill.price
+        with(paymentDataSource) {
+            repeat(numOfPayments) { i ->
+                val paymentMonth = billingStartDate.month + i
+                insert(
+                    billID = billId,
+                    dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
+                    paidAt = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
+                    paidValue = paidValue
+                )
+            }
+        }
 
-
-
-
-
-
-
-
-
-
-
+        return billId
+    }
 }
