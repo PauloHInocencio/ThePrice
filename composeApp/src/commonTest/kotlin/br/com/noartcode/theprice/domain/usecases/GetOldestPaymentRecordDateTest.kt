@@ -79,7 +79,7 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
         //WHEN
         getFirstPaymentDate().test {
             with(awaitItem()) {
-                assertEquals(9, this?.month ?: 1)
+                assertEquals(9, this?.month)
             }
         }
     }
@@ -131,7 +131,7 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
         //WHEN
         getFirstPaymentDate().test {
             with(awaitItem()) {
-                assertEquals(7, this?.month ?: 1)
+                assertEquals(7, this?.month)
             }
         }
     }

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -44,21 +44,23 @@ class HomeViewModel(
 
 
     private data class InternalState(
-        val date:DayMonthAndYear,
+        val currentDay:DayMonthAndYear,
         val lastUpdatePayment: Payment? = null,
     )
 
     private val oldestDate = getFirstPaymentDate()
     private val isLoading = MutableStateFlow(false)
     private val monthName = MutableStateFlow<String?>(null)
-    private val internalState = MutableStateFlow(InternalState(date = getTodayDay()))
+    private val internalState = MutableStateFlow(InternalState(currentDay = getTodayDay()))
     private val paymentsResultFlow = internalState
         .flatMapLatest {internalState ->
-            val date = internalState.date
+            val date = internalState.currentDay
             monthName.update { getMonthName(date.month)?.plus(" - ${date.year}") }
             getPayments(date = date, billStatus = Bill.Status.ACTIVE)
                 .onStart { isLoading.update { true } }
-                .onCompletion { isLoading.update { false } }
+                .onEach {
+                    isLoading.update { false }
+                }
         }.shareIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -81,8 +83,8 @@ class HomeViewModel(
             errorMessage = if (result is Resource.Error) {
                 result.message
             } else null,
-            canGoBack = oldestDate != null && internal.date > oldestDate,
-            canGoNext = internal.date < getTodayDay(),
+            canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = internal.currentDay) > oldestDate,
+            canGoNext = internal.currentDay < getTodayDay(),
         )
     }.stateIn(
         scope = viewModelScope,
@@ -91,36 +93,35 @@ class HomeViewModel(
     )
 
 
-    fun onEvent(event:HomeEvent) {
+    fun onEvent(event:HomeEvent) = viewModelScope.launch{
         when(event) {
             HomeEvent.OnBackToPreviousMonth -> {
                 internalState.update {
-                    it.copy(date = moveMonth(by = -1, currentDate = it.date) )
+                    it.copy(currentDay = moveMonth(by = -1, currentDate = it.currentDay) )
                 }
             }
 
             HomeEvent.OnGoToCurrentMonth -> {
                 internalState.update {
-                    it.copy(date = getTodayDay())
+                    it.copy(currentDay = getTodayDay())
                 }
             }
 
             HomeEvent.OnGoToNexMonth -> {
                 internalState.update {
-                    it.copy(date =  moveMonth(by = 1, currentDate = it.date) )
+                    it.copy(currentDay =  moveMonth(by = 1, currentDate = it.currentDay) )
                 }
             }
 
             is HomeEvent.OnPaymentStatusClicked -> {
-                viewModelScope.launch {
-                    val updatedPayment =
-                        updatePayment(
-                            id = event.id,
-                            paidAt = if (event.status != PAYED) internalState.value.date else null,
-                            payedValue = if (event.status != PAYED)  event.price else null,
-                        )
-                    internalState.update { it.copy(lastUpdatePayment = updatedPayment) }
-                }
+                val updatedPayment =
+                    updatePayment(
+                        id = event.id,
+                        paidAt = if (event.status != PAYED) internalState.value.currentDay else null,
+                        payedValue = if (event.status != PAYED)  event.price else null,
+                    )
+                internalState.update { it.copy(lastUpdatePayment = updatedPayment) }
+
             }
         }
     }

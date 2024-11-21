@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
@@ -70,7 +71,9 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         val billId = populateDBWithAnBillAndFewPayments(
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
-            numOfPayments = numOfPayments
+            numOfPayments = numOfPayments,
+            billDataSource,
+            paymentDataSource
         )
 
         // check if the current bill has only the correct amount of payments
@@ -99,7 +102,9 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         val billId = populateDBWithAnBillAndFewPayments(
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = initialMonth, year = 2024),
-            numOfPayments = 0
+            numOfPayments = 0,
+            billDataSource,
+            paymentDataSource
         )
 
         // check if the current bill has no payments
@@ -132,7 +137,9 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         val billId = populateDBWithAnBillAndFewPayments(
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
-            numOfPayments = 0
+            numOfPayments = 0,
+            billDataSource,
+            paymentDataSource
         )
 
         // check if the current bill has no payments
@@ -153,32 +160,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             actual = (result as Resource.Success<List<Payment>>).data
         )
     }
-
-
-
-    private suspend fun populateDBWithAnBillAndFewPayments(bill:Bill, billingStartDate:DayMonthAndYear, numOfPayments:Int) : Long {
-        // Adding payments for a bill
-        val billId = billDataSource.insert(
-            name = bill.name,
-            description = bill.description,
-            price = bill.price,
-            status = bill.status,
-            type = bill.type,
-            billingStartDate = billingStartDate,
-        )
-        val paidValue = bill.price
-        with(paymentDataSource) {
-            repeat(numOfPayments) { i ->
-                val paymentMonth = billingStartDate.month + i
-                insert(
-                    billID = billId,
-                    dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
-                    paidAt = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
-                    paidValue = paidValue
-                )
-            }
-        }
-
-        return billId
-    }
 }
+
+
