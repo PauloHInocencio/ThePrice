@@ -8,6 +8,7 @@ import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocal
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
+import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.GetPayments
@@ -25,10 +26,13 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
+import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -37,6 +41,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import kotlin.math.exp
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -73,6 +78,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         )
     }
 
+    // Unit Under Test
     private val viewModel:HomeViewModel by inject()
 
     @BeforeTest
@@ -221,6 +227,117 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
 
 
+    }
+
+
+    @Test
+    fun `When a Bill is Updated Only Pending Payments Of The Current Month Should Be Affected`() = runTest{
+        // Populating the database with 1 bill and 3 paid payments
+        val bill = Bill(
+            name = "Internet",
+            description = "My internet bill.",
+            price = 10099,
+            billingStartDate = DayMonthAndYear(day = 5, month = 9, year = 2024)
+        )
+        val billId = populateDBWithAnBillAndFewPayments(
+            bill = bill,
+            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
+            numOfPayments = 3,
+            billDataSource,
+            paymentDataSource
+        )
+
+        // set the current date
+        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+
+
+        // GIVEN
+        viewModel.uiState.test {
+
+            // ignoring emissions
+            skipItems(2)
+
+            // change amount of bill
+            billDataSource.update( bill.copy(id = billId, price = 12099) )
+
+            // check if the current payment has changed
+            with(awaitItem()) {
+                val payment = payments.first()
+                assertEquals(expected = 4, actual = payment.id)
+                assertEquals(expected = "R$ 120,99", actual = payment.price)
+                assertEquals(expected = "OVERDUE", actual = payment.status.name)
+
+            }
+
+            // Go back to previous month
+            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
+            skipItems(3)
+
+            // checking if previous paid bill remains the same
+
+            with(awaitItem()) {
+                val payment = payments.first()
+                assertEquals(expected = 3, actual = payment.id)
+                assertEquals(expected = "PAYED", payment.status.name)
+                assertEquals(expected = "R$ 100,99", actual = payment.price)
+            }
+
+
+            ensureAllEventsConsumed()
+
+            // simulating the click on a paid payment to change it status
+            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
+                id = 3,
+                status = PaymentUi.Status.PAYED,
+                price = "R$ 100,99"
+            ))
+
+            skipItems(2)
+
+            with(awaitItem()){
+                val payment = payments.first()
+                assertEquals(expected = 3, actual = payment.id)
+                assertEquals(expected = "OVERDUE", payment.status.name)
+                assertEquals(expected = "R$ 100,99", actual = payment.price)
+            }
+        }
+    }
+
+    @Test
+    fun `When a Payed bill Receive the Event OnPaymentStatusClicked it Status Should Change`() = runTest {
+        populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
+            numOfPayments = 3,
+            billDataSource,
+            paymentDataSource
+        )
+
+        // set the current date
+        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+
+        viewModel.uiState.test {
+
+            // ignoring emissions
+            skipItems(2)
+
+
+            // simulating the click on a paid payment to change it status
+            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
+                id = 4,
+                status = PaymentUi.Status.OVERDUE,
+                price = "R$ 120,99"
+            ))
+
+            skipItems(2)
+
+            with(awaitItem()){
+                val payment = payments.first()
+                assertEquals(expected = 4, payment.id)
+                assertEquals(expected = "PAYED", payment.status.name)
+                assertEquals(expected = "R$ 120,99", actual = payment.price)
+            }
+        }
     }
 
 

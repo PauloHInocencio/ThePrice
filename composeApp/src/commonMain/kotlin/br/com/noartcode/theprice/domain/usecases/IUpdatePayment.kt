@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.domain.usecases
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -13,7 +14,7 @@ interface IUpdatePayment {
         id: Long,
         payedValue: String? = null,
         paidAt: DayMonthAndYear? = null
-    ) : Payment?
+    ) : Resource<Payment>
 }
 
 
@@ -26,11 +27,19 @@ class UpdatePayment(
         id: Long,
         payedValue: String?,
         paidAt: DayMonthAndYear?
-    ): Payment? = withContext(dispatcher) {
-        return@withContext datasource.updatePayment(
-            id = id,
-            paidValue = payedValue?.let { currencyFormatter.clenup(it) },
-            paidAt = paidAt,
-        )
+    ): Resource<Payment> = withContext(dispatcher) {
+        try {
+            val payment = datasource.updatePayment(
+                id = id,
+                paidValue = payedValue?.let { currencyFormatter.clenup(it) },
+                paidAt = paidAt,
+            )
+            return@withContext Resource.Success(data = payment!!)
+        } catch (e:Throwable) {
+            return@withContext Resource.Error(
+                message = "Error when tried to update payment",
+                exception = e
+            )
+        }
     }
 }

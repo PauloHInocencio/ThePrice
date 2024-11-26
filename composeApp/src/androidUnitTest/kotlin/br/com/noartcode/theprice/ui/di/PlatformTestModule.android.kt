@@ -14,6 +14,8 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.koin.dsl.module
 import java.util.Calendar
 import java.util.Locale
@@ -21,6 +23,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 actual fun platformTestModule() = module {
     single<ThePriceDatabase> {
         run {

@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.home
 
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
@@ -18,6 +19,8 @@ import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
+import br.com.noartcode.theprice.util.doIfError
+import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -114,14 +117,17 @@ class HomeViewModel(
             }
 
             is HomeEvent.OnPaymentStatusClicked -> {
-                val updatedPayment =
-                    updatePayment(
-                        id = event.id,
-                        paidAt = if (event.status != PAYED) internalState.value.currentDay else null,
-                        payedValue = if (event.status != PAYED)  event.price else null,
-                    )
-                internalState.update { it.copy(lastUpdatePayment = updatedPayment) }
-
+                updatePayment(
+                    id = event.id,
+                    paidAt = if (event.status != PAYED) internalState.value.currentDay else null,
+                    payedValue = if (event.status != PAYED)  event.price else null,
+                )
+                    .doIfSuccess { data ->
+                        internalState.update { it.copy(lastUpdatePayment = data) }
+                    }
+                    .doIfError { error ->
+                        throw error.exception ?: Exception("Some Error Have Occur")
+                    }
             }
         }
     }
