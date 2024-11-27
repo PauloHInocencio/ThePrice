@@ -1,7 +1,6 @@
 package br.com.noartcode.theprice.ui.presentation.home
 
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
@@ -21,20 +20,18 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.PAY
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val getPayments: IGetPayments,
     private val getTodayDay: IGetTodayDate,
@@ -44,91 +41,90 @@ class HomeViewModel(
     private val getFirstPaymentDate: IGetOldestPaymentRecordDate,
     private val updatePayment: IUpdatePayment,
 ): ViewModel() {
-
-
-    private data class InternalState(
-        val currentDay:DayMonthAndYear,
-        val lastUpdatePayment: Payment? = null,
-    )
-
+    private val initialDate by lazy { getTodayDay() }
     private val oldestDate = getFirstPaymentDate()
-    private val isLoading = MutableStateFlow(false)
-    private val monthName = MutableStateFlow<String?>(null)
-    private val internalState = MutableStateFlow(InternalState(currentDay = getTodayDay()))
-    private val paymentsResultFlow = internalState
-        .flatMapLatest {internalState ->
-            val date = internalState.currentDay
-            monthName.update { getMonthName(date.month)?.plus(" - ${date.year}") }
-            getPayments(date = date, billStatus = Bill.Status.ACTIVE)
-                .onStart { isLoading.update { true } }
-                .onEach {
-                    isLoading.update { false }
-                }
-        }.shareIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            replay = 1
-        )
-
+    private val _state = MutableStateFlow(HomeUiState(initialDate))
     val uiState = combine(
-        paymentsResultFlow,
-        isLoading,
-        internalState,
-        monthName,
+        _state,
         oldestDate,
-    ) { result, isLoading, internal, monthName, oldestDate ->
+    ) { state, oldestDate ->
         HomeUiState(
-            payments = if (result is Resource.Success) {
-                result.data.mapNotNull { paymentUiMapper.mapFrom(it) }.sortedBy { it.status }
-            } else listOf(),
-            monthName = monthName ?: "",
-            loading = isLoading,
-            errorMessage = if (result is Resource.Error) {
-                result.message
-            } else null,
-            canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = internal.currentDay) > oldestDate,
-            canGoNext = internal.currentDay < getTodayDay(),
+            currentDate = state.currentDate,
+            payments = state.payments,
+            monthName = getMonthName(state.currentDate.month)?.plus(" - ${state.currentDate.year}") ?: "",
+            loading = state.loading,
+            errorMessage = state.errorMessage,
+            canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = state.currentDate) > oldestDate,
+            canGoNext = state.currentDate < initialDate,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = HomeUiState()
+        initialValue = HomeUiState(initialDate)
     )
 
+    init {
+        viewModelScope.launch {
+            getPayments(initialDate)
+        }
+    }
 
     fun onEvent(event:HomeEvent) = viewModelScope.launch{
         when(event) {
             HomeEvent.OnBackToPreviousMonth -> {
-                internalState.update {
-                    it.copy(currentDay = moveMonth(by = -1, currentDate = it.currentDay) )
-                }
+                getPayments(moveMonth(by = -1, currentDate = _state.value.currentDate))
             }
 
             HomeEvent.OnGoToCurrentMonth -> {
-                internalState.update {
-                    it.copy(currentDay = getTodayDay())
-                }
+                getPayments(getTodayDay())
             }
 
             HomeEvent.OnGoToNexMonth -> {
-                internalState.update {
-                    it.copy(currentDay =  moveMonth(by = 1, currentDate = it.currentDay) )
-                }
+                getPayments(moveMonth(by = 1, currentDate = _state.value.currentDate))
             }
 
             is HomeEvent.OnPaymentStatusClicked -> {
                 updatePayment(
                     id = event.id,
-                    paidAt = if (event.status != PAYED) internalState.value.currentDay else null,
+                    paidAt = if (event.status != PAYED) _state.value.currentDate else null,
                     payedValue = if (event.status != PAYED)  event.price else null,
                 )
-                    .doIfSuccess { data ->
-                        internalState.update { it.copy(lastUpdatePayment = data) }
+                    .doIfSuccess {
+                        getPayments(_state.value.currentDate)
                     }
                     .doIfError { error ->
                         throw error.exception ?: Exception("Some Error Have Occur")
                     }
             }
         }
+    }
+
+
+    private suspend fun getPayments(date:DayMonthAndYear)  {
+        getPayments(date = date, billStatus = Bill.Status.ACTIVE)
+            .onStart { _state.update { it.copy(loading = true) } }
+            .catch { exception ->
+                emit(Resource.Error(message = exception.message ?: "Unknown error"))
+            }
+            .first()
+            .doIfSuccess { payments ->
+                _state.update {
+                    it.copy(
+                        payments = payments.mapNotNull { paymentUiMapper.mapFrom(it) }.sortedBy { it.status },
+                        currentDate = date,
+                        loading = false
+                    )
+                }
+            }
+            .doIfError { error ->
+                _state.update {
+                    it.copy(
+                        errorMessage = error.message,
+                        payments = listOf(),
+                        currentDate = date,
+                        loading = false
+                    )
+                }
+            }
     }
 }

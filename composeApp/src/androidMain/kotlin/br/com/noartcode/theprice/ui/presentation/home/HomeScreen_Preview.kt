@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.ui.presentation.home
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 
@@ -12,6 +13,7 @@ fun HomeScreen_Preview() {
     MaterialTheme {
         HomeScreen(
             state = HomeUiState(
+                currentDate = DayMonthAndYear(day = 27, month = 9, year = 2024),
                 monthName = "Sep 2024",
                 payments = listOf(
                     PaymentUi(

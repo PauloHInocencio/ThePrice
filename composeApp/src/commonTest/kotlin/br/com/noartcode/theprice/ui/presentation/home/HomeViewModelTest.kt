@@ -17,7 +17,6 @@ import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
@@ -29,10 +28,8 @@ import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -41,7 +38,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.math.exp
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -111,9 +107,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
 
@@ -165,8 +161,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Go Back to October
             viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-            skipItems(3)
-
+            skipItems(1)
             // Should display the correct month and allow to go back to another month
             with(awaitItem()) {
                 assertEquals("Outubro - 2024", monthName)
@@ -175,8 +170,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Go back to September
             viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-            skipItems(3)
-
+            skipItems(1)
             // Should display the correct month and NOT allow to go back another month
             with(awaitItem()) {
                 assertEquals("Setembro - 2024", monthName)
@@ -211,8 +205,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // GIVEN
         viewModel.uiState.test {
 
-            // ignoring the first emission
-            skipItems(1)
+            // ignoring the first 2 emission
+            skipItems(2)
 
             with(awaitItem()) {
                 assertEquals(3, payments.size)
@@ -271,10 +265,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Go back to previous month
             viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-            skipItems(3)
+
 
             // checking if previous paid bill remains the same
-
             with(awaitItem()) {
                 val payment = payments.first()
                 assertEquals(expected = 3, actual = payment.id)
