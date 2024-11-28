@@ -33,7 +33,7 @@ class PaymentLocalDataSourceImp (
         return dao.getPayment(id)?.toDomain()
     }
 
-    override suspend fun updatePayment(id:Long, paidValue: Int?, paidAt: DayMonthAndYear?) : Payment? {
+    override suspend fun updatePayment(id:Long, paidValue: Int?, paidAt: DayMonthAndYear?) {
         dao.updatePayment(
             paymentId = id,
             paidValue = paidValue,
@@ -41,7 +41,6 @@ class PaymentLocalDataSourceImp (
             paidMonth = paidAt?.month,
             paidYear = paidAt?.year
         )
-        return dao.getPayment(id)?.toDomain()
     }
 
     override suspend fun insert(

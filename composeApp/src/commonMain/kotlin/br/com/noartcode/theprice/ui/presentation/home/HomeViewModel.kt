@@ -38,7 +38,7 @@ class HomeViewModel(
     private val getMonthName: IGetMonthName,
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val moveMonth: IMoveMonth,
-    private val getFirstPaymentDate: IGetOldestPaymentRecordDate,
+    getFirstPaymentDate: IGetOldestPaymentRecordDate,
     private val updatePayment: IUpdatePayment,
 ): ViewModel() {
     private val initialDate by lazy { getTodayDay() }
@@ -102,7 +102,9 @@ class HomeViewModel(
 
     private suspend fun getPayments(date:DayMonthAndYear)  {
         getPayments(date = date, billStatus = Bill.Status.ACTIVE)
-            .onStart { _state.update { it.copy(loading = true) } }
+            .onStart {
+                _state.update { it.copy(loading = true) }
+            }
             .catch { exception ->
                 emit(Resource.Error(message = exception.message ?: "Unknown error"))
             }
@@ -110,7 +112,9 @@ class HomeViewModel(
             .doIfSuccess { payments ->
                 _state.update {
                     it.copy(
-                        payments = payments.mapNotNull { paymentUiMapper.mapFrom(it) }.sortedBy { it.status },
+                        payments = payments
+                            .mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }
+                            .sortedBy { paymentUi ->  paymentUi.status },
                         currentDate = date,
                         loading = false
                     )

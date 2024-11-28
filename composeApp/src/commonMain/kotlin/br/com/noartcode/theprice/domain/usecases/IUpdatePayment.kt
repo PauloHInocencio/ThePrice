@@ -14,7 +14,7 @@ interface IUpdatePayment {
         id: Long,
         payedValue: String? = null,
         paidAt: DayMonthAndYear? = null
-    ) : Resource<Payment>
+    ) : Resource<Unit>
 }
 
 
@@ -27,14 +27,14 @@ class UpdatePayment(
         id: Long,
         payedValue: String?,
         paidAt: DayMonthAndYear?
-    ): Resource<Payment> = withContext(dispatcher) {
+    ): Resource<Unit> = withContext(dispatcher) {
         try {
-            val payment = datasource.updatePayment(
+            datasource.updatePayment(
                 id = id,
                 paidValue = payedValue?.let { currencyFormatter.clenup(it) },
                 paidAt = paidAt,
             )
-            return@withContext Resource.Success(data = payment!!)
+            return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 message = "Error when tried to update payment",

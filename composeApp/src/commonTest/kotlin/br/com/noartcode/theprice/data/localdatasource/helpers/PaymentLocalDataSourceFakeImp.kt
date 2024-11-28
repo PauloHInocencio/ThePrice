@@ -26,7 +26,7 @@ class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
         id: Long,
         paidValue: Int?,
         paidAt: DayMonthAndYear?
-    ): Payment? {
+    ) {
         TODO("Not yet implemented")
     }
 

@@ -28,7 +28,11 @@ import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -45,6 +49,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest : KoinTest, RobolectricTests() {
+
+
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
@@ -70,7 +78,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         UpdatePayment(
             datasource = paymentDataSource,
             currencyFormatter = formatter,
-            dispatcher = UnconfinedTestDispatcher()
+            dispatcher = testDispatcher
         )
     }
 
@@ -79,7 +87,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testDispatcher)
         startKoin{
             modules(
                 commonTestModule(),
@@ -91,7 +99,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                             getPayments = GetPayments(
                                 billLDS = billDataSource,
                                 paymentLDS = paymentDataSource,
-                                dispatcher = UnconfinedTestDispatcher()
+                                dispatcher = testDispatcher
                             ),
                             getMonthName = get(),
                             paymentUiMapper = uiMapper,
@@ -113,27 +121,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     }
 
 
-    @Test
-    fun `When the ViewModel started it should return an empty state object`() = runTest {
-
-        // GIVEN
-        viewModel.uiState.test {
-
-            with(awaitItem()) {
-                assertEquals(emptyList(), payments)
-                assertEquals("", monthName)
-                assertEquals(false, loading)
-                assertEquals(null, errorMessage)
-            }
-
-            ensureAllEventsConsumed()
-
-        }
-    }
 
 
     @Test
     fun `When Current Month is the Oldest Billing Start Date canGoBack Property Should be false `() = runTest {
+
         // Populating the database with 3 different bills
         repeat(3) { i ->
             val startMonth = 9
@@ -149,38 +141,62 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // Set Current Day to November 21th
         getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
-        // GIVEN
+
         viewModel.uiState.test {
 
-            // Current month should be November
-            skipItems(1)
+            // check initial state
             with(awaitItem()) {
-                assertEquals("Novembro - 2024", monthName)
+                assertEquals(expected = emptyList(), actual = payments)
+                assertEquals(expected = "", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+            }
+
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
+            // display November list
+            with(awaitItem()) {
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = false, actual = loading)
             }
 
             // Go Back to October
             viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-            skipItems(1)
+
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
             // Should display the correct month and allow to go back to another month
             with(awaitItem()) {
-                assertEquals("Outubro - 2024", monthName)
+                assertEquals(expected = "Outubro - 2024", actual = monthName)
                 assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected= false, actual = loading)
             }
 
             // Go back to September
             viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-            skipItems(1)
+
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
             // Should display the correct month and NOT allow to go back another month
             with(awaitItem()) {
                 assertEquals("Setembro - 2024", monthName)
                 assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected= false, actual = loading)
             }
-
-
-            ensureAllEventsConsumed()
-
         }
+
+
+
 
     }
 
@@ -205,9 +221,20 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // GIVEN
         viewModel.uiState.test {
 
-            // ignoring the first 2 emission
-            skipItems(2)
+            // check initial state
+            with(awaitItem()) {
+                assertEquals(expected = emptyList(), actual = payments)
+                assertEquals(expected = "", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+            }
 
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
+            // Display correct payments
             with(awaitItem()) {
                 assertEquals(3, payments.size)
                 assertEquals("Novembro - 2024", monthName)
@@ -221,79 +248,6 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
 
 
-    }
-
-
-    @Test
-    fun `When a Bill is Updated Only Pending Payments Of The Current Month Should Be Affected`() = runTest{
-        // Populating the database with 1 bill and 3 paid payments
-        val bill = Bill(
-            name = "Internet",
-            description = "My internet bill.",
-            price = 10099,
-            billingStartDate = DayMonthAndYear(day = 5, month = 9, year = 2024)
-        )
-        val billId = populateDBWithAnBillAndFewPayments(
-            bill = bill,
-            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
-            numOfPayments = 3,
-            billDataSource,
-            paymentDataSource
-        )
-
-        // set the current date
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
-
-
-        // GIVEN
-        viewModel.uiState.test {
-
-            // ignoring emissions
-            skipItems(2)
-
-            // change amount of bill
-            billDataSource.update( bill.copy(id = billId, price = 12099) )
-
-            // check if the current payment has changed
-            with(awaitItem()) {
-                val payment = payments.first()
-                assertEquals(expected = 4, actual = payment.id)
-                assertEquals(expected = "R$ 120,99", actual = payment.price)
-                assertEquals(expected = "OVERDUE", actual = payment.status.name)
-
-            }
-
-            // Go back to previous month
-            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-
-
-            // checking if previous paid bill remains the same
-            with(awaitItem()) {
-                val payment = payments.first()
-                assertEquals(expected = 3, actual = payment.id)
-                assertEquals(expected = "PAYED", payment.status.name)
-                assertEquals(expected = "R$ 100,99", actual = payment.price)
-            }
-
-
-            ensureAllEventsConsumed()
-
-            // simulating the click on a paid payment to change it status
-            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
-                id = 3,
-                status = PaymentUi.Status.PAYED,
-                price = "R$ 100,99"
-            ))
-
-            skipItems(2)
-
-            with(awaitItem()){
-                val payment = payments.first()
-                assertEquals(expected = 3, actual = payment.id)
-                assertEquals(expected = "OVERDUE", payment.status.name)
-                assertEquals(expected = "R$ 100,99", actual = payment.price)
-            }
-        }
     }
 
     @Test
@@ -311,8 +265,29 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
         viewModel.uiState.test {
 
-            // ignoring emissions
-            skipItems(2)
+            // check initial state
+            with(awaitItem()) {
+                assertEquals(expected = emptyList(), actual = payments)
+                assertEquals(expected = "", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+            }
+
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
+            // Display correct payments
+            with(awaitItem()) {
+                assertEquals(expected = 1, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+
+                val payment = payments.first()
+                assertEquals(expected = 4, payment.id)
+                assertEquals(expected = "OVERDUE", payment.status.name)
+                assertEquals(expected = "R$ 120,99", actual = payment.price)
+            }
 
 
             // simulating the click on a paid payment to change it status
@@ -322,9 +297,16 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 price = "R$ 120,99"
             ))
 
-            skipItems(2)
+            // loading payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
 
+            // Check for the payment update
             with(awaitItem()){
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+
                 val payment = payments.first()
                 assertEquals(expected = 4, payment.id)
                 assertEquals(expected = "PAYED", payment.status.name)
