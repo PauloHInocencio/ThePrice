@@ -5,15 +5,18 @@ import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PaymentLocalDataSourceImp (
     private val database: ThePriceDatabase
 ): PaymentLocalDataSource {
 
     private val dao by lazy { database.getPaymentDao() }
-    override suspend fun getMonthPayments(month: Int, year: Int): List<Payment> {
-        TODO("Not yet implemented")
-    }
+
+    override fun getMonthPayments(month: Int, year: Int): Flow<List<Payment>> = dao
+        .getMonthPayments(month = month, year = year)
+        .map { list -> list.map { it.toDomain() } }
 
     override suspend fun getBillPayments(billID: Long): List<Payment> {
         return dao

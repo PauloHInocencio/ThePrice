@@ -13,7 +13,6 @@ fun HomeScreen_Preview() {
     MaterialTheme {
         HomeScreen(
             state = HomeUiState(
-                currentDate = DayMonthAndYear(day = 27, month = 9, year = 2024),
                 monthName = "Sep 2024",
                 payments = listOf(
                     PaymentUi(

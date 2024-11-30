@@ -193,11 +193,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = false, actual = canGoBack)
                 assertEquals(expected= false, actual = loading)
             }
+
+            ensureAllEventsConsumed()
         }
-
-
-
-
     }
 
     @Test
@@ -312,6 +310,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = "PAYED", payment.status.name)
                 assertEquals(expected = "R$ 120,99", actual = payment.price)
             }
+
+            ensureAllEventsConsumed()
         }
     }
 

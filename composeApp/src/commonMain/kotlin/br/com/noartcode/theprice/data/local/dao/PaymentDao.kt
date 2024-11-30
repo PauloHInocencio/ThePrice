@@ -5,12 +5,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PaymentDao {
 
     @Query("SELECT * FROM payments WHERE dueMonth == :month AND dueYear == :year")
-    suspend fun getMonthPayments(month:Int, year:Int) : List<PaymentEntity>
+    fun getMonthPayments(month:Int, year:Int) : Flow<List<PaymentEntity>>
 
     @Query("SELECT * FROM payments WHERE billId == :billId")
     suspend fun getBillPayments(billId:Long) : List<PaymentEntity>

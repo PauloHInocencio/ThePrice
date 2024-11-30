@@ -66,6 +66,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
     fun after() {
         Dispatchers.resetMain()
         stopKoin()
+        database.close()
     }
 
 

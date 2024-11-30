@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
@@ -15,6 +16,9 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -31,6 +35,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
+
     private val database:ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
@@ -41,7 +48,7 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     @BeforeTest
     fun before() {
         startKoin { modules(platformTestModule(), commonTestModule()) }
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest

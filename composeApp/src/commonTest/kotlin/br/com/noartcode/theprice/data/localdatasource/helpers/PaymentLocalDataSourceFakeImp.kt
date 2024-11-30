@@ -3,10 +3,11 @@ package br.com.noartcode.theprice.data.localdatasource.helpers
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import kotlinx.coroutines.flow.Flow
 
 class PaymentLocalDataSourceFakeImp : PaymentLocalDataSource {
     private val store = mutableListOf<Payment>()
-    override suspend fun getMonthPayments(month: Int, year: Int): List<Payment> {
+    override fun getMonthPayments(month: Int, year: Int): Flow<List<Payment>> {
         TODO("Not yet implemented")
     }
 
