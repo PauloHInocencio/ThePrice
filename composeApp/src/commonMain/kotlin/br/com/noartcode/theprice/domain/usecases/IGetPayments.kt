@@ -32,47 +32,6 @@ interface IGetPayments {
     ) : Flow<Resource<List<Payment>>>
 }
 
-/*
-class GetPayments(
-    private val billLDS: BillLocalDataSource,
-    private val paymentLDS: PaymentLocalDataSource,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : IGetPayments {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun invoke(
-        date: DayMonthAndYear,
-        billStatus: Bill.Status
-    ): Flow<Resource<List<Payment>>> = billLDS
-        .getBillsBy(billStatus)
-        .flatMapLatest { bills ->
-            flow {
-                try {
-                    val payments = bills.mapNotNull { bill ->
-                        if (date < bill.billingStartDate) return@mapNotNull null
-                        with(paymentLDS.getPayment(bill.id, date.month, date.year))  {
-                            if (this != null) return@with this
-                            val id = paymentLDS.insert(
-                                billID = bill.id,
-                                dueDate = DayMonthAndYear(
-                                    day = bill.billingStartDate.day,
-                                    month = date.month,
-                                    year = date.year
-                                )
-                            )
-                            return@with paymentLDS.getPayment(id)!!
-                        }
-                    }
-                    emit(Resource.Success(payments))
-                } catch (e:Throwable) {
-                    emit(Resource.Error(
-                        message = "Something wrong happen when trying to get payments",
-                        exception = e
-                    ))
-                }
-            }
-        }.flowOn(dispatcher)
-}
-*/
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class GetPayments(
@@ -93,6 +52,7 @@ class GetPayments(
         .flatMapLatest {  (activeBills, monthPayments) ->
             flowOf(processPayments(activeBills, monthPayments, date))
         }
+        .onStart { emit(Resource.Loading) }
         .debounce(10)
         .catch { e ->
             // Suppress CancellationException

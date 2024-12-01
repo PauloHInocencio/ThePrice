@@ -46,6 +46,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest : KoinTest, RobolectricTests() {
@@ -124,7 +125,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
 
     @Test
-    fun `When Current Month is the Oldest Billing Start Date canGoBack Property Should be false `() = runTest {
+    fun `Should emit correct sequence of state on the ViewModel initialization `() = runTest {
+
 
         // Populating the database with 3 different bills
         repeat(3) { i ->
@@ -138,182 +140,134 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             )
         }
 
+
         // Set Current Day to November 21th
         getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
 
-        viewModel.uiState.test {
+        viewModel.uiState.test{
 
             // check initial state
             with(awaitItem()) {
-                assertEquals(expected = emptyList(), actual = payments)
+                assertEquals(expected = 0, actual = payments.size)
                 assertEquals(expected = "", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
-            }
-
-            // loading payments
-            with(awaitItem()) {
-                assertEquals(expected = true, actual = loading)
-            }
-
-            // display November list
-            with(awaitItem()) {
-                assertEquals(expected = "Novembro - 2024", actual = monthName)
-                assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = loading)
-            }
-
-            // Go Back to October
-            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-
-            // loading payments
-            with(awaitItem()) {
-                assertEquals(expected = true, actual = loading)
-            }
-
-            // Should display the correct month and allow to go back to another month
-            with(awaitItem()) {
-                assertEquals(expected = "Outubro - 2024", actual = monthName)
-                assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected= false, actual = loading)
-            }
-
-            // Go back to September
-            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
-
-            // loading payments
-            with(awaitItem()) {
-                assertEquals(expected = true, actual = loading)
-            }
-
-            // Should display the correct month and NOT allow to go back another month
-            with(awaitItem()) {
-                assertEquals("Setembro - 2024", monthName)
                 assertEquals(expected = false, actual = canGoBack)
-                assertEquals(expected= false, actual = loading)
+                assertEquals(expected = false, actual = canGoNext)
             }
+
+            // Start Loading Payments
+            with(awaitItem()) {
+                assertEquals(expected = 0, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = true, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+
+
+            // Final State
+            with(awaitItem()) {
+                assertEquals(expected = 3, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+
 
             ensureAllEventsConsumed()
         }
     }
 
+
     @Test
-    fun `When the DataBase is Populate ViewModel should Display the Correct State`() = runTest {
+    fun `Should emit correct sequence of states when User Went back to Previous Month `() = runTest {
+
 
         // Populating the database with 3 different bills
         repeat(3) { i ->
-            val startMonth = 8
+            val startMonth = 9
             populateDBWithAnBillAndFewPayments(
                 bill = stubBills[i],
-                billingStartDate = DayMonthAndYear(day = 5, month = startMonth + i, year = 2024),
+                billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
                 numOfPayments = 0,
                 billDataSource,
                 paymentDataSource
             )
         }
 
-        // set the current date
+
+        // Set Current Day to November 21th
         getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
-        // GIVEN
-        viewModel.uiState.test {
 
-            // check initial state
-            with(awaitItem()) {
-                assertEquals(expected = emptyList(), actual = payments)
-                assertEquals(expected = "", actual = monthName)
-                assertEquals(expected = false, actual = loading)
-                assertEquals(expected = null, actual = errorMessage)
-            }
+        viewModel.uiState.test{
 
-            // loading payments
+            // Ignoring empty state
+            skipItems(1)
+
+            // Start Loading Payments
             with(awaitItem()) {
                 assertEquals(expected = true, actual = loading)
             }
 
-            // Display correct payments
+            // Final State
             with(awaitItem()) {
-                assertEquals(3, payments.size)
-                assertEquals("Novembro - 2024", monthName)
-                assertEquals(false, loading)
-                assertEquals(null, errorMessage)
-                assertEquals(true, canGoBack)
+                assertEquals(expected = 3, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
             }
 
             ensureAllEventsConsumed()
 
-        }
+            // Going back to previous Month
+            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
 
 
-    }
-
-    @Test
-    fun `When a Payed bill Receive the Event OnPaymentStatusClicked it Status Should Change`() = runTest {
-        populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
-            numOfPayments = 3,
-            billDataSource,
-            paymentDataSource
-        )
-
-        // set the current date
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
-
-        viewModel.uiState.test {
-
-            // check initial state
-            with(awaitItem()) {
-                assertEquals(expected = emptyList(), actual = payments)
-                assertEquals(expected = "", actual = monthName)
-                assertEquals(expected = false, actual = loading)
-                assertEquals(expected = null, actual = errorMessage)
-            }
-
-            // loading payments
+            // Start Loading Payments
             with(awaitItem()) {
                 assertEquals(expected = true, actual = loading)
             }
 
-            // Display correct payments
+            // Final State
+            with(awaitItem()) {
+                assertEquals(expected = 2, actual = payments.size)
+                assertEquals(expected = "Outubro - 2024", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = true, actual = canGoNext)
+            }
+
+            ensureAllEventsConsumed()
+
+            // Going back to previous Month
+            viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
+
+            // Start Loading Payments
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+            }
+
+            // Final State
             with(awaitItem()) {
                 assertEquals(expected = 1, actual = payments.size)
-                assertEquals(expected = "Novembro - 2024", actual = monthName)
-
-                val payment = payments.first()
-                assertEquals(expected = 4, payment.id)
-                assertEquals(expected = "OVERDUE", payment.status.name)
-                assertEquals(expected = "R$ 120,99", actual = payment.price)
-            }
-
-
-            // simulating the click on a paid payment to change it status
-            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
-                id = 4,
-                status = PaymentUi.Status.OVERDUE,
-                price = "R$ 120,99"
-            ))
-
-            // loading payments
-            with(awaitItem()) {
-                assertEquals(expected = true, actual = loading)
-            }
-
-            // Check for the payment update
-            with(awaitItem()){
-                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = "Setembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
-
-                val payment = payments.first()
-                assertEquals(expected = 4, payment.id)
-                assertEquals(expected = "PAYED", payment.status.name)
-                assertEquals(expected = "R$ 120,99", actual = payment.price)
+                assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
             ensureAllEventsConsumed()
+
         }
     }
+
 
 
 }

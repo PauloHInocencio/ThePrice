@@ -7,6 +7,7 @@ sealed class Resource<out T> {
         val code: Int? = null,
         val exception: Throwable? = null
     ) : Resource<Nothing>()
+    data object Loading: Resource<Nothing>()
 }
 
 inline fun <reified A> Resource<A>.doIfSuccess(callback: (value: A) -> Unit): Resource<A> {

@@ -4,7 +4,6 @@ package br.com.noartcode.theprice.ui.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
@@ -19,22 +18,17 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError
-import br.com.noartcode.theprice.util.doIfSuccess
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
@@ -47,36 +41,37 @@ class HomeViewModel(
     private val updatePayment: IUpdatePayment,
 ): ViewModel() {
     private val initialDate by lazy { getTodayDay() }
-
     private val _currentDate = MutableStateFlow(initialDate)
-    
+    private val _homeScreenResults =
+        combine(_currentDate, getFirstPaymentDate()) { currentDate, oldestDate ->
+            currentDate to oldestDate
+        }
+        .flatMapLatest { (currentDate, oldestDate) ->
+            getPayments(
+                date = currentDate,
+                billStatus = Bill.Status.ACTIVE
+            ).map { result ->
+                result to (currentDate to oldestDate)
+            }
+        }
+
+
     private val _state = MutableStateFlow(HomeUiState())
-    val uiState = _state.stateIn(
+    val uiState = combine( _state, _homeScreenResults ) { state, (payments, dates) ->
+        val (currentDate, oldestDate) = dates
+        HomeUiState(
+            monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
+            canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = currentDate) > oldestDate,
+            canGoNext = currentDate < initialDate,
+            payments = (payments as? Resource.Success)?.data?.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }?.sortedBy { paymentUi -> paymentUi.status } ?: emptyList(),
+            errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,
+            loading = (payments is Resource.Loading),
+        )
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState()
     )
-
-    init {
-        viewModelScope.launch {
-            combine(_currentDate, getFirstPaymentDate()) { currentDate, oldestDate -> currentDate to oldestDate }
-                .flatMapLatest { (currentDate, oldestDate) ->
-                    getPayments(
-                        date = currentDate,
-                        billStatus = Bill.Status.ACTIVE
-                    ).onStart {
-                            _state.update { state ->
-                                state.copy(
-                                    monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
-                                    canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = currentDate) > oldestDate,
-                                    canGoNext = currentDate < initialDate,
-                                    loading = true,
-                                )
-                            }
-                        }
-            }.collect(::handlePaymentsResult)
-        }
-    }
 
     fun onEvent(event:HomeEvent) = viewModelScope.launch{
         when(event) {
@@ -110,26 +105,4 @@ class HomeViewModel(
         }
     }
 
-
-    private suspend fun handlePaymentsResult(result: Resource<List<Payment>>) {
-        result.doIfSuccess { payments ->
-            _state.update {
-                it.copy(
-                    payments = payments
-                        .mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }
-                        .sortedBy { paymentUi -> paymentUi.status },
-                    loading = false,
-                )
-            }
-        }
-            .doIfError { error ->
-                _state.update {
-                    it.copy(
-                        errorMessage = error.message,
-                        payments = listOf(),
-                        loading = false
-                    )
-                }
-            }
-    }
 }
