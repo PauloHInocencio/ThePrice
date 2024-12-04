@@ -36,33 +36,26 @@ class PaymentLocalDataSourceImp (
         return dao.getPayment(id)?.toDomain()
     }
 
-    override suspend fun updatePayment(id:Long, paidValue: Int?, paidAt: DayMonthAndYear?) {
+    override suspend fun updatePayment(id:Long, dueDate: DayMonthAndYear, price:Int, isPayed: Boolean) {
         dao.updatePayment(
             paymentId = id,
-            paidValue = paidValue,
-            paidDay = paidAt?.day,
-            paidMonth = paidAt?.month,
-            paidYear = paidAt?.year
+            price = price,
+            dueDay = dueDate.day,
+            dueMonth = dueDate.month,
+            dueYear = dueDate.year,
+            isPayed = isPayed
         )
     }
 
-    override suspend fun insert(
-        billID: Long,
-        dueDate: DayMonthAndYear,
-        paidValue: Int?,
-        paidAt: DayMonthAndYear?
-    ) : Long {
+    override suspend fun insert(billID: Long, dueDate: DayMonthAndYear, price:Int, isPayed:Boolean) : Long {
         return dao.insert(
             PaymentEntity(
                 billId = billID,
+                price = price,
                 dueDay = dueDate.day,
                 dueMonth = dueDate.month,
                 dueYear = dueDate.year,
-                paidValue = paidValue,
-                paidDay = paidAt?.day,
-                paidMonth = paidAt?.month,
-                paidYear = paidAt?.year
-
+                isPayed = isPayed
             )
         )
     }

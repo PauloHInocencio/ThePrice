@@ -24,8 +24,11 @@ class PaymentDomainToUiMapper (
 
     override suspend fun mapFrom(from: Payment): PaymentUi? {
         val bill = dataSource.getBill(from.billId) ?: return null
-        return if (from.paidAt == null) {
-            val days = getDaysUntil(startDate = getTodayDate(), endDate = from.dueDate)
+        return if (!from.isPayed) {
+            val days = getDaysUntil(
+                startDate = getTodayDate(),
+                endDate = from.dueDate.copy(day = bill.billingStartDate.day) // get original day
+            )
             val (description, status) = when {
                 days > 0 -> { "Expires in $days days" to PaymentUi.Status.PENDING }
                 days < 0 -> {  "${abs(days)} days overdue" to PaymentUi.Status.OVERDUE }
@@ -36,18 +39,16 @@ class PaymentDomainToUiMapper (
                 billName = bill.name,
                 status = status,
                 statusDescription = description,
-                price = formatter.format(from.payedValue ?: bill.price)
+                price = formatter.format(from.price)
             )
         } else {
             PaymentUi(
                 id = from.id,
                 billName = bill.name,
                 status = PaymentUi.Status.PAYED,
-                statusDescription = "Paid in ${dateFormat(from.paidAt)}",
-                price = formatter.format(from.payedValue ?: bill.price)
+                statusDescription = "Paid in ${dateFormat(from.dueDate)}",
+                price = formatter.format(from.price)
             )
         }
-
-
     }
 }

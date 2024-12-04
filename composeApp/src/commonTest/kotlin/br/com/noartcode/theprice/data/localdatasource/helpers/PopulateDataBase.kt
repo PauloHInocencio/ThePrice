@@ -8,6 +8,7 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 internal suspend fun populateDBWithAnBillAndFewPayments(
     bill: Bill, billingStartDate: DayMonthAndYear,
     numOfPayments:Int,
+    paymentsArePaid:Boolean = false,
     billDataSource: BillLocalDataSource,
     paymentDataSource: PaymentLocalDataSource,
 ) : Long {
@@ -27,8 +28,8 @@ internal suspend fun populateDBWithAnBillAndFewPayments(
             insert(
                 billID = billId,
                 dueDate = billingStartDate.copy(month = paymentMonth),
-                paidAt = billingStartDate.copy(month = paymentMonth),
-                paidValue = paidValue
+                price = paidValue,
+                isPayed = paymentsArePaid
             )
         }
     }

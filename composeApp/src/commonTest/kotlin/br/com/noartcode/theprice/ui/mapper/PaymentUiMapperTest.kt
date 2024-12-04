@@ -89,9 +89,9 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
             Payment(
                 id = 1,
                 billId = 1,
-                dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
-                payedValue = bill.price,
-                paidAt = DayMonthAndYear(day = 3, month = 8, year = 2024)
+                dueDate = DayMonthAndYear(day = 3, month = 8, year = 2024),
+                price = bill.price,
+                isPayed = true
             )
         )
 
@@ -125,6 +125,8 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
                 id = 1,
                 billId = 1,
                 dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
+                price = bill.price,
+                isPayed = false,
             )
         )
 
@@ -158,6 +160,8 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
                 id = 1,
                 billId = 1,
                 dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
+                price = bill.price,
+                isPayed = false,
             )
         )
 

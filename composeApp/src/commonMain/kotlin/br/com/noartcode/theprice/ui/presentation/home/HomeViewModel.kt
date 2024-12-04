@@ -11,6 +11,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
+import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
@@ -38,7 +39,7 @@ class HomeViewModel(
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val moveMonth: IMoveMonth,
     getFirstPaymentDate: IGetOldestPaymentRecordDate,
-    private val updatePayment: IUpdatePayment,
+    private val updatePaymentStatus: IUpdatePaymentStatus,
 ): ViewModel() {
     private val initialDate by lazy { getTodayDay() }
     private val _currentDate = MutableStateFlow(initialDate)
@@ -94,10 +95,9 @@ class HomeViewModel(
             }
 
             is HomeEvent.OnPaymentStatusClicked -> {
-                updatePayment(
+                updatePaymentStatus(
                     id = event.id,
-                    paidAt = if (event.status != PAYED) _currentDate.value else null,
-                    payedValue = if (event.status != PAYED)  event.price else null,
+                    isPayed = event.status != PAYED
                 ).doIfError { error ->
                     _state.update { it.copy(errorMessage = error.message) }
                 }

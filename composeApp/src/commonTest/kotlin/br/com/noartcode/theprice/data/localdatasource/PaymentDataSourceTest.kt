@@ -71,9 +71,24 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
         )
 
 
-        assertEquals(expected = 1, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024)))
-        assertEquals(expected = 2, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024)))
-        assertEquals(expected = 3, paymentDataSource.insert(billID = 1L, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024)))
+        assertEquals(expected = 1, paymentDataSource.
+            insert(
+                billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024),
+                price = bill.price, isPayed = false
+            )
+        )
+        assertEquals(expected = 2, paymentDataSource.
+            insert(
+                billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024),
+                price = bill.price, isPayed = false
+            )
+        )
+        assertEquals(expected = 3, paymentDataSource.
+            insert(
+                billID = 1L, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024),
+                price = bill.price, isPayed = false
+            )
+        )
         assertEquals(expected = 3, paymentDataSource.getBillPayments(1).size)
     }
 
@@ -99,8 +114,8 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
                 insert(
                     billID = billId,
                     dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
-                    paidAt = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
-                    paidValue = paidValue
+                    price = paidValue,
+                    isPayed = true,
                 )
             }
         }

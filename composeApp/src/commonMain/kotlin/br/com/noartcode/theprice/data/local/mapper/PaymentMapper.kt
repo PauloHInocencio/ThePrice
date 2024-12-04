@@ -9,9 +9,7 @@ fun PaymentEntity.toDomain() : Payment {
         id = this.id,
         billId = this.billId,
         dueDate = DayMonthAndYear(day = this.dueDay, month = this.dueMonth, year = this.dueYear),
-        payedValue = this.paidValue,
-        paidAt = if (this.paidValue != null)
-            DayMonthAndYear(day = this.paidDay!!, month = this.paidMonth!!, year = this.paidYear!!)
-        else null
+        price = this.price,
+        isPayed = isPayed
     )
 }

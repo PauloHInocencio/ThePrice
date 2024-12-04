@@ -47,7 +47,7 @@ class PaymentEditViewModel(
         when(event){
 
             is PaymentEditEvent.OnPaidAtDateChanged -> {
-                val originalPaidDate = (payment!!.paidAt ?: payment!!.dueDate).let { date -> epochFormatter.from(date) }
+                val originalPaidDate = (payment!!.dueDate).let { date -> epochFormatter.from(date) }
                 _state.update {
                     it.copy(
                         paidAtDate = event.date,
@@ -105,8 +105,9 @@ class PaymentEditViewModel(
                 }
                 updatePayment(
                     id = payment!!.id,
-                    payedValue = if(_state.value.paymentStatus == PAYED) _state.value.payedValue else null,
-                    paidAt = if(_state.value.paymentStatus == PAYED) epochFormatter.to(_state.value.paidAtDate) else null
+                    price = _state.value.payedValue,
+                    dueDate =  epochFormatter.to(_state.value.paidAtDate),
+                    isPayed = _state.value.paymentStatus == PAYED
                 )
                 _state.update {
                     it.copy(
@@ -130,7 +131,7 @@ class PaymentEditViewModel(
         when(status) {
             OVERDUE, PENDING -> PAYED
             PAYED -> {
-                val paymentWithoutPaidDate = payment!!.copy(paidAt = null)
+                val paymentWithoutPaidDate = payment!!.copy(isPayed = false)
                 paymentUiMapper.mapFrom(paymentWithoutPaidDate)!!.status
             }
         }
@@ -145,24 +146,10 @@ class PaymentEditViewModel(
                 billId = bill!!.id,
                 billName = bill!!.name,
                 payedValue = paymentUi!!.price,
-                paidAtDate = (payment!!.paidAt ?: payment!!.dueDate).let { date -> epochFormatter.from(date) },
+                paidAtDate = payment!!.dueDate.let { date -> epochFormatter.from(date) },
                 paidDateTitle = dateFormatter(payment!!.dueDate),
                 paymentStatus = paymentUi!!.status,
             )
         }
     }
 }
-
-/*
-
-        val mockPrice = currencyFormatter.format(0)
-        val price = (original?.payedValue ?: b?.price)?.let { currencyFormatter.format(it) } ?: ui?.price ?: mockPrice
-        PaymentEditUiState(
-            billName = ui?.billName ?: "",
-            payedValue = price,
-            paidAtDate = (original?.paidAt ?: b?.createAt)?.let { date -> epochFormatter.from(date) }  ?: 0L,
-            paidDateTitle = (original?.paidAt ?: b?.createAt)?.let { date -> dateFormatter(date) } ?: "",
-            paymentStatus = ui?.status ?: PaymentUi.Status.PENDING,
-            priceHasError = price == mockPrice,
-            askingConfirmation = confirm
- */

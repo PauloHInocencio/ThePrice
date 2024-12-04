@@ -69,35 +69,51 @@ val stubPayments:List<Payment> by lazy {
     listOf(
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 1, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 1, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 2, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 2, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 4, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 4, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 5, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 5, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 6, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 6, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 7, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 7, year = 2024),
+            price =12099,
+            isPayed = false,
         ),
         Payment(
             billId = 1L,
-            dueDate = DayMonthAndYear(day = 5, month = 8, year = 2024)
+            dueDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
+            price =12099,
+            isPayed = false,
         )
     )
 }

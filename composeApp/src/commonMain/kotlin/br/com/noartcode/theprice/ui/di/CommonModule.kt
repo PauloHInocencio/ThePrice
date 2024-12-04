@@ -28,10 +28,12 @@ import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
+import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.UpdateBill
 import br.com.noartcode.theprice.domain.usecases.UpdatePayment
+import br.com.noartcode.theprice.domain.usecases.UpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
@@ -74,6 +76,7 @@ fun appModule() = module {
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}
+    single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
     }
@@ -85,7 +88,7 @@ fun appModule() = module {
             paymentUiMapper = get(),
             moveMonth = get(),
             getFirstPaymentDate = get(),
-            updatePayment = get(),
+            updatePaymentStatus = get(),
         )
     }
     viewModel {

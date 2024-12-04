@@ -66,7 +66,6 @@ fun HomeScreen(
                                 HomeEvent.OnPaymentStatusClicked(
                                     id = payment.id,
                                     status = payment.status,
-                                    price = payment.price
                                 )
                             )},
                         onPaymentClicked = onNavigateToEditPayment

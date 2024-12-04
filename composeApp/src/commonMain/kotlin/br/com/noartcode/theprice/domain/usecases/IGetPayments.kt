@@ -53,7 +53,7 @@ class GetPayments(
             flowOf(processPayments(activeBills, monthPayments, date))
         }
         .onStart { emit(Resource.Loading) }
-        .debounce(10)
+        .debounce(4)
         .catch { e ->
             // Suppress CancellationException
             if (e !is CancellationException) {
@@ -85,7 +85,9 @@ class GetPayments(
                             day = bill.billingStartDate.day,
                             month = date.month,
                             year = date.year
-                        )
+                        ),
+                        price = bill.price,
+                        isPayed = false,
                     )
                     paymentLDS.getPayment(paymentId)
                 }

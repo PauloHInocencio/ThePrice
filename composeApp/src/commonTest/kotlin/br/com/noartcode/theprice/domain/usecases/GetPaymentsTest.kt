@@ -10,7 +10,6 @@ import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBi
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -33,6 +32,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -78,8 +78,8 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
             numOfPayments = numOfPayments,
-            billDataSource,
-            paymentDataSource
+            billDataSource = billDataSource,
+            paymentDataSource = paymentDataSource
         )
 
         // check if the current bill has only the correct amount of payments
@@ -89,16 +89,30 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             actual = payments.size
         )
 
-        val result = getPayments(
+
+        getPayments(
             date = DayMonthAndYear(day = 5, month = 9, year = 2024),
             billStatus = Bill.Status.ACTIVE
-        ).first()
+        ).test {
+
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = (this is Resource.Loading))
+            }
+
+            with(awaitItem()) {
+                assertEquals(
+                    expected = 0,
+                    actual = (this as Resource.Success).data.size
+                )
+            }
+
+            ensureAllEventsConsumed()
+        }
 
 
-        assertEquals(
-            expected = emptyList(),
-            actual = (result as Resource.Success<List<Payment>>).data
-        )
+
+
+
     }
 
     @Test
@@ -109,8 +123,8 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = initialMonth, year = 2024),
             numOfPayments = 0,
-            billDataSource,
-            paymentDataSource
+            billDataSource = billDataSource,
+            paymentDataSource = paymentDataSource
         )
 
         // check if the current bill has no payments
@@ -144,8 +158,8 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             bill = stubBills[0],
             billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
             numOfPayments = 0,
-            billDataSource,
-            paymentDataSource
+            billDataSource = billDataSource,
+            paymentDataSource = paymentDataSource
         )
 
         // check if the current bill has no payments
@@ -155,16 +169,29 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             actual = payments.size
         )
 
-        val result = getPayments(
+
+
+        getPayments(
             date = DayMonthAndYear(day = 3, month = 10, year = 2024),
             billStatus = Bill.Status.ACTIVE
-        ).first()
+        ).test {
+
+            with(awaitItem()) {
+                assertEquals(expected = true, this is Resource.Loading)
+            }
+
+            with(awaitItem()) {
+                assertEquals(
+                    expected = 0,
+                    actual = (this as Resource.Success).data.size
+                )
+            }
 
 
-        assertEquals(
-            expected = emptyList(),
-            actual = (result as Resource.Success<List<Payment>>).data
-        )
+        }
+
+
+
     }
 
 
@@ -179,29 +206,37 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
                 bill = stubBills[i],
                 billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
                 numOfPayments = 0,
-                billDataSource,
-                paymentDataSource
+                billDataSource = billDataSource,
+                paymentDataSource = paymentDataSource
             )
         }
 
         getPayments(DayMonthAndYear(day = 21, month = 11, year = 2024), billStatus = Bill.Status.ACTIVE).test(timeout =  60.seconds) {
 
 
-            val result = awaitItem()
-            assertEquals(expected = true, actual = result is Resource.Success)
-            assertEquals(expected = 3, actual = (result as Resource.Success).data.size)
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = this is Resource.Loading)
+            }
 
+            val result = (awaitItem() as Resource.Success)
+            with(result) {
+                assertEquals(expected = 3, actual = data.size)
+            }
+
+
+            val originalPayment = assertNotNull(result.data.find { it.billId == 1L })
 
             // Updates one of the payments
             paymentDataSource.updatePayment(
-                id = 1,
-                paidValue = 1111,
-                paidAt = DayMonthAndYear(day = 21, month = 11, year = 2024)
+                id = originalPayment.id,
+                price = 1111,
+                dueDate = originalPayment.dueDate,
+                isPayed = true
             )
 
             with(awaitItem() as Resource.Success) {
                 assertEquals(expected = 3, actual = data.size)
-                assertEquals(expected = 1111, data.find { it.id == 1L }?.payedValue)
+                assertEquals(expected = 1111, data.find { it.id == originalPayment.id }?.price)
             }
 
             ensureAllEventsConsumed()

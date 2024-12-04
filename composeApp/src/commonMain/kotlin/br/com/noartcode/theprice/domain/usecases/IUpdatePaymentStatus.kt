@@ -1,39 +1,31 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-interface IUpdatePayment {
-    suspend operator fun invoke(
-        id: Long,
-        price: String,
-        dueDate: DayMonthAndYear,
-        isPayed: Boolean,
-    ) : Resource<Unit>
+
+interface IUpdatePaymentStatus {
+    suspend operator fun invoke(id: Long, isPayed:Boolean) : Resource<Unit>
 }
 
-
-class UpdatePayment(
+class UpdatePaymentStatus (
     private val datasource: PaymentLocalDataSource,
-    private val currencyFormatter: ICurrencyFormatter,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : IUpdatePayment {
+) : IUpdatePaymentStatus {
     override suspend fun invoke(
         id: Long,
-        price: String,
-        dueDate: DayMonthAndYear,
-        isPayed: Boolean,
+        isPayed: Boolean
     ): Resource<Unit> = withContext(dispatcher) {
         try {
+            val originalPayment = datasource.getPayment(id)!!
             datasource.updatePayment(
                 id = id,
-                price = price.let { currencyFormatter.clenup(it) },
-                dueDate = dueDate,
+                price = originalPayment.price,
+                dueDate = originalPayment.dueDate,
                 isPayed = isPayed,
             )
             return@withContext Resource.Success(Unit)
@@ -44,4 +36,5 @@ class UpdatePayment(
             )
         }
     }
+
 }
