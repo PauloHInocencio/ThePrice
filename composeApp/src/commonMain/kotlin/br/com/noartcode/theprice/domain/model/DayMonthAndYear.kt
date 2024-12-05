@@ -12,5 +12,14 @@ data class DayMonthAndYear(
             DayMonthAndYear::day
         )
     }
+
+    override fun toString(): String = StringBuilder().apply {
+        append(if(day < 10) "0$day" else day)
+        append("/")
+        append(if (month < 10) "0$month" else month)
+        append("/")
+        append(year)
+    }.toString()
+
 }
 

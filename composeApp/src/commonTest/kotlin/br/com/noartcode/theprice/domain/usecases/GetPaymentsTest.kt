@@ -17,7 +17,12 @@ import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -241,6 +246,54 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
             ensureAllEventsConsumed()
         }
+    }
+
+    @Test
+    fun `Should Return The Correct List of Payments for All Valid Months` () = runTest {
+
+        populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
+            numOfPayments = 0,
+            billDataSource = billDataSource,
+            paymentDataSource = paymentDataSource
+        )
+
+
+        val currentDate = MutableStateFlow(DayMonthAndYear(day = 5, month = 12, year = 2024))
+
+        currentDate
+            .flatMapLatest { date ->
+                getPayments(date, billStatus = Bill.Status.ACTIVE)
+            }.test {
+
+                repeat(5) {
+                    skipItems(1)
+                    with(awaitItem()) {
+                        val payment = (this as Resource.Success).data.first()
+                        assertEquals(expected = currentDate.value.toString() , actual = payment.dueDate.toString())
+                        assertEquals(expected = 1, actual = data.size)
+                    }
+
+                    ensureAllEventsConsumed()
+
+                    //Going back to valid previous month
+                    currentDate.update { it.copy(month = it.month - 1) }
+                }
+
+
+                //Going back to an invalid previous month
+                currentDate.update { it.copy(month = it.month - 1) }
+
+                // Should return a empty list
+                skipItems(1)
+                with(awaitItem()) {
+                    assertEquals(expected = 0, actual = (this as Resource.Success).data.size)
+                }
+
+                ensureAllEventsConsumed()
+            }
+
     }
 
 }

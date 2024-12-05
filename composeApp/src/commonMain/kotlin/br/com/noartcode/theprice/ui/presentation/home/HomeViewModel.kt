@@ -44,25 +44,25 @@ class HomeViewModel(
     private val initialDate by lazy { getTodayDay() }
     private val _currentDate = MutableStateFlow(initialDate)
     private val _homeScreenResults =
-        combine(_currentDate, getFirstPaymentDate()) { currentDate, oldestDate ->
-            currentDate to oldestDate
+        combine(_currentDate, getFirstPaymentDate()) { currentDate, firstPaymentDate ->
+            currentDate to firstPaymentDate
         }
-        .flatMapLatest { (currentDate, oldestDate) ->
+        .flatMapLatest { (currentDate, firstPaymentDate) ->
             getPayments(
                 date = currentDate,
                 billStatus = Bill.Status.ACTIVE
             ).map { result ->
-                result to (currentDate to oldestDate)
+                result to (currentDate to firstPaymentDate)
             }
         }
 
 
     private val _state = MutableStateFlow(HomeUiState())
     val uiState = combine( _state, _homeScreenResults ) { state, (payments, dates) ->
-        val (currentDate, oldestDate) = dates
+        val (currentDate, firstPaymentDate) = dates
         HomeUiState(
             monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
-            canGoBack = oldestDate != null && moveMonth(by = -1, currentDate = currentDate) > oldestDate,
+            canGoBack = firstPaymentDate != null && moveMonth(by = -1, currentDate = currentDate).let { it  > firstPaymentDate || (it.month == firstPaymentDate.month && it.year == firstPaymentDate.year) },
             canGoNext = currentDate < initialDate,
             payments = (payments as? Resource.Success)?.data?.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }?.sortedBy { paymentUi -> paymentUi.status } ?: emptyList(),
             errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,

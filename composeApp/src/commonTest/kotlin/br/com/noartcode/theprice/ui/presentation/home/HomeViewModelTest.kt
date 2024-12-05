@@ -405,5 +405,54 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
     }
 
+    @Test
+    fun `Should Return The Correct List of Payments for All Valid Months`() = runTest {
+
+        populateDBWithAnBillAndFewPayments(
+            bill = stubBills[0],
+            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
+            numOfPayments = 0,
+            billDataSource = billDataSource,
+            paymentDataSource = paymentDataSource
+        )
+
+        // Set Current Day to November 21th
+        getTodayDate.date =  DayMonthAndYear(day = 5, month = 12, year = 2024)
+
+
+        val monthNames = listOf("Novembro - 2024", "Outubro - 2024", "Setembro - 2024", "Agosto - 2024")
+        viewModel.uiState.test {
+
+            skipItems(2)
+            with(awaitItem()) {
+                assertEquals(expected = "Dezembro - 2024", actual = monthName)
+                assertEquals(expected = 1, actual = payments.size)
+            }
+
+            repeat(4) { i ->
+
+                viewModel.onEvent(HomeEvent.OnBackToPreviousMonth)
+
+                skipItems(1)
+                with(awaitItem()) {
+                    assertEquals(expected = monthNames[i], actual = monthName)
+                    assertEquals(expected = 1, actual = payments.size)
+
+                    when(i) {
+                        // The user should be able to go back From September to August
+                        2 -> assertEquals(expected = true, canGoBack)
+                        // The user shouldn't be able to go back Form August to July
+                        3 -> assertEquals(expected = false, canGoBack)
+                        // Ignoring other emissions
+                        else -> Unit
+                    }
+
+                }
+            }
+
+            ensureAllEventsConsumed()
+        }
+    }
+
 
 }
