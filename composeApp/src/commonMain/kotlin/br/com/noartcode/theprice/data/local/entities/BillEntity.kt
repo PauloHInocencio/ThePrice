@@ -10,7 +10,7 @@ data class BillEntity(
     val id:Long = 0,
     val name:String,
     val description:String? = null,
-    val price:Int,
+    val price:Long,
     val type:String,
     val status:String,
     val billingStartDate:Long,

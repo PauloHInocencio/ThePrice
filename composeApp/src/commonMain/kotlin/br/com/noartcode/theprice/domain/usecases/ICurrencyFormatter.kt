@@ -1,9 +1,9 @@
 package br.com.noartcode.theprice.domain.usecases
 
 interface ICurrencyFormatter {
-    fun format(value:Int) : String
+    fun format(value:Long) : String
 
-    fun clenup(value:String) : Int
+    fun clenup(value:String) : Long
 
 }
 

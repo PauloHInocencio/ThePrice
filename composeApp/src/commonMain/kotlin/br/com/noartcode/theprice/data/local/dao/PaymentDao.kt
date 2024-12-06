@@ -25,7 +25,7 @@ interface PaymentDao {
     @Query("UPDATE payments SET price = :price, dueDay = :dueDay, dueMonth = :dueMonth, dueYear = :dueYear, isPayed = :isPayed WHERE id == :paymentId")
     suspend fun updatePayment(
         paymentId:Long,
-        price:Int,
+        price:Long,
         dueDay:Int,
         dueMonth:Int,
         dueYear:Int,

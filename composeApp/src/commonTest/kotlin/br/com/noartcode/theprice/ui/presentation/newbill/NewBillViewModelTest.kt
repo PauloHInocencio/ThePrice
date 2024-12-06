@@ -15,6 +15,9 @@ import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -33,6 +36,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
+
     private val database: ThePriceDatabase by inject()
     private val epochFormatter: IEpochMillisecondsFormatter by inject()
     private val getTodayDate: IGetTodayDate = GetTodayDateStub()
@@ -41,7 +47,7 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
                 commonTestModule(),
@@ -52,7 +58,7 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                             currencyFormatter = get(),
                             insertNewBill = InsertOrReplaceBill(
                                 localDataSource = billDataSource,
-                                dispatcher = UnconfinedTestDispatcher(),
+                                dispatcher = testDispatcher,
                             ),
                             getTodayDate = get(),
                             epochFormatter = get(),
@@ -76,16 +82,16 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
         // GIVEN
         viewModel.uiState.test {
 
-            // WHEN
-            val initialUiState = awaitItem()
+            skipItems(1)
 
             // THEN
-            with(initialUiState) {
+            with(awaitItem()) {
                 assertEquals("", name)
                 assertEquals("R$ 0,00", price)
                 assertEquals(null, description)
             }
 
+            ensureAllEventsConsumed()
         }
     }
 
@@ -96,20 +102,26 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
         // GIVEN
         viewModel.uiState.test {
 
-            // WHEN
-            with(viewModel){
-                onEvent(AddBillEvent.OnNameChanged("internet"))
-                onEvent(AddBillEvent.OnPriceChanged("9990"))
-                onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
-                skipItems(4)
-            }
+            // ignoring the emissions
+            skipItems(2)
 
-            // THEN
+            // changing the bill name
+            viewModel.onEvent(AddBillEvent.OnNameChanged("internet"))
+            skipItems(1)
+
+            //changing the bill price
+            viewModel.onEvent(AddBillEvent.OnPriceChanged("9990"))
+            skipItems(1)
+
+            // changing the bill description
+            viewModel.onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
             with(awaitItem()) {
                 assertEquals("internet", name)
                 assertEquals("R$ 99,90", price)
                 assertEquals("Bill of home's internet", description)
             }
+
+            ensureAllEventsConsumed()
         }
     }
 
@@ -119,12 +131,24 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
         // GIVEN
         viewModel.uiState.test {
 
-            // WHEN
-            with(viewModel){
-                onEvent(AddBillEvent.OnNameChanged("internet"))
-                onEvent(AddBillEvent.OnPriceChanged("9990"))
-                onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
-                skipItems(5)
+            // ignoring the emissions
+            skipItems(2)
+
+            // changing the bill name
+            viewModel.onEvent(AddBillEvent.OnNameChanged("internet"))
+            skipItems(1)
+
+            //changing the bill price
+            viewModel.onEvent(AddBillEvent.OnPriceChanged("9990"))
+            skipItems(1)
+
+            // changing the bill description
+            viewModel.onEvent(AddBillEvent.OnDescriptionChanged("Bill of home's internet"))
+            with(awaitItem()) {
+                assertEquals(expected = true, canSave)
+                assertEquals("internet", name)
+                assertEquals("R$ 99,90", price)
+                assertEquals("Bill of home's internet", description)
             }
 
 
@@ -140,6 +164,35 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(false, isSaving)
                 assertEquals(true, isSaved)
             }
+
+            ensureAllEventsConsumed()
+        }
+    }
+
+
+
+    @Test
+    fun `When User Typed Wrong Price Input ViewModel Should Reset Field`() = runTest {
+
+        viewModel.uiState.test {
+
+            // ignoring the emissions
+            skipItems(2)
+
+            // entering the limit amount
+            viewModel.onEvent(AddBillEvent.OnPriceChanged("9223372036854775807"))
+            with(awaitItem()) {
+                assertEquals(expected = "R$ 92.233.720.368.547.758,07", price)
+            }
+
+            // exceeding the limit
+            viewModel.onEvent(AddBillEvent.OnPriceChanged("9223372036854775808"))
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = priceHasError)
+                assertEquals(expected = "R$ 0,00", actual = price)
+            }
+
+            ensureAllEventsConsumed()
         }
     }
 }

@@ -8,7 +8,7 @@ actual class CurrencyFormatter(
 ) : ICurrencyFormatter {
 
 
-    override fun format(value: Int): String {
+    override fun format(value: Long): String {
         val decimalDigits = 2
         val text = value.toString()
         val thousandsSeparator = symbols.groupingSeparator
@@ -60,7 +60,7 @@ actual class CurrencyFormatter(
         return "$currencySymbol $intPart$decimalSeparator$fractionPart"
     }
 
-    override fun clenup(value: String): Int {
+    override fun clenup(value: String): Long {
 
         val sb = StringBuilder()
         for(char in value) {
@@ -71,6 +71,6 @@ actual class CurrencyFormatter(
         }
 
         val s = sb.toString()
-        return if (s.isEmpty()) -1  else s.toInt()
+        return try { s.toLong() } catch (e:Throwable) { 0 }
     }
 }

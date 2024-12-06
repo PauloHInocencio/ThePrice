@@ -35,7 +35,7 @@ interface BillDao {
         id:Long,
         name:String,
         description:String?,
-        price:Int,
+        price:Long,
         type:String,
         status:String,
         billingStartDate:Long

@@ -19,7 +19,7 @@ class BillLocalDataSourceFakeImp : BillLocalDataSource {
     override suspend fun insert(
         name: String,
         description: String?,
-        price: Int,
+        price: Long,
         type: Bill.Type,
         status: Bill.Status,
         billingStartDate: DayMonthAndYear

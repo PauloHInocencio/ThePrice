@@ -63,7 +63,7 @@ class PaymentEditViewModel(
                 _state.update {
                     it.copy(
                         payedValue = newPrice,
-                        priceHasError = value == 0,
+                        priceHasError = value == 0L,
                         priceHasChanged = newPrice != paymentUi!!.price
                     )
                 }

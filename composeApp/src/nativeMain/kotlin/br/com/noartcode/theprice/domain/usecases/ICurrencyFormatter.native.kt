@@ -6,7 +6,7 @@ actual class CurrencyFormatter(
     private val formatter: NSNumberFormatter
 ) : ICurrencyFormatter {
 
-    override fun format(value: Int): String {
+    override fun format(value: Long): String {
         val decimalDigits = 2
         val text = value.toString()
         val thousandsSeparator = formatter.groupingSeparator
@@ -27,7 +27,7 @@ actual class CurrencyFormatter(
             .dropLast(decimalDigits)
             .reversed()
             .chunked(3)
-            .joinToString(separator = thousandsSeparator.toString())
+            .joinToString(separator = thousandsSeparator)
             .reversed()
             .ifEmpty {
                zero ?: "0"
@@ -57,7 +57,7 @@ actual class CurrencyFormatter(
         return "$currencySymbol $intPart$decimalSeparator$fractionPart"
     }
 
-    override fun clenup(value: String): Int {
+    override fun clenup(value: String): Long {
         val sb = StringBuilder()
         for(char in value) {
             if (char.isDigit()) {
@@ -67,6 +67,6 @@ actual class CurrencyFormatter(
         }
 
         val s = sb.toString()
-        return if (s.isEmpty()) -1  else s.toInt()
+        return try { s.toLong() } catch (e:Throwable) { 0 }
     }
 }

@@ -66,23 +66,31 @@ class CurrencyFormatterTest : KoinTest {
 
 
     @Test
-    fun `Should return '-1' for an invalid input`() {
+    fun `Should return '0' for an invalid input`() {
         assertEquals(
-            expected = -1,
+            expected = 0,
             actual = formatter.clenup("R$")
         )
 
         assertEquals(
-            expected = -1,
+            expected = 0,
             actual = formatter.clenup("")
         )
 
         assertEquals(
-            expected = -1,
+            expected = 0,
             actual = formatter.clenup(" ")
         )
     }
 
+
+    @Test
+    fun `Should return '0' when the input Cases An Error`() {
+        assertEquals(
+            expected = 0,
+            actual = formatter.clenup("R$ 92.233.720.368.547.758,08") //MAX_LONG + 1
+        )
+    }
 
     @Test
     fun `should return currency with correct group separator`() {
@@ -91,5 +99,8 @@ class CurrencyFormatterTest : KoinTest {
             actual = formatter.format(111111)
         )
     }
+
+
+
 
 }

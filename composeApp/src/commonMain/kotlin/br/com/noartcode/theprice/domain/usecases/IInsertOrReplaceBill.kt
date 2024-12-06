@@ -13,7 +13,7 @@ interface IInsertOrReplaceBill {
     suspend operator fun invoke(
         name:String,
         description:String?,
-        price:Int,
+        price:Long,
         type:Bill.Type,
         status:Bill.Status,
         billingStartDate: DayMonthAndYear,
@@ -28,7 +28,7 @@ class InsertOrReplaceBill(
     override suspend fun invoke(
         name:String,
         description:String?,
-        price:Int,
+        price:Long,
         type:Bill.Type,
         status:Bill.Status,
         billingStartDate: DayMonthAndYear,
