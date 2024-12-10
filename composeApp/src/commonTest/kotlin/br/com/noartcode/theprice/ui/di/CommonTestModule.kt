@@ -1,9 +1,5 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.BillLocalDataSourceFakeImp
-import br.com.noartcode.theprice.data.localdatasource.helpers.PaymentLocalDataSourceFakeImp
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
@@ -27,8 +23,6 @@ import org.koin.dsl.module
 
 @OptIn(ExperimentalCoroutinesApi::class)
 fun commonTestModule() = module {
-    single<BillLocalDataSource> { BillLocalDataSourceFakeImp() }
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceFakeImp() }
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateFormat> { GetDateFormat() }
     single<IGetDaysUntil> { GetDaysUntil() }

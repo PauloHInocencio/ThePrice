@@ -5,7 +5,6 @@ import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSo
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
-import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
@@ -19,7 +18,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain

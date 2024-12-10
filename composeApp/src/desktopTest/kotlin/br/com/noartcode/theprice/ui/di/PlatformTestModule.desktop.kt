@@ -1,9 +1,8 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.BillLocalDataSourceFakeImp
-import br.com.noartcode.theprice.data.localdatasource.helpers.PaymentLocalDataSourceFakeImp
+import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import org.koin.dsl.module
@@ -13,6 +12,13 @@ import java.util.Locale
 actual fun platformTestModule() = module {
     single<IGetMonthName>{
         GetMonthName(calendar = Calendar.getInstance(), Locale("pt", "BR"))
+    }
+
+    single<ThePriceDatabase> {
+        Room.inMemoryDatabaseBuilder<ThePriceDatabase>()
+            .setDriver(BundledSQLiteDriver())
+            //.setQueryCoroutineContext(Dispatchers.IO)
+            .build()
     }
 }
 
