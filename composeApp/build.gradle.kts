@@ -39,6 +39,7 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.kotlinx.coroutines.android)
 
             implementation(libs.mockk)
         }
@@ -67,14 +68,16 @@ kotlin {
             //implementation(libs.lifecycle.compose)
 
             // Coroutines
-            implementation(libs.kotlinx.coroutines)
+            implementation(libs.kotlinx.coroutines.core)
 
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
         }
 
         val androidUnitTest by getting {

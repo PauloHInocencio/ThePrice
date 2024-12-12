@@ -44,7 +44,9 @@ lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", versi
 lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 
 # Coroutines
-kotlinx-coroutines = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
+kotlinx-coroutines-core = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 
 #Room
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
