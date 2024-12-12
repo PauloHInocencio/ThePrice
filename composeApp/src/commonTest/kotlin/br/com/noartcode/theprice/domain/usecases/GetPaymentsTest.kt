@@ -113,11 +113,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
             ensureAllEventsConsumed()
         }
-
-
-
-
-
     }
 
     @Test
@@ -191,12 +186,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
                     actual = (this as Resource.Success).data.size
                 )
             }
-
-
         }
-
-
-
     }
 
 

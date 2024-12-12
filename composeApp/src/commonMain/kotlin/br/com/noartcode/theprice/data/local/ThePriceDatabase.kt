@@ -22,6 +22,8 @@ abstract class ThePriceDatabase : RoomDatabase() {
 
 // The Room compiler generates the `actual` implementations.
 @Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object ThePriceDatabaseConstructor : RoomDatabaseConstructor<ThePriceDatabase>
+expect object ThePriceDatabaseConstructor : RoomDatabaseConstructor<ThePriceDatabase>{
+    override fun initialize(): ThePriceDatabase
+}
 
 internal const val dbFileName = "the_price_app.db"
