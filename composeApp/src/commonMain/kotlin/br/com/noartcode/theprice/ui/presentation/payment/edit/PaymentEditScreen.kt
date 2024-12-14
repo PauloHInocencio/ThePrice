@@ -16,9 +16,15 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -37,6 +43,7 @@ import br.com.noartcode.theprice.ui.views.ConfirmPaymentChangeDialog
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentEditScreen(
     modifier: Modifier = Modifier,
@@ -45,8 +52,31 @@ fun PaymentEditScreen(
     onNavigateToEditBill : (Long) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-
-    Scaffold { innerPadding ->
+    Scaffold (
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { onNavigateToEditBill(state.billId) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
         Column(
             modifier = modifier
                 .padding(innerPadding)
@@ -54,24 +84,12 @@ fun PaymentEditScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.Start
         ) {
-            Row(modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically){
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = state.billName,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                IconButton(
-                    onClick = { onNavigateToEditBill(state.billId) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = null
-                    )
-                }
-            }
-
+            Text(
+                modifier = Modifier.weight(1f),
+                text = state.billName,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
             Spacer(modifier = Modifier.height(20.dp))
             NormalEditField(
                 fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Payed amount" else "Amount to pay",
