@@ -10,10 +10,15 @@ import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -30,23 +35,33 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class BillDataSourceTest : KoinTest, RobolectricTests() {
 
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
+
     private val database:ThePriceDatabase by inject()
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
-    private val dataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
+
+    // Unit Under Test
+    private val dataSource: BillLocalDataSource by inject()
 
     @BeforeTest
     fun before() {
-        startKoin { modules(platformTestModule(), commonTestModule()) }
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testDispatcher)
+        startKoin {
+            modules(
+                platformTestModule(),
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
+            )
+        }
     }
 
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
 
@@ -89,8 +104,6 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
         dataSource.getBillsBy(Bill.Status.ACTIVE).test {
             assertEquals(3, awaitItem().size)
         }
-
-
     }
 
 }

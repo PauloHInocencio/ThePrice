@@ -13,10 +13,16 @@ import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
+import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -33,40 +39,34 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
-    private val database: ThePriceDatabase by inject()
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate:IGetTodayDate = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
-    private val formatter:ICurrencyFormatter by inject()
-    private val dateFormat:IGetDateFormat by inject()
-    private val getDaysUntil:IGetDaysUntil by inject()
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
-    private val paymentUiMapper:PaymentDomainToUiMapper by lazy {
-        PaymentDomainToUiMapper(
-            dataSource = billDataSource,
-            formatter = formatter,
-            getTodayDate = getTodayDate,
-            dateFormat = dateFormat,
-            getDaysUntil = getDaysUntil,
-        )
-    }
+    private val database: ThePriceDatabase by inject()
+    private val getTodayDate:IGetTodayDate by inject()
+    private val billDataSource: BillLocalDataSource by inject()
+
+    // Unit Under Test
+    private val paymentUiMapper:UiMapper<Payment, PaymentUi?> by inject()
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
-                commonTestModule(),
                 platformTestModule(),
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
             )
         }
     }
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
 

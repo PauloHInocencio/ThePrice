@@ -3,28 +3,17 @@ package br.com.noartcode.theprice.ui.presentation.home
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
-import br.com.noartcode.theprice.domain.usecases.GetPayments
-import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
-import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
-import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
-import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
-import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
-import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
-import br.com.noartcode.theprice.domain.usecases.UpdatePayment
-import br.com.noartcode.theprice.domain.usecases.UpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import kotlinx.coroutines.Dispatchers
@@ -35,10 +24,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.AfterTest
@@ -55,31 +42,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database: ThePriceDatabase by inject()
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
-    private val getTodayDate: GetTodayDateStub = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
-    private val formatter: ICurrencyFormatter by inject()
-    private val dateFormat: IGetDateFormat by inject()
-    private val getDaysUntil: IGetDaysUntil by inject()
-    private val uiMapper: PaymentDomainToUiMapper by lazy {
-        PaymentDomainToUiMapper(
-            dataSource = billDataSource,
-            formatter = formatter,
-            getTodayDate = getTodayDate,
-            dateFormat = dateFormat,
-            getDaysUntil = getDaysUntil,
-        )
-    }
-    private val getFirstPaymentDate: IGetOldestPaymentRecordDate by lazy {
-        GetOldestPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
-    }
-    private val updatePayment: IUpdatePaymentStatus by lazy {
-        UpdatePaymentStatus(
-            datasource = paymentDataSource,
-            dispatcher = testDispatcher
-        )
-    }
+    private val paymentDataSource: PaymentLocalDataSource by inject()
+    private val getTodayDate: IGetTodayDate by inject()
+    private val billDataSource: BillLocalDataSource by inject()
 
     // Unit Under Test
     private val viewModel:HomeViewModel by inject()
@@ -89,25 +54,10 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         Dispatchers.setMain(testDispatcher)
         startKoin{
             modules(
-                commonTestModule(),
                 platformTestModule(),
-                module {
-                    viewModel {
-                        HomeViewModel(
-                            getTodayDay = getTodayDate,
-                            getPayments = GetPayments(
-                                billLDS = billDataSource,
-                                paymentLDS = paymentDataSource,
-                                dispatcher = testDispatcher
-                            ),
-                            getMonthName = get(),
-                            paymentUiMapper = uiMapper,
-                            moveMonth = get(),
-                            getFirstPaymentDate = getFirstPaymentDate,
-                            updatePaymentStatus = updatePayment,
-                        )
-                    }
-                }
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
             )
         }
     }
@@ -138,7 +88,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
 
         // Set Current Day to November 21th
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
 
         viewModel.uiState.test{
@@ -197,7 +147,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
 
         // Set Current Day to November 21th
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
 
         viewModel.uiState.test{
@@ -279,7 +229,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
 
         // Set Current Day to November 21th
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
 
         viewModel.uiState.test {
@@ -346,7 +296,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         )
 
         // Set Current Day to November 21th
-        getTodayDate.date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
         viewModel.uiState.test {
 
@@ -417,7 +367,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         )
 
         // Set Current Day to November 21th
-        getTodayDate.date =  DayMonthAndYear(day = 5, month = 12, year = 2024)
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 5, month = 12, year = 2024)
 
 
         val monthNames = listOf("Novembro - 2024", "Outubro - 2024", "Setembro - 2024", "Agosto - 2024")

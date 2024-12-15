@@ -3,25 +3,22 @@ package br.com.noartcode.theprice.domain.usecases
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -47,32 +44,31 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database: ThePriceDatabase by inject()
-    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
+    private val paymentDataSource: PaymentLocalDataSource by inject()
+    private val billDataSource: BillLocalDataSource by inject()
 
     // The Unit Under Test
-    private val getPayments: IGetPayments by lazy {
-        GetPayments(
-            billLDS = billDataSource,
-            paymentLDS = paymentDataSource,
-            dispatcher = testDispatcher
-        )
-    }
+    private val getPayments: IGetPayments by inject()
 
 
     @BeforeTest
     fun before() {
-        startKoin { modules(platformTestModule(), commonTestModule()) }
         Dispatchers.setMain(testDispatcher)
+        startKoin{
+            modules(
+                platformTestModule(),
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
+            )
+        }
     }
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
 

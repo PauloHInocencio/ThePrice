@@ -44,7 +44,7 @@ import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewMod
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-fun appModule() = module {
+fun commonModule() = module {
     single<IGetTodayDate> { GetTodayDate() }
     single<IGetDateFormat> { GetDateFormat() }
     single<IGetDaysUntil> { GetDaysUntil() }
@@ -80,6 +80,9 @@ fun appModule() = module {
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
     }
+}
+
+fun viewModelsModule() = module {
     viewModel {
         HomeViewModel(
             getPayments = get(),

@@ -25,7 +25,7 @@ actual fun platformModule() = module {
 actual class KoinInitializer {
     actual fun init() {
         startKoin {
-            modules(platformModule(), appModule())
+            modules(platformModule(), viewModelsModule(), commonModule())
         }
     }
 }

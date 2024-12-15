@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -18,7 +19,11 @@ class GetDaysUntilTest : KoinTest {
 
     @BeforeTest
     fun before() {
-        startKoin { modules(commonTestModule()) }
+        startKoin {
+            modules(
+                commonModule(),
+            )
+        }
     }
 
     @AfterTest

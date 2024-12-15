@@ -9,8 +9,10 @@ import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
 import kotlinx.coroutines.Dispatchers
@@ -38,11 +40,9 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
     private val testScope = TestScope()
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
-
     private val database: ThePriceDatabase by inject()
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
+
+    // Unit Under Test
     private val viewModel: AddBillViewModel by inject()
 
     @BeforeTest
@@ -50,28 +50,17 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
         Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
-                commonTestModule(),
                 platformTestModule(),
-                module {
-                    viewModel {
-                        AddBillViewModel(
-                            currencyFormatter = get(),
-                            insertNewBill = InsertOrReplaceBill(
-                                localDataSource = billDataSource,
-                                dispatcher = testDispatcher,
-                            ),
-                            getTodayDate = get(),
-                            epochFormatter = get(),
-                            getMonthName = get(),
-                        )
-                    }
-                }
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
             )
         }
     }
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
     }

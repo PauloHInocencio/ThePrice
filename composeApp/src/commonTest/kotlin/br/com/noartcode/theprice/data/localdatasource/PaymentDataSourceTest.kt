@@ -11,8 +11,10 @@ import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -37,23 +39,30 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database:ThePriceDatabase by inject()
-    private val paymentDataSource: PaymentLocalDataSource by lazy { PaymentLocalDataSourceImp(database) }
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
+    private val billDataSource: BillLocalDataSource by inject()
+
+    // Unit Under Test
+    private val paymentDataSource: PaymentLocalDataSource by inject()
 
 
     @BeforeTest
     fun before() {
-        startKoin { modules(platformTestModule(), commonTestModule()) }
         Dispatchers.setMain(testDispatcher)
+        startKoin {
+            modules(
+                platformTestModule(),
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
+            )
+        }
     }
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
     @Test

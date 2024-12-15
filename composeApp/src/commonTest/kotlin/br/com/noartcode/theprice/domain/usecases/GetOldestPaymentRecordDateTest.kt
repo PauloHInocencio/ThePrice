@@ -3,15 +3,18 @@ package br.com.noartcode.theprice.domain.usecases
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
-import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.viewModelsModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -28,27 +31,33 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
 
+    private val testScope = TestScope()
+    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database: ThePriceDatabase by inject()
-    private val epochFormatter: IEpochMillisecondsFormatter by inject()
-    private val getTodayDate: IGetTodayDate = GetTodayDateStub()
-    private val billDataSource: BillLocalDataSource by lazy { BillLocalDataSourceImp(database, epochFormatter, getTodayDate) }
-    private val getFirstPaymentDate:IGetOldestPaymentRecordDate by lazy {
-        GetOldestPaymentRecordDate(localDataSource = billDataSource, epochFormatter = epochFormatter)
-    }
+    private val billDataSource: BillLocalDataSource by inject()
+
+    // Unit Under Test
+    private val getFirstPaymentDate:IGetOldestPaymentRecordDate by inject()
+
     @BeforeTest
     fun before() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
         startKoin {
-            modules(platformTestModule(),  commonTestModule())
+            modules(
+                platformTestModule(),
+                commonModule(),
+                commonTestModule(testDispatcher),
+                viewModelsModule()
+            )
         }
     }
 
     @AfterTest
     fun after() {
+        database.close()
         Dispatchers.resetMain()
         stopKoin()
-        database.close()
     }
 
     @Test
