@@ -43,8 +43,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
-    private val getTodayDate: IGetTodayDate by inject()
     private val billDataSource: BillLocalDataSource by inject()
+    private val getTodayDate: IGetTodayDate by inject()
+
 
     // Unit Under Test
     private val viewModel:HomeViewModel by inject()

@@ -12,6 +12,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,7 +30,15 @@ fun HomeHeaderView(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.padding(vertical = 16.dp),
+        modifier = modifier
+            .padding(vertical = 16.dp)
+            .semantics {
+                if (title.isNotEmpty()) {
+                    val (month, year) = title.split("-").map { it.trim() }
+                    contentDescription = "Bills of $month $year"
+                }
+            }
+        ,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(

@@ -4,6 +4,7 @@ import android.icu.text.DecimalFormatSymbols
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
+import br.com.noartcode.theprice.data.local.ThePriceDatabaseConstructor
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
@@ -17,10 +18,12 @@ import java.util.Locale
 actual fun platformTestModule() = module {
     single<ThePriceDatabase> {
         run {
-            val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-            Room.inMemoryDatabaseBuilder(
-                context,
-                ThePriceDatabase::class.java
+            val instrumentation = InstrumentationRegistry.getInstrumentation()
+            val file = instrumentation.targetContext.getDatabasePath("test.db")
+            Room.databaseBuilder(
+                context = instrumentation.targetContext,
+                name = file.path,
+                factory = ThePriceDatabaseConstructor::initialize
             ).build()
         }
     }

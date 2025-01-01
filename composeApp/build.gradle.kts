@@ -141,6 +141,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    
+    testOptions.unitTests.isIncludeAndroidResources = true
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -185,6 +188,8 @@ dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     // Update: https://issuetracker.google.com/u/0/issues/342905180
     //add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    add("kspAndroidAndroidTest",  libs.androidx.room.compiler) // Android instrumentation test
+    add("kspAndroidTest",  libs.androidx.room.compiler) // Android unit test
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
