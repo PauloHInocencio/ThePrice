@@ -56,6 +56,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
 
             implementation(libs.mockk)
+
+            implementation(libs.credentials)
+            implementation(libs.credentials.auth)
+            implementation(libs.googleid)
         }
         commonMain.dependencies {
 

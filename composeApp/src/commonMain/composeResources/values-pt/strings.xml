@@ -3,4 +3,5 @@
     <string name="new_bill">Adicionar Conta</string>
     <string name="edit_payment">Editar Pagamento</string>
     <string name="edit_bill">Editar Conta</string>
+    <string name="account">Informações da Conta</string>
 </resources>

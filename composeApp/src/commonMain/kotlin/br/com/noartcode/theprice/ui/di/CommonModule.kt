@@ -41,6 +41,7 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
+import br.com.noartcode.theprice.ui.presentation.user.account.AccountViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -123,6 +124,12 @@ fun viewModelsModule() = module {
             currencyFormatter = get(),
             updatePayment = get(),
             paymentUiMapper = get(),
+        )
+    }
+
+    viewModel {
+        AccountViewModel(
+            accountManager = get()
         )
     }
 }

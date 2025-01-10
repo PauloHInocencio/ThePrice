@@ -25,6 +25,8 @@ import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditScreen
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
+import br.com.noartcode.theprice.ui.presentation.user.account.AccountScreen
+import br.com.noartcode.theprice.ui.presentation.user.account.AccountViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -39,7 +41,7 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME.name,
+        startDestination = Routes.ACCOUNT.name,
         modifier = modifier.fillMaxSize()
     ) {
         composable(
@@ -148,6 +150,31 @@ fun AppNavGraph(
                 val billId = checkNotNull(backStackEntry?.arguments?.getLong("billId"))
                 viewModel.onEvent(EditBillEvent.OnGetBill(billId))
             }
+        }
+
+        composable(
+            route = Routes.ACCOUNT.name,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tween(500)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    tween(300)
+                )
+            }
+        ) {
+            val viewModel = koinViewModel<AccountViewModel>()
+            AccountScreen(
+                state = viewModel.uiState.collectAsState().value,
+                onEvent = viewModel::onEvent,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 

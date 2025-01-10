@@ -8,6 +8,8 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import br.com.noartcode.theprice.ui.presentation.user.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.user.account.IAccountManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -18,6 +20,7 @@ actual fun platformModule() = module {
     single<ThePriceDatabase> { getDatabase(context = get()) }
     single<ICurrencyFormatter> { CurrencyFormatter(symbols = DecimalFormat().decimalFormatSymbols)}
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
+    factory<IAccountManager> { AccountManager(context = androidContext()) }
 }
 
 actual class KoinInitializer(
