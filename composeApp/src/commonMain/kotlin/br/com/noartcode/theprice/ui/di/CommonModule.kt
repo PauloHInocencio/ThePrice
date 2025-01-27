@@ -1,9 +1,9 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSourceImp
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
+import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat

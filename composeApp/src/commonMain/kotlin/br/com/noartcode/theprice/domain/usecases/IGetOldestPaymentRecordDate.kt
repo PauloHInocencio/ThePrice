@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

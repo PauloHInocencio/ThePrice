@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.data.local.localdatasource.payment
+package br.com.noartcode.theprice.data.local.datasource.payment
 
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment

@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.ui.mapper
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat

@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -60,7 +61,11 @@ kotlin {
             implementation(libs.credentials)
             implementation(libs.credentials.auth)
             implementation(libs.googleid)
+
+            implementation(libs.ktor.client.okhttp)
         }
+
+
         commonMain.dependencies {
 
             // Compose
@@ -91,6 +96,13 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+
+            // Ktor
+            implementation(libs.bundles.ktor)
+        }
+
+        nativeMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
 
         desktopMain.dependencies {

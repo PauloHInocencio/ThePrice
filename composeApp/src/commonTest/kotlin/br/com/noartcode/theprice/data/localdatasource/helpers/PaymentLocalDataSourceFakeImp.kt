@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.data.localdatasource.helpers
 
-import br.com.noartcode.theprice.data.local.localdatasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow

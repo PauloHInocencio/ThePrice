@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.data.repository
 
-import br.com.noartcode.theprice.data.local.localdatasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import kotlinx.coroutines.flow.Flow

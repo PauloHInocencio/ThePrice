@@ -1,11 +1,10 @@
-package br.com.noartcode.theprice.data.local.localdatasource.bill
+package br.com.noartcode.theprice.data.local.datasource.bill
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.GetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import kotlinx.coroutines.ExperimentalCoroutinesApi
