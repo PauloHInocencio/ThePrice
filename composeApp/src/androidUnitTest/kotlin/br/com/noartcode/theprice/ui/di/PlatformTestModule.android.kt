@@ -19,6 +19,7 @@ import java.util.Calendar
 import java.util.Locale
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 
 actual fun platformTestModule() = module {

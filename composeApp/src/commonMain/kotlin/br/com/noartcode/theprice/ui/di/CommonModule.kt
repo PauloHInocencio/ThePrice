@@ -1,9 +1,13 @@
 package br.com.noartcode.theprice.ui.di
 
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
+import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourceImp
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
@@ -24,13 +28,16 @@ import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
 import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.ISignInUser
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
+import br.com.noartcode.theprice.domain.usecases.SignInUser
 import br.com.noartcode.theprice.domain.usecases.UpdateBill
 import br.com.noartcode.theprice.domain.usecases.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.UpdatePaymentStatus
@@ -41,7 +48,7 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
-import br.com.noartcode.theprice.ui.presentation.user.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.auth.account.AccountViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -69,9 +76,11 @@ fun commonModule() = module {
             getTodayDate = get()
         )
     }
+    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
+    single<AuthLocalDataSource> { AuthLocalDataSourceImp(dataStore = get()) }
+    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
-    single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<IInsertOrReplaceBill> { InsertOrReplaceBill(localDataSource = get()) }
     single<IUpdateBill> { UpdateBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
@@ -80,6 +89,14 @@ fun commonModule() = module {
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
+    }
+    single<IGetUserInfo> { IGetUserInfo(get<AuthLocalDataSource>()::getUser) }
+    single<ISignInUser> {
+        SignInUser(
+            accountManager = get(),
+            localDataSource = get(),
+            remoteDataSource = get()
+        )
     }
 }
 
@@ -129,7 +146,8 @@ fun viewModelsModule() = module {
 
     viewModel {
         AccountViewModel(
-            accountManager = get()
+            signInUser = get(),
+            getUserInfo = get()
         )
     }
 }

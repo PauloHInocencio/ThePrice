@@ -12,7 +12,6 @@ import platform.Foundation.NSCalendar
 import platform.Foundation.NSLocale
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterCurrencyStyle
-import platform.Foundation.currentLocale
 
 actual fun platformTestModule() = module{
     single<IGetMonthName> { GetMonthName(

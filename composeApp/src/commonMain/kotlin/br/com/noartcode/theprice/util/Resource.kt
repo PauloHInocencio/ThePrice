@@ -19,3 +19,11 @@ inline fun <reified A> Resource<A>.doIfError(callback: (error: Resource.Error) -
     (this as? Resource.Error)?.let { callback(it) }
     return this
 }
+
+inline fun <A, B> Resource<A>.map(transform: (A) -> B): Resource<B> {
+    return when (this) {
+        is Resource.Success -> Resource.Success(transform(this.data))
+        is Resource.Error -> this
+        is Resource.Loading -> this
+    }
+}

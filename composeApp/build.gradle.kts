@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.googleid)
 
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.android)
         }
 
 
@@ -78,6 +79,10 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.compose.navigation)
+
+            // Coil
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
 
             // Koin
             implementation(libs.koin.core)
@@ -98,6 +103,10 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
 
+            // DataStore
+            implementation(libs.datastore.preferences)
+            implementation(libs.datastore)
+
             // Ktor
             implementation(libs.bundles.ktor)
         }
@@ -109,6 +118,9 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.jvm)
         }
 
         val androidUnitTest by getting {

@@ -2,14 +2,20 @@ package br.com.noartcode.theprice.ui.di
 
 import android.content.Context
 import android.icu.text.DecimalFormat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
+import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
-import br.com.noartcode.theprice.ui.presentation.user.account.AccountManager
-import br.com.noartcode.theprice.ui.presentation.user.account.IAccountManager
+import br.com.noartcode.theprice.ui.presentation.auth.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -21,6 +27,8 @@ actual fun platformModule() = module {
     single<ICurrencyFormatter> { CurrencyFormatter(symbols = DecimalFormat().decimalFormatSymbols)}
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     factory<IAccountManager> { AccountManager(context = androidContext()) }
+    single<DataStore<Preferences>> { createDataStore(context = get()) }
+    single<HttpClient> { createHttpClient(OkHttp.create()) }
 }
 
 actual class KoinInitializer(

@@ -25,8 +25,8 @@ import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditScreen
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
-import br.com.noartcode.theprice.ui.presentation.user.account.AccountScreen
-import br.com.noartcode.theprice.ui.presentation.user.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.auth.account.AccountScreen
+import br.com.noartcode.theprice.ui.presentation.auth.account.AccountViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 

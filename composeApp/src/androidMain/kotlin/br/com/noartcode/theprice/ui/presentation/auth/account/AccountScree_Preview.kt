@@ -1,0 +1,17 @@
+package br.com.noartcode.theprice.ui.presentation.auth.account
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountUiState
+
+@Preview
+@Composable
+fun AccountScreen_Preview() {
+    AccountScreen(
+        modifier = Modifier,
+        state = AccountUiState(),
+        onEvent = {},
+        onNavigateBack = {},
+    )
+}

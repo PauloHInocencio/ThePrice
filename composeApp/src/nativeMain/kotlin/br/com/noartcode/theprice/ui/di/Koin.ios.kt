@@ -1,11 +1,17 @@
 package br.com.noartcode.theprice.ui.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
+import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.darwin.Darwin
 import platform.Foundation.NSCalendar
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -25,6 +31,8 @@ actual fun platformModule() = module {
         })
     }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
+    single<DataStore<Preferences>> { createDataStore() }
+    single<HttpClient> { createHttpClient(Darwin.create()) }
 }
 
 
