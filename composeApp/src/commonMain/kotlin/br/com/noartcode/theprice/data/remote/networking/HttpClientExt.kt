@@ -8,7 +8,6 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
@@ -19,7 +18,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 
-const val API_BASE_URL = "http://192.168.1.7:8080/api/v1"
+const val API_BASE_URL = "http://192.168.1.7:8080/api/v1/"
 
 suspend inline fun <reified Request, reified Response: Any> HttpClient.patch(
     route: String,
@@ -38,17 +37,7 @@ suspend inline fun <reified Request, reified Response: Any> HttpClient.patch(
 }
 
 
-suspend inline fun <reified Request, reified Response: Any> HttpClient.post(
-    route: String,
-    body: Request,
-) : Resource<Response> {
-    return safeCall {
-        post {
-            url("$API_BASE_URL/$route")
-            setBody(body)
-        }
-    }
-}
+
 
 suspend inline fun <reified Response: Any> HttpClient.get(
     route: String,

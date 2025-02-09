@@ -28,7 +28,7 @@ actual fun platformModule() = module {
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     factory<IAccountManager> { AccountManager(context = androidContext()) }
     single<DataStore<Preferences>> { createDataStore(context = get()) }
-    single<HttpClient> { createHttpClient(OkHttp.create()) }
+    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
 }
 
 actual class KoinInitializer(

@@ -8,6 +8,7 @@ interface AuthLocalDataSource {
     suspend fun saveUser(user: UserDto)
     suspend fun saveAccessToken(accessToken:String)
     suspend fun saveRefreshToken(refreshToken:String)
+    suspend fun clean()
     fun getUser() : Flow<User?>
     fun getAccessToken() : Flow<String?>
     fun getRefreshToken() : Flow<String?>

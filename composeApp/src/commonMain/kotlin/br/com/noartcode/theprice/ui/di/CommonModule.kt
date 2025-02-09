@@ -30,12 +30,14 @@ import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
 import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.ILogOutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.ISignInUser
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.LogOutUser
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.SignInUser
 import br.com.noartcode.theprice.domain.usecases.UpdateBill
@@ -78,7 +80,7 @@ fun commonModule() = module {
     }
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<AuthLocalDataSource> { AuthLocalDataSourceImp(dataStore = get()) }
-    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get()) }
+    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), localDataSource = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<IInsertOrReplaceBill> { InsertOrReplaceBill(localDataSource = get()) }
@@ -94,6 +96,12 @@ fun commonModule() = module {
     single<ISignInUser> {
         SignInUser(
             accountManager = get(),
+            localDataSource = get(),
+            remoteDataSource = get()
+        )
+    }
+    single<ILogOutUser> {
+        LogOutUser(
             localDataSource = get(),
             remoteDataSource = get()
         )
@@ -147,7 +155,8 @@ fun viewModelsModule() = module {
     viewModel {
         AccountViewModel(
             signInUser = get(),
-            getUserInfo = get()
+            getUserInfo = get(),
+            logOutUser = get()
         )
     }
 }

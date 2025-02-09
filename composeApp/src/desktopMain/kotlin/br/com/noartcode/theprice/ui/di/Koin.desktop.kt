@@ -28,7 +28,7 @@ actual fun platformModule() = module {
     }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }) }
-    single<HttpClient> { createHttpClient(OkHttp.create()) }
+    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
 }
 
 actual class KoinInitializer {

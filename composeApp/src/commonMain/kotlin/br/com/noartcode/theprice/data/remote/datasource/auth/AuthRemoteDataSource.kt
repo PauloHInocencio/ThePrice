@@ -5,4 +5,5 @@ import br.com.noartcode.theprice.util.Resource
 
 interface AuthRemoteDataSource {
     suspend fun signUpUser(tokenID:String, rawNonce:String) : Resource<AuthInfo>
+    suspend fun logoutUser() : Resource<Unit>
 }

@@ -6,19 +6,27 @@ import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfSuccess
 import br.com.noartcode.theprice.util.map
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 interface ISignInUser {
-    suspend operator fun invoke() : Resource<Unit>
+    operator fun invoke() : Flow<Resource<Unit>>
 }
 
 class SignInUser(
     private val accountManager: IAccountManager,
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: AuthLocalDataSource,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ISignInUser {
 
-    override suspend fun invoke(): Resource<Unit> {
-        return when(val googleResult = accountManager.singInWithGoogle()) {
+    override fun invoke(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading)
+        when(val googleResult = accountManager.singInWithGoogle()) {
             is Resource.Success -> {
                 val (tokenId, rawNonce) = googleResult.data
                 val signInResult = remoteDataSource.signUpUser(tokenId, rawNonce).doIfSuccess { data ->
@@ -26,9 +34,9 @@ class SignInUser(
                     localDataSource.saveAccessToken(data.accessToken)
                     localDataSource.saveRefreshToken(data.refreshToken)
                 }
-                signInResult.map {  }
+                emit(signInResult.map {  })
             }
-            else ->  googleResult.map {  }
+            else ->  emit(googleResult.map {  })
         }
-    }
+    }.flowOn(dispatcher)
 }

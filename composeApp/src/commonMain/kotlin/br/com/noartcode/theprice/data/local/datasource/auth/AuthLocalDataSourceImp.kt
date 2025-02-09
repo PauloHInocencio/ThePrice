@@ -32,6 +32,12 @@ class AuthLocalDataSourceImp(
         }
     }
 
+    override suspend fun clean() {
+        dataStore.edit {
+            it.clear()
+        }
+    }
+
     override fun getUser(): Flow<User?> {
         return dataStore.data.map {
             val email = it[USER_EMAIL]

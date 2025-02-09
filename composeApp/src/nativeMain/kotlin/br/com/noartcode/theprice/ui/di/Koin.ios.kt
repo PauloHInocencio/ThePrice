@@ -32,7 +32,7 @@ actual fun platformModule() = module {
     }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore() }
-    single<HttpClient> { createHttpClient(Darwin.create()) }
+    single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
 }
 
 
