@@ -42,6 +42,7 @@ class HomeScreenTest : KoinTest, RobolectricTests() {
     @BeforeTest
     fun before() {
         Dispatchers.setMain(testDispatcher)
+        stopKoin()
         startKoin{
             modules(
                 platformTestModule(),

@@ -29,14 +29,14 @@ import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
-import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.ILogOutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.ISignInUser
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
-import br.com.noartcode.theprice.domain.usecases.InsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.InsertBill
 import br.com.noartcode.theprice.domain.usecases.LogOutUser
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.SignInUser
@@ -83,7 +83,7 @@ fun commonModule() = module {
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), localDataSource = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
-    single<IInsertOrReplaceBill> { InsertOrReplaceBill(localDataSource = get()) }
+    single<IInsertBill> { InsertBill(localDataSource = get()) }
     single<IUpdateBill> { UpdateBill(localDataSource = get()) }
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }

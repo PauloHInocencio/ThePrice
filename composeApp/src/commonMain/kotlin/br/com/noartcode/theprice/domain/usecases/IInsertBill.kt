@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-interface IInsertOrReplaceBill {
+interface IInsertBill {
     suspend operator fun invoke(
         name:String,
         description:String?,
@@ -20,10 +20,10 @@ interface IInsertOrReplaceBill {
     ) : Resource<Long>
 }
 
-class InsertOrReplaceBill(
+class InsertBill(
     private val localDataSource: BillLocalDataSource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : IInsertOrReplaceBill {
+) : IInsertBill {
 
     override suspend fun invoke(
         name:String,

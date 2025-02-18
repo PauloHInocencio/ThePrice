@@ -8,7 +8,7 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertOrReplaceBill
+import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
 import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillUiState
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 class AddBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
-    private val insertNewBill: IInsertOrReplaceBill,
+    private val insertNewBill: IInsertBill,
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,

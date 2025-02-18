@@ -53,6 +53,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
+        stopKoin()
         Dispatchers.setMain(testDispatcher)
         startKoin{
             modules(
@@ -202,7 +203,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             )
         }
 
-        getPayments(DayMonthAndYear(day = 21, month = 11, year = 2024), billStatus = Bill.Status.ACTIVE).test(timeout =  60.seconds) {
+        getPayments(DayMonthAndYear(day = 21, month = 11, year = 2024), billStatus = Bill.Status.ACTIVE).test {
 
 
             with(awaitItem()) {

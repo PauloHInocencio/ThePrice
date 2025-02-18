@@ -17,8 +17,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -32,14 +34,12 @@ interface IGetPayments {
 }
 
 
-@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class GetPayments(
     private val billLDS: BillLocalDataSource,
     private val paymentLDS: PaymentLocalDataSource,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IGetPayments {
-
-    private val mutex = Mutex()
 
     override fun invoke(
         date: DayMonthAndYear,
@@ -49,49 +49,23 @@ class GetPayments(
         paymentLDS.getMonthPayments(month = date.month, year = date.year)
     ) { activeBills, monthPayments -> activeBills to monthPayments }
         .flatMapLatest {  (activeBills, monthPayments) ->
-            flowOf(processPayments(activeBills, monthPayments, date))
+            flow<Resource<List<Payment>>>{
+                val monthPaymentsMap = monthPayments.associateBy { it.billId }
+                val payments = activeBills.mapNotNull { bill ->
+                    if (date < bill.billingStartDate) return@mapNotNull null
+                    return@mapNotNull monthPaymentsMap[bill.id]!!
+                }
+                emit(Resource.Success(payments))
+            }
         }
         .onStart { emit(Resource.Loading) }
-        .debounce(4)
         .catch { e ->
-            // Suppress CancellationException
-            if (e !is CancellationException) {
-                emit(Resource.Error(
-                    message = "Something wrong happen when trying to get payments",
-                    exception = e
-                ))
-            }
+            if (e is CancellationException) throw e
+            emit(Resource.Error(
+                exception = e,
+                message = "Something wrong happen when trying to get payments")
+            )
         }
         .flowOn(dispatcher)
 
-
-    private suspend fun processPayments(
-        activeBills: List<Bill>,
-        monthPayments: List<Payment>,
-        date: DayMonthAndYear
-    ) : Resource<List<Payment>> {
-        val monthPaymentsMap = monthPayments.associateBy { it.billId }
-        val payments = activeBills.mapNotNull { bill ->
-            if (date < bill.billingStartDate) return@mapNotNull null
-            val currentPayment = monthPaymentsMap[bill.id]
-            if (currentPayment != null) {
-                return@mapNotNull currentPayment
-            } else {
-                mutex.withLock {
-                    val paymentId = paymentLDS.insert(
-                        billID = bill.id,
-                        dueDate = DayMonthAndYear(
-                            day = bill.billingStartDate.day,
-                            month = date.month,
-                            year = date.year
-                        ),
-                        price = bill.price,
-                        isPayed = false,
-                    )
-                    paymentLDS.getPayment(paymentId)
-                }
-            }
-        }
-        return Resource.Success(payments)
-    }
 }
