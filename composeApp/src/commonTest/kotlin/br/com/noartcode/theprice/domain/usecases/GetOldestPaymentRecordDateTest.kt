@@ -65,16 +65,8 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
     fun `When more the one bill have the same start date Return at least one of them`() = runTest {
         // GIVEN
         billDataSource.apply {
-            val bill = stubBills[0]
-            repeat(3) { i ->
-                insert(
-                    name = bill.name,
-                    description = bill.description,
-                    price = bill.price,
-                    type = bill.type,
-                    status = bill.status,
-                    billingStartDate = bill.billingStartDate,
-                )
+            repeat(3) {
+                insert(bill = stubBills[0])
             }
         }
 
@@ -102,12 +94,7 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
             val bill = stubBills[0]
             repeat(3) { i ->
                 insert(
-                    name = bill.name,
-                    description = bill.description,
-                    price = bill.price,
-                    type = bill.type,
-                    status = bill.status,
-                    billingStartDate = bill.billingStartDate.copy(day = i + 1),
+                    bill.copy(billingStartDate =  bill.billingStartDate.copy(day = i + 1)),
                 )
             }
         }
@@ -125,15 +112,7 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
         // GIVEN
         billDataSource.apply {
             repeat(3) { i ->
-                val bill = stubBills[i]
-                insert(
-                    name = bill.name,
-                    description = bill.description,
-                    price = bill.price,
-                    type = bill.type,
-                    status = bill.status,
-                    billingStartDate = bill.billingStartDate,
-                )
+                insert(bill = stubBills[i])
             }
         }
 

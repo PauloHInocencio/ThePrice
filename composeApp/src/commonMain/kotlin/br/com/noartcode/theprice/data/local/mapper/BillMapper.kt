@@ -1,20 +1,33 @@
 package br.com.noartcode.theprice.data.local.mapper
 
+
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
+import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 
-fun BillEntity.toDomain(
-    epochFormatter: IEpochMillisecondsFormatter
-) : Bill {
-    return Bill(
+fun BillEntity.toDomain() =
+    Bill(
         id = this.id,
         name = this.name,
         description = this.description,
         price = this.price,
         type = Bill.Type.valueOf(this.type),
         status = Bill.Status.valueOf(this.status),
-        billingStartDate = epochFormatter.to(this.billingStartDate)
+        billingStartDate = this.billingStartDate.toDayMonthAndYear(),
+        createdAt = this.createdAt
     )
-}
+
+fun Bill.toEntity() =
+    BillEntity(
+        id = this.id,
+        name = this.name.lowercase().trim(),
+        description = this.description,
+        price = this.price,
+        type = this.type.name,
+        status = this.status.name,
+        billingStartDate = this.billingStartDate.toEpochMilliseconds(),
+        createdAt = this.createdAt
+    )
+
+fun Iterable<BillEntity>.toDomain() = this.map { it.toDomain() }

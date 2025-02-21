@@ -1,5 +1,11 @@
 package br.com.noartcode.theprice.domain.model
 
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
+
 data class DayMonthAndYear(
     val day:Int,
     val month: Int,
@@ -23,3 +29,20 @@ data class DayMonthAndYear(
 
 }
 
+fun DayMonthAndYear.toLocalDate() : LocalDate {
+    val (day, month, year) = this.toString().split('/')
+    return LocalDate.parse("$year-$month-$day")
+}
+
+fun LocalDate.toDayMonthAndYear() =
+    DayMonthAndYear(day = this.dayOfMonth, month = this.monthNumber, year = this.year)
+
+fun DayMonthAndYear.toEpochMilliseconds() =
+    this.toLocalDate().atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+
+fun Long.toDayMonthAndYear() =
+    Instant
+        .fromEpochMilliseconds(this)
+        .toLocalDateTime(TimeZone.UTC)
+        .date
+        .toDayMonthAndYear()

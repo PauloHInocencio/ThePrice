@@ -13,3 +13,18 @@ fun PaymentEntity.toDomain() : Payment {
         isPayed = isPayed
     )
 }
+
+fun Payment.toEntity() =
+    PaymentEntity(
+        id = this.id,
+        billId = this.billId,
+        isPayed = this.isPayed,
+        price = this.price,
+        dueDay = this.dueDate.day,
+        dueMonth = this.dueDate.month,
+        dueYear = this.dueDate.year,
+    )
+
+fun Iterable<Payment>.toEntity() = this.map { model ->
+    model.toEntity()
+}

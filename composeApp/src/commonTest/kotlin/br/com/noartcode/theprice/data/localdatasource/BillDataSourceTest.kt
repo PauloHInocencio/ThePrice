@@ -65,15 +65,7 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
     fun `Should successfully add new items into the database`() = runTest {
 
         repeat(3) { i ->
-            val bill = stubBills[i]
-            val id = dataSource.insert(
-                name = bill.name,
-                description = bill.description,
-                price = bill.price,
-                type = bill.type,
-                status = bill.status,
-                billingStartDate = bill.billingStartDate,
-            )
+            val id = dataSource.insert(bill = stubBills[i])
             assertEquals(i + 1L, id)
         }
 
@@ -86,15 +78,7 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
     @Test
     fun `Should successfully return items by status`() = runTest {
         repeat(3) { i ->
-            val bill = stubBills[i]
-            dataSource.insert(
-                name = bill.name,
-                description = bill.description,
-                price = bill.price,
-                type = bill.type,
-                status = bill.status,
-                billingStartDate = bill.billingStartDate,
-            )
+            dataSource.insert(bill = stubBills[i])
         }
 
         dataSource.getBillsBy(Bill.Status.ACTIVE).test {

@@ -2,21 +2,16 @@ package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
+
 interface IInsertBill {
     suspend operator fun invoke(
-        name:String,
-        description:String?,
-        price:Long,
-        type:Bill.Type,
-        status:Bill.Status,
-        billingStartDate: DayMonthAndYear,
+        bill: Bill
     ) : Resource<Long>
 }
 
@@ -26,27 +21,18 @@ class InsertBill(
 ) : IInsertBill {
 
     override suspend fun invoke(
-        name:String,
-        description:String?,
-        price:Long,
-        type:Bill.Type,
-        status:Bill.Status,
-        billingStartDate: DayMonthAndYear,
+        bill: Bill
     ): Resource<Long> = withContext(dispatcher) {
         try {
-            val id = localDataSource.insert(
-                name = name,
-                description = description,
-                price = price,
-                type = type,
-                status = status,
-                billingStartDate = billingStartDate,
-            )
+
+            val id = localDataSource.insert(bill)
+
             return@withContext Resource.Success(id)
+
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 exception = e,
-                message = "A Error occurred when trying to add new bill"
+                message = "An error occurred when trying to add new bill"
             )
         }
     }

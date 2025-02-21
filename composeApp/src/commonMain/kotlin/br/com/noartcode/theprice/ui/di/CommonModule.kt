@@ -30,6 +30,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.ILogOutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.ISignInUser
@@ -37,6 +38,7 @@ import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertBill
+import br.com.noartcode.theprice.domain.usecases.InsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.LogOutUser
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.SignInUser
@@ -71,13 +73,7 @@ fun commonModule() = module {
     single<IGetDaysInMonth> { GetDaysInMonth() }
     single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
-    single<BillLocalDataSource> {
-        BillLocalDataSourceImp(
-            database = get(),
-            epochFormatter = get(),
-            getTodayDate = get()
-        )
-    }
+    single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<AuthLocalDataSource> { AuthLocalDataSourceImp(dataStore = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), localDataSource = get()) }
@@ -85,6 +81,7 @@ fun commonModule() = module {
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<IInsertBill> { InsertBill(localDataSource = get()) }
     single<IUpdateBill> { UpdateBill(localDataSource = get()) }
+    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get())}
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}

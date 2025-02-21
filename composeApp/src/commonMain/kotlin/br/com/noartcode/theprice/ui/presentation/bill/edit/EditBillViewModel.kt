@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IDeleteBill
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
@@ -34,7 +35,7 @@ class EditBillViewModel(
     private val deleteBill: IDeleteBill,
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate()))
+    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate(), createdAt = getTodayDate().toEpochMilliseconds()))
     private val state = MutableStateFlow(EditBillUiState())
     val uiState: StateFlow<EditBillUiState> = combine(state, bill) {
         s, b ->

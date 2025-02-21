@@ -1,12 +1,11 @@
 package br.com.noartcode.theprice.data.local.datasource.bill
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
+import br.com.noartcode.theprice.data.local.mapper.toEntity
 import br.com.noartcode.theprice.domain.model.Bill
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -15,43 +14,36 @@ import kotlinx.coroutines.flow.map
 
 class BillLocalDataSourceImp(
     private val database: ThePriceDatabase,
-    private val epochFormatter:IEpochMillisecondsFormatter,
-    private val getTodayDate: IGetTodayDate,
 ) : BillLocalDataSource {
 
     private val dao by lazy { database.getBillDao() }
     override fun getAllBills(): Flow<List<Bill>> =
-         dao.getAllBills().map { bills ->  bills.map { it.toDomain(epochFormatter) } }
+         dao.getAllBills().map { bills ->  bills.toDomain() }
 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getBillsBy(status: Bill.Status): Flow<List<Bill>> = dao
             .getBillsBy(status.name)
-            .flatMapLatest { list ->
+            .flatMapLatest { bills ->
                 flow{
-                    emit(list.map { entity ->  entity.toDomain(epochFormatter) })
+                    emit(bills.toDomain())
                 }
             }
 
     override suspend fun insert(
-        name:String,
-        description:String?,
-        price:Long,
-        type:Bill.Type,
-        status:Bill.Status,
-        billingStartDate:DayMonthAndYear,
+        bill: Bill
     ) : Long {
-        return dao.insert(
-            BillEntity(
-                id = 0,
-                name = name.lowercase().trim(),
-                description = description,
-                price = price,
-                type = type.name,
-                status = status.name,
-                billingStartDate = billingStartDate.let { epochFormatter.from(it) },
-                createdAt = getTodayDate().let { epochFormatter.from(it) }
-            )
+        return dao.insert(bill.toEntity())
+    }
+
+    override suspend fun insertBillWithPayments(
+        bill: Bill,
+        payments: List<Payment>
+    ) : Long {
+
+        return dao.insertBillWithPayments(
+            bill = bill.toEntity(),
+            payments = payments.toEntity()
         )
     }
 
@@ -63,12 +55,12 @@ class BillLocalDataSourceImp(
             price = bill.price,
             type = bill.type.name,
             status = bill.status.name,
-            billingStartDate = bill.billingStartDate.let { epochFormatter.from(it) },
+            billingStartDate = bill.billingStartDate.toEpochMilliseconds(),
         )
     }
 
     override suspend fun getBill(id: Long): Bill? {
-        return dao.getBill(id)?.toDomain(epochFormatter)
+        return dao.getBill(id)?.toDomain()
     }
 
     override suspend fun delete(id: Long) {

@@ -64,14 +64,7 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     @Test
     fun `Should successfully add new items into the database`() = runTest {
         val bill = stubBills[0]
-        billDataSource.insert(
-            name = bill.name,
-            description = bill.description,
-            price = bill.price,
-            type = bill.type,
-            status = bill.status,
-            billingStartDate = bill.billingStartDate,
-        )
+        billDataSource.insert(bill = stubBills[0])
 
 
         assertEquals(expected = 1, paymentDataSource.
@@ -101,14 +94,7 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
         // Adding payments for a bill
         val bill = stubBills[0]
-        val billId = billDataSource.insert(
-            name = bill.name,
-            description = bill.description,
-            price = bill.price,
-            type = bill.type,
-            status = bill.status,
-            billingStartDate = bill.billingStartDate,
-        )
+        val billId = billDataSource.insert(bill)
         val paidValue = bill.price
         val numOfPayments = 3
         with(paymentDataSource) {

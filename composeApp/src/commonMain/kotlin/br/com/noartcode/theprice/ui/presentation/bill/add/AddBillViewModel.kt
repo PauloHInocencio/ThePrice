@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
@@ -30,7 +31,12 @@ class AddBillViewModel(
     private val getMonthName: IGetMonthName,
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate()))
+    private val bill = MutableStateFlow(
+        Bill(
+            billingStartDate = getTodayDate(),
+            createdAt = getTodayDate().toEpochMilliseconds()
+        )
+    )
     private val state = MutableStateFlow(AddBillUiState())
     val uiState: StateFlow<AddBillUiState> = combine(state, bill) {
         s, b ->
@@ -67,20 +73,16 @@ class AddBillViewModel(
             AddBillEvent.OnSave -> {
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
-                    insertNewBill(
-                        name = bill.value.name,
-                        description = bill.value.description,
-                        price = bill.value.price,
-                        type = bill.value.type,
-                        status = bill.value.status,
-                        billingStartDate = bill.value.billingStartDate,
-                    ).doIfSuccess { id ->
+
+                    insertNewBill(bill.value)
+                        .doIfSuccess { id ->
                             bill.update { it.copy(id = id) }
-                    }
-                    .doIfError { error->
-                        state.update { it.copy(errorMessage = error.message) }
-                        println("${error.message}, ${error.exception.toString()}" )
-                    }
+                        }
+                        .doIfError { error->
+                            state.update { it.copy(errorMessage = error.message) }
+                            println("${error.message}, ${error.exception.toString()}" )
+                        }
+
                     state.update { it.copy(isSaving = false) }
                 }
             }

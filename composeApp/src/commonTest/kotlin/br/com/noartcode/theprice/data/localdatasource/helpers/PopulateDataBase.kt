@@ -5,8 +5,10 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 
+//TODO("Get rid of this function. Should be replaced by the InsertBillWithPayments use case")
 internal suspend fun populateDBWithAnBillAndFewPayments(
-    bill: Bill, billingStartDate: DayMonthAndYear,
+    bill: Bill,
+    billingStartDate: DayMonthAndYear,
     numOfPayments:Int,
     paymentsArePaid:Boolean = false,
     billDataSource: BillLocalDataSource,
@@ -14,12 +16,7 @@ internal suspend fun populateDBWithAnBillAndFewPayments(
 ) : Long {
     // Adding payments for a bill
     val billId = billDataSource.insert(
-        name = bill.name,
-        description = bill.description,
-        price = bill.price,
-        status = bill.status,
-        type = bill.type,
-        billingStartDate = billingStartDate,
+        bill = bill.copy(billingStartDate = billingStartDate)
     )
     val paidValue = bill.price
     with(paymentDataSource) {
