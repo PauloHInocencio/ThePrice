@@ -4,10 +4,10 @@ import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -45,6 +45,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     private val paymentDataSource: PaymentLocalDataSource by inject()
     private val billDataSource: BillLocalDataSource by inject()
     private val getTodayDate: IGetTodayDate by inject()
+    private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
 
     // Unit Under Test
@@ -79,12 +80,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // Populating the database with 3 different bills
         repeat(3) { i ->
             val startMonth = 9
-            populateDBWithAnBillAndFewPayments(
-                bill = stubBills[i],
-                billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
-                numOfPayments = 0,
-                billDataSource = billDataSource,
-                paymentDataSource = paymentDataSource
+            insertBillWithPayments(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024)
+                ),
+                currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
             )
         }
 
@@ -138,12 +138,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // Populating the database with 3 different bills
         repeat(3) { i ->
             val startMonth = 9
-            populateDBWithAnBillAndFewPayments(
-                bill = stubBills[i],
-                billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
-                numOfPayments = 0,
-                billDataSource = billDataSource,
-                paymentDataSource = paymentDataSource
+            insertBillWithPayments(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024)
+                ),
+                currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
             )
         }
 
@@ -221,12 +220,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // Populating the database with 3 different bills
         repeat(3) { i ->
             val startMonth = 9
-            populateDBWithAnBillAndFewPayments(
-                bill = stubBills[i],
-                billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
-                numOfPayments = 0,
-                billDataSource = billDataSource,
-                paymentDataSource = paymentDataSource
+            insertBillWithPayments(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024)
+                ),
+                currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
             )
         }
 
@@ -289,12 +287,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     fun `Payment Amount and Due Date Should Not Change when User Update Payment Status`() = runTest {
 
         // Populating the database with 1 bill
-        populateDBWithAnBillAndFewPayments(
-            bill = stubBills[1],
-            billingStartDate = DayMonthAndYear(day = 12, month = 9, year = 2024),
-            numOfPayments = 0,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        insertBillWithPayments(
+            bill = stubBills[1].copy(
+                billingStartDate = DayMonthAndYear(day = 12, month = 9, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
         )
 
         // Set Current Day to November 21th
@@ -360,12 +357,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     @Test
     fun `Should Return The Correct List of Payments for All Valid Months`() = runTest {
 
-        populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
-            numOfPayments = 0,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
 
         // Set Current Day to November 21th

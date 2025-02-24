@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.populateDBWithAnBillAndFewPayments
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
@@ -35,7 +34,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetPaymentsTest : KoinTest, RobolectricTests() {
@@ -46,6 +44,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
     private val billDataSource: BillLocalDataSource by inject()
+    private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
     // The Unit Under Test
     private val getPayments: IGetPayments by inject()
@@ -76,13 +75,13 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     @Test
     fun `Try To Get Payments of a Invalid Month should return an Empty list`() = runTest {
         val numOfPayments = 3
-        val billId = populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
-            numOfPayments = numOfPayments,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        val result = insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
+        val billId = (result as Resource.Success).data
 
         // check if the current bill has only the correct amount of payments
         val payments =  paymentDataSource.getBillPayments(billId)
@@ -116,18 +115,18 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     fun `Try To Get a Payments in a Valid Month With a Empty DB Should Create and Return Payments`() = runTest {
         val numOfValidMonths = 3
         val initialMonth = 10
-        val billId = populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = initialMonth, year = 2024),
-            numOfPayments = 0,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        val result = insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 5, month = initialMonth, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
+        val billId = (result as Resource.Success).data
 
         // check if the current bill has no payments
         var payments =  paymentDataSource.getBillPayments(billId)
         assertEquals(
-            expected = 0,
+            expected = 3,
             actual = payments.size
         )
 
@@ -151,18 +150,18 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     @Test
     fun `Try To Get a Payments in a Invalid Day should return an Empty list`() = runTest {
 
-        val billId = populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024),
-            numOfPayments = 0,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        val result = insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
+        val billId = (result as Resource.Success).data
 
         // check if the current bill has no payments
         val payments =  paymentDataSource.getBillPayments(billId)
         assertEquals(
-            expected = 0,
+            expected = 3,
             actual = payments.size
         )
 
@@ -194,12 +193,11 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         // Populating the database with 3 different bills
         repeat(3) { i ->
             val startMonth = 9
-            populateDBWithAnBillAndFewPayments(
-                bill = stubBills[i],
-                billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024),
-                numOfPayments = 0,
-                billDataSource = billDataSource,
-                paymentDataSource = paymentDataSource
+            insertBillWithPayments(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = 12, month = startMonth + i, year = 2024)
+                ),
+                currentDate = DayMonthAndYear(day = 5, month = 1, year = 2025),
             )
         }
 
@@ -238,12 +236,11 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     @Test
     fun `Should Return The Correct List of Payments for All Valid Months` () = runTest {
 
-        populateDBWithAnBillAndFewPayments(
-            bill = stubBills[0],
-            billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024),
-            numOfPayments = 0,
-            billDataSource = billDataSource,
-            paymentDataSource = paymentDataSource
+        insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 5, month = 8, year = 2024)
+            ),
+            currentDate = DayMonthAndYear(day = 5, month = 1, year = 2025),
         )
 
 
