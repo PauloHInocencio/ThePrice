@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.data.local.datasource.payment
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
+import br.com.noartcode.theprice.data.local.mapper.toEntity
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow
@@ -60,6 +61,9 @@ class PaymentLocalDataSourceImp (
         )
     }
 
+    override suspend fun insert(payments: List<Payment>) {
+        return dao.insert(payments.toEntity())
+    }
 
 
     override suspend fun delete(id: Long) {

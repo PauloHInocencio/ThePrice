@@ -2,11 +2,11 @@ package br.com.noartcode.theprice.ui.presentation.home
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
@@ -43,8 +43,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
-    private val billDataSource: BillLocalDataSource by inject()
     private val getTodayDate: IGetTodayDate by inject()
+    private val insertBill: IInsertBill by inject()
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
 
@@ -402,5 +402,56 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
     }
 
+
+    @Test
+    fun `Valid Payments Should Be Inserted and Returned If Not Exists`() = runTest {
+
+        repeat(3) { i ->
+            insertBill(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = 21, month = 11, year = 2024)
+                )
+            )
+        }
+
+        (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
+
+
+        viewModel.uiState.test{
+
+            // check initial state
+            with(awaitItem()) {
+                assertEquals(expected = 0, actual = payments.size)
+                assertEquals(expected = "", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+
+            // Start Loading Payments
+            with(awaitItem()) {
+                assertEquals(expected = 0, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = true, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+
+            // Final State
+            with(awaitItem()) {
+                assertEquals(expected = 3, actual = payments.size)
+                assertEquals(expected = "Novembro - 2024", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+
+
+            ensureAllEventsConsumed()
+        }
+    }
 
 }

@@ -10,20 +10,15 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.retryWhen
 
 
 interface IGetPayments {
@@ -38,6 +33,7 @@ interface IGetPayments {
 class GetPayments(
     private val billLDS: BillLocalDataSource,
     private val paymentLDS: PaymentLocalDataSource,
+    private val insertMissingPayments: IInsertMissingPayments,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IGetPayments {
 
@@ -53,12 +49,19 @@ class GetPayments(
                 val monthPaymentsMap = monthPayments.associateBy { it.billId }
                 val payments = activeBills.mapNotNull { bill ->
                     if (date < bill.billingStartDate) return@mapNotNull null
-                    return@mapNotNull monthPaymentsMap[bill.id]!!
+                    return@mapNotNull requireNotNull(monthPaymentsMap[bill.id])
                 }
                 emit(Resource.Success(payments))
             }
         }
         .onStart { emit(Resource.Loading) }
+        .retryWhen { cause, attempt ->
+            if(cause is IllegalArgumentException && attempt == 0L) {
+                insertMissingPayments(date)
+                return@retryWhen true
+            }
+            return@retryWhen false
+        }
         .catch { e ->
             if (e is CancellationException) throw e
             emit(Resource.Error(

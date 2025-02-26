@@ -11,5 +11,5 @@ import org.koin.dsl.module
 
 fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) = module {
     single<IGetTodayDate> { GetTodayDateStub() }
-    single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), dispatcher = testDispatcher)}
+    single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), insertMissingPayments = get(), dispatcher = testDispatcher)}
 }

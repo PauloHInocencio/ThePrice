@@ -2,7 +2,6 @@ package br.com.noartcode.theprice.domain.usecases
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
@@ -34,6 +33,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetPaymentsTest : KoinTest, RobolectricTests() {
@@ -43,7 +43,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
-    private val billDataSource: BillLocalDataSource by inject()
+    private val insertBill: IInsertBill by inject()
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
     // The Unit Under Test
@@ -277,6 +277,38 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
                 ensureAllEventsConsumed()
             }
+    }
+
+
+    @Test
+    fun `Should Insert Missing Payments When A Valid Month Don't Have a Payment`() = runTest {
+        val date = DayMonthAndYear(day = 5, month = 10, year = 2024)
+        // Populating the database with 3 different bills
+        insertBill(
+            bill = stubBills[0].copy(
+                billingStartDate = date
+            )
+        )
+
+        getPayments(date, billStatus = Bill.Status.ACTIVE).test {
+
+            with(awaitItem()) {
+                assertTrue(this is Resource.Loading)
+            }
+
+            // Retrying
+            with(awaitItem()) {
+                assertTrue(this is Resource.Loading)
+            }
+
+            with(awaitItem()) {
+                assertTrue(this is Resource.Success)
+                assertEquals(this.data.size, 1)
+            }
+
+
+            ensureAllEventsConsumed()
+        }
 
     }
 

@@ -31,6 +31,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.ILogOutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.ISignInUser
@@ -39,6 +40,7 @@ import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertBill
 import br.com.noartcode.theprice.domain.usecases.InsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.InsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.LogOutUser
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.SignInUser
@@ -82,7 +84,8 @@ fun commonModule() = module {
     single<IInsertBill> { InsertBill(localDataSource = get()) }
     single<IUpdateBill> { UpdateBill(localDataSource = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get())}
-    single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get())}
+    single<IInsertMissingPayments> { InsertMissingPayments(billsLDS = get(), paymentLDS = get())}
+    single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), insertMissingPayments = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
