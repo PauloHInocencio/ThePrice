@@ -9,9 +9,9 @@ import br.com.noartcode.theprice.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class AuthLocalDataSourceImp(
+class SessionStorageImp(
     private val dataStore: DataStore<Preferences>
-) : AuthLocalDataSource {
+) : SessionStorage {
     override suspend fun saveUser(user: UserDto) {
         dataStore.edit {
             it[USER_EMAIL] = user.email

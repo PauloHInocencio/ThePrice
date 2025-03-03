@@ -2,9 +2,7 @@
 
 package br.com.noartcode.theprice.data.remote.dtos
 
-import br.com.noartcode.theprice.domain.model.User
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
@@ -20,7 +20,7 @@ interface ISignInUser {
 class SignInUser(
     private val accountManager: IAccountManager,
     private val remoteDataSource: AuthRemoteDataSource,
-    private val localDataSource: AuthLocalDataSource,
+    private val localDataSource: SessionStorage,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ISignInUser {
 

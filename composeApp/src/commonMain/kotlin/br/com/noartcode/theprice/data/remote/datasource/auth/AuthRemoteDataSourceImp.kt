@@ -1,8 +1,7 @@
 package br.com.noartcode.theprice.data.remote.datasource.auth
 
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.dtos.AuthInfo
-import br.com.noartcode.theprice.data.remote.networking.API_BASE_URL
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.first
 
 class AuthRemoteDataSourceImp(
     private val client: HttpClient,
-    private val localDataSource: AuthLocalDataSource
+    private val session: SessionStorage
 ) : AuthRemoteDataSource {
 
     override suspend fun signUpUser(tokenID: String, rawNonce: String): Resource<AuthInfo> =
@@ -30,8 +29,8 @@ class AuthRemoteDataSourceImp(
 
     override suspend fun logoutUser(): Resource<Unit> =
         safeCall {
-            val accessToken = localDataSource.getAccessToken().first()
-            val refreshToken = localDataSource.getRefreshToken().first()
+            val accessToken = session.getAccessToken().first()
+            val refreshToken = session.getRefreshToken().first()
             client.post {
                 url("users/logout")
                 setBody(mapOf("refresh_token" to refreshToken))

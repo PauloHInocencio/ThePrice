@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,7 +16,7 @@ interface ILogOutUser {
 
 class LogOutUser(
     private val remoteDataSource: AuthRemoteDataSource,
-    private val localDataSource: AuthLocalDataSource,
+    private val localDataSource: SessionStorage,
     private val dispatcher:CoroutineDispatcher = Dispatchers.IO
 ) : ILogOutUser {
     override fun invoke(): Flow<Resource<Unit>> = flow {

@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -140,6 +141,7 @@ kotlin {
             implementation(libs.turbine)
             implementation(libs.coroutines.test)
             implementation(libs.koin.test)
+            implementation(libs.ktor.client.mock)
         }
 
         commonMain {

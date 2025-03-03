@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.data.localdatasource.helpers
+package br.com.noartcode.theprice.data.helpers
 
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear

@@ -4,7 +4,7 @@ import br.com.noartcode.theprice.data.remote.dtos.UserDto
 import br.com.noartcode.theprice.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
-interface AuthLocalDataSource {
+interface SessionStorage {
     suspend fun saveUser(user: UserDto)
     suspend fun saveAccessToken(accessToken:String)
     suspend fun saveRefreshToken(refreshToken:String)

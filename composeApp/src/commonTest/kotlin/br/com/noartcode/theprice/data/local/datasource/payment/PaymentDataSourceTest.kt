@@ -1,9 +1,8 @@
-package br.com.noartcode.theprice.data.localdatasource
+package br.com.noartcode.theprice.data.local.datasource.payment
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -33,7 +32,7 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     private val testScope = TestScope()
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
-    private val database:ThePriceDatabase by inject()
+    private val database: ThePriceDatabase by inject()
     private val billDataSource: BillLocalDataSource by inject()
 
     // Unit Under Test

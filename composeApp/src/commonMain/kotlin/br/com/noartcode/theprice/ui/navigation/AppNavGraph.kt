@@ -41,7 +41,7 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.HOME.name,
+        startDestination = Routes.ACCOUNT.name,
         modifier = modifier.fillMaxSize()
     ) {
         composable(

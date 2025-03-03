@@ -9,6 +9,7 @@ interface BillLocalDataSource {
     fun getAllBills() : Flow<List<Bill>>
     fun getBillsBy(status:Bill.Status) : Flow<List<Bill>>
     suspend fun update(bill: Bill)
+    suspend fun insert(bills:List<Bill>)
     suspend fun insert(bill: Bill) : Long
     suspend fun insertBillWithPayments(
         bill:Bill,

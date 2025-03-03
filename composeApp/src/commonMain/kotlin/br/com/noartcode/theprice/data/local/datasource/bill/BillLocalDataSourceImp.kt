@@ -59,6 +59,10 @@ class BillLocalDataSourceImp(
         )
     }
 
+    override suspend fun insert(bills: List<Bill>) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getBill(id: Long): Bill? {
         return dao.getBill(id)?.toDomain()
     }

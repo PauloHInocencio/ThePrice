@@ -2,7 +2,7 @@ package br.com.noartcode.theprice.ui.mapper
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
-import br.com.noartcode.theprice.data.localdatasource.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate

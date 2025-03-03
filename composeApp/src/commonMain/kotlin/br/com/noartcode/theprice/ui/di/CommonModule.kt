@@ -1,14 +1,18 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSourceImp
+import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
+import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorageImp
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourceImp
+import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
+import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSourceImp
+import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
@@ -76,9 +80,10 @@ fun commonModule() = module {
     single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
+    single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
-    single<AuthLocalDataSource> { AuthLocalDataSourceImp(dataStore = get()) }
-    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), localDataSource = get()) }
+    single<SessionStorage> { SessionStorageImp(dataStore = get()) }
+    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<IInsertBill> { InsertBill(localDataSource = get()) }
@@ -92,7 +97,8 @@ fun commonModule() = module {
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
     }
-    single<IGetUserInfo> { IGetUserInfo(get<AuthLocalDataSource>()::getUser) }
+    single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get())}
+    single<IGetUserInfo> { IGetUserInfo(get<SessionStorage>()::getUser) }
     single<ISignInUser> {
         SignInUser(
             accountManager = get(),
