@@ -10,11 +10,11 @@ interface BillLocalDataSource {
     fun getBillsBy(status:Bill.Status) : Flow<List<Bill>>
     suspend fun update(bill: Bill)
     suspend fun insert(bills:List<Bill>)
-    suspend fun insert(bill: Bill) : Long
+    suspend fun insert(bill: Bill) : String
     suspend fun insertBillWithPayments(
         bill:Bill,
         payments:List<Payment>
-    ) : Long
-    suspend fun getBill(id:Long) : Bill?
-    suspend fun delete(id:Long)
+    ) : String
+    suspend fun getBill(id:String) : Bill?
+    suspend fun delete(id:String)
 }

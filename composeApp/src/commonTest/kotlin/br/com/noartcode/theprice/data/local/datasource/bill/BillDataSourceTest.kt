@@ -25,6 +25,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BillDataSourceTest : KoinTest, RobolectricTests() {
@@ -65,7 +67,7 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
 
         repeat(3) { i ->
             val id = dataSource.insert(bill = stubBills[i])
-            assertEquals(i + 1L, id)
+            assertNotEquals(illegal = "", actual = id)
         }
 
         dataSource.getAllBills().test {

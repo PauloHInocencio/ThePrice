@@ -14,7 +14,7 @@ interface PaymentDao {
     fun getMonthPayments(month:Int, year:Int) : Flow<List<PaymentEntity>>
 
     @Query("SELECT * FROM payments WHERE billId == :billId")
-    suspend fun getBillPayments(billId:Long) : List<PaymentEntity>
+    suspend fun getBillPayments(billId:String) : List<PaymentEntity>
 
     @Query("SELECT * FROM payments WHERE billId == :billId AND dueMonth == :month AND dueYear == :year")
     suspend fun getPayment(billId:Long, month:Int, year:Int) : PaymentEntity?

@@ -28,6 +28,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -74,12 +75,13 @@ class InsertBillTest : KoinTest, RobolectricTests() {
                 type = Bill.Type.MONTHLY,
                 status = Bill.Status.ACTIVE,
                 billingStartDate = DayMonthAndYear(day = 5, month = 9, year = 2024),
-                createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds()
+                createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+                updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             )
         )
 
         assertTrue(result is Resource.Success)
-        assertEquals(expected = 1, result.data)
+        assertNotEquals(illegal = "", actual = result.data)
     }
 
     @Test

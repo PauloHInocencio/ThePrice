@@ -23,7 +23,7 @@ import androidx.room.PrimaryKey
 data class PaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Long = 0,
-    val billId:Long,
+    val billId:String,
     val isPayed:Boolean,
     val dueDay:Int,
     val dueMonth:Int,

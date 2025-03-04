@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 interface IInsertBill {
     suspend operator fun invoke(
         bill: Bill
-    ) : Resource<Long>
+    ) : Resource<String>
 }
 
 class InsertBill(
@@ -22,7 +22,7 @@ class InsertBill(
 
     override suspend fun invoke(
         bill: Bill
-    ): Resource<Long> = withContext(dispatcher) {
+    ): Resource<String> = withContext(dispatcher) {
         try {
 
             val id = localDataSource.insert(bill)

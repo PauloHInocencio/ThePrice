@@ -26,6 +26,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,7 +70,7 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
         )
 
         assertTrue(result is Resource.Success)
-        assertEquals(expected = 1, result.data)
+        assertNotEquals(illegal = "", actual = result.data)
     }
 
     @Test

@@ -49,7 +49,7 @@ fun PaymentEditScreen(
     modifier: Modifier = Modifier,
     state: PaymentEditUiState,
     onEvent: (event: PaymentEditEvent) -> Unit,
-    onNavigateToEditBill : (Long) -> Unit,
+    onNavigateToEditBill : (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold (

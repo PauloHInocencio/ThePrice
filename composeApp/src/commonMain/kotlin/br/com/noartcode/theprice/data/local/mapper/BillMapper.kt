@@ -15,7 +15,8 @@ fun BillEntity.toDomain() =
         type = Bill.Type.valueOf(this.type),
         status = Bill.Status.valueOf(this.status),
         billingStartDate = this.billingStartDate.toDayMonthAndYear(),
-        createdAt = this.createdAt
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
     )
 
 fun Bill.toEntity() =
@@ -27,7 +28,10 @@ fun Bill.toEntity() =
         type = this.type.name,
         status = this.status.name,
         billingStartDate = this.billingStartDate.toEpochMilliseconds(),
-        createdAt = this.createdAt
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
     )
 
 fun Iterable<BillEntity>.toDomain() = this.map { it.toDomain() }
+
+fun Iterable<Bill>.toEntity() = this.map { it.toEntity() }

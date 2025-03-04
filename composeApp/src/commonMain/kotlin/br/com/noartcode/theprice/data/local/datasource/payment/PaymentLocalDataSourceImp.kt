@@ -19,7 +19,7 @@ class PaymentLocalDataSourceImp (
         .getMonthPayments(month = month, year = year)
         .map { list -> list.map { it.toDomain() } }
 
-    override suspend fun getBillPayments(billID: Long): List<Payment> {
+    override suspend fun getBillPayments(billID: String): List<Payment> {
         return dao
             .getBillPayments(billID)
             .map {
@@ -48,7 +48,7 @@ class PaymentLocalDataSourceImp (
         )
     }
 
-    override suspend fun insert(billID: Long, dueDate: DayMonthAndYear, price:Long, isPayed:Boolean) : Long {
+    override suspend fun insert(billID: String, dueDate: DayMonthAndYear, price:Long, isPayed:Boolean) : Long {
         return dao.insert(
             PaymentEntity(
                 billId = billID,

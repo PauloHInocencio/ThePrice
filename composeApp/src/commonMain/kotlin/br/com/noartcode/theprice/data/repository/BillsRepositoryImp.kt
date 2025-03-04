@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.data.repository
 
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
+import br.com.noartcode.theprice.data.remote.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
@@ -26,7 +27,7 @@ class BillsRepositoryImp(
             is Resource.Error -> result
             is Resource.Loading -> result
             is Resource.Success -> {
-                local.insert(result.data)
+                local.insert(result.data.toDomain())
                 Resource.Success(Unit)
             }
         }

@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class BillLocalDataSourceImp(
     private val database: ThePriceDatabase,
 ) : BillLocalDataSource {
@@ -32,42 +35,40 @@ class BillLocalDataSourceImp(
 
     override suspend fun insert(
         bill: Bill
-    ) : Long {
-        return dao.insert(bill.toEntity())
+    ) : String {
+        val id = Uuid.random().toString()
+        dao.insert(bill.copy(id = id).toEntity())
+        return id
     }
 
     override suspend fun insertBillWithPayments(
         bill: Bill,
         payments: List<Payment>
-    ) : Long {
-
-        return dao.insertBillWithPayments(
-            bill = bill.toEntity(),
+    ) : String {
+        val id = Uuid.random().toString()
+        dao.insertBillWithPayments(
+            bill = bill.copy(id = id).toEntity(),
             payments = payments.toEntity()
         )
+        return id
     }
 
     override suspend fun update(bill: Bill) {
+
         dao.update(
-            id = bill.id,
-            name = bill.name,
-            description = bill.description,
-            price = bill.price,
-            type = bill.type.name,
-            status = bill.status.name,
-            billingStartDate = bill.billingStartDate.toEpochMilliseconds(),
+            bill.toEntity()
         )
     }
 
     override suspend fun insert(bills: List<Bill>) {
-        TODO("Not yet implemented")
+        dao.insert(bills.toEntity())
     }
 
-    override suspend fun getBill(id: Long): Bill? {
+    override suspend fun getBill(id: String): Bill? {
         return dao.getBill(id)?.toDomain()
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: String) {
         dao.deleteBill(id)
     }
 }

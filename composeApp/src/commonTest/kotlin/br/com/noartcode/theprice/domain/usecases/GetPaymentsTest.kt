@@ -214,7 +214,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             }
 
 
-            val originalPayment = assertNotNull(result.data.find { it.billId == 1L })
+            val originalPayment = result.data.first()
 
             // Updates one of the payments
             paymentDataSource.updatePayment(

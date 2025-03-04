@@ -34,7 +34,8 @@ class AddBillViewModel(
     private val bill = MutableStateFlow(
         Bill(
             billingStartDate = getTodayDate(),
-            createdAt = getTodayDate().toEpochMilliseconds()
+            createdAt = getTodayDate().toEpochMilliseconds(),
+            updatedAt = getTodayDate().toEpochMilliseconds(),
         )
     )
     private val state = MutableStateFlow(AddBillUiState())
@@ -45,7 +46,7 @@ class AddBillViewModel(
             price = price,
             name = b.name,
             description = b.description,
-            isSaved = b.id != 0L,
+            isSaved = b.id.isNotEmpty(),
             isSaving = s.isSaving,
             errorMessage = s.errorMessage,
             billingStartDateTitle = formatTitle(b.billingStartDate),

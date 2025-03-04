@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "bills")
 data class BillEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id:Long = 0,
+    @PrimaryKey
+    val id:String,
     val name:String,
     val description:String? = null,
     val price:Long,
@@ -15,4 +15,5 @@ data class BillEntity(
     val status:String,
     val billingStartDate:Long,
     val createdAt:Long,
+    val updatedAt:Long,
 )

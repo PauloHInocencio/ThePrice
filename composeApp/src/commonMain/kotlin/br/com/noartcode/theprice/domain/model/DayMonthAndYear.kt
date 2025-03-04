@@ -46,3 +46,10 @@ fun Long.toDayMonthAndYear() =
         .toLocalDateTime(TimeZone.UTC)
         .date
         .toDayMonthAndYear()
+
+fun String.toDayMonthAndYear() =
+    Instant
+        .parse(this)
+        .toLocalDateTime(TimeZone.UTC)
+        .date
+        .toDayMonthAndYear()

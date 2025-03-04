@@ -35,7 +35,13 @@ class EditBillViewModel(
     private val deleteBill: IDeleteBill,
 ) : ViewModel() {
 
-    private val bill = MutableStateFlow(Bill(billingStartDate = getTodayDate(), createdAt = getTodayDate().toEpochMilliseconds()))
+    private val bill = MutableStateFlow(
+        Bill(
+            billingStartDate = getTodayDate(),
+            createdAt = getTodayDate().toEpochMilliseconds(),
+            updatedAt = getTodayDate().toEpochMilliseconds(),
+        )
+    )
     private val state = MutableStateFlow(EditBillUiState())
     val uiState: StateFlow<EditBillUiState> = combine(state, bill) {
         s, b ->

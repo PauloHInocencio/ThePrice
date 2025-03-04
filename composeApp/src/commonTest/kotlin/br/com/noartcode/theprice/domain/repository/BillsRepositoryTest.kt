@@ -49,9 +49,9 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
 
     @AfterTest
     fun after() {
-        stopKoin()
-        Dispatchers.resetMain()
         database.close()
+        Dispatchers.resetMain()
+        stopKoin()
     }
 
     @Test
@@ -67,10 +67,9 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
             repository.fetchAllBills()
 
             // Validating final state
-            assertEquals(expected = 3, awaitItem().size)
+            assertEquals(expected = 5, awaitItem().size)
             ensureAllEventsConsumed()
         }
-
     }
 
 }

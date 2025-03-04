@@ -9,7 +9,7 @@ object MockedApiResponses {
                 "name": "Electricity Bill",
                 "description": "Monthly payment for electricity usage in your home.",
                 "price": 9454,
-                "type": "Utility",
+                "type": "MONTHLY",
                 "billing_start_date": "2025-01-20T00:00:00Z",
                 "created_at": "2025-01-14T10:00:00Z",
                 "updated_at": "2025-01-17T10:00:00Z"
@@ -20,7 +20,7 @@ object MockedApiResponses {
                 "name": "Netflix Subscription",
                 "description": "Monthly payment for Netflix streaming service.",
                 "price": 10454,
-                "type": "Subscription",
+                "type": "MONTHLY",
                 "billing_start_date": "2025-02-19T00:00:00Z",
                 "created_at": "2025-01-14T00:00:00Z",
                 "updated_at": "2025-01-17T00:00:00Z"
@@ -31,7 +31,7 @@ object MockedApiResponses {
                 "name": "Car Loan",
                 "description": "Monthly installment for your car loan.",
                 "price": 15454,
-                "type": "Loan",
+                "type": "MONTHLY",
                 "billing_start_date": "2025-03-21T00:00:00Z",
                 "created_at": "2025-01-14T00:00:00Z",
                 "updated_at": "2025-01-17T00:00:00Z"
@@ -42,7 +42,7 @@ object MockedApiResponses {
                 "name": "Health Insurance",
                 "description": "Monthly premium for your health insurance.",
                 "price": 20454,
-                "type": "Insurance",
+                "type": "MONTHLY",
                 "billing_start_date": "2025-04-20T00:00:00Z",
                 "created_at": "2025-01-14T00:00:00Z",
                 "updated_at": "2025-01-17T00:00:00Z"
@@ -53,7 +53,7 @@ object MockedApiResponses {
                 "name": "Apartment Rent",
                 "description": "Monthly rent payment for your apartment.",
                 "price": 25454,
-                "type": "Rent",
+                "type": "MONTHLY",
                 "billing_start_date": "2025-05-20T00:00:00Z",
                 "created_at": "2025-01-14T00:00:00Z",
                 "updated_at": "2025-01-17T00:00:00Z"

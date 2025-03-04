@@ -25,6 +25,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentDataSourceTest : KoinTest, RobolectricTests() {
@@ -63,28 +64,28 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
     @Test
     fun `Should successfully add new items into the database`() = runTest {
         val bill = stubBills[0]
-        billDataSource.insert(bill = stubBills[0])
+        val id = billDataSource.insert(bill = stubBills[0])
 
 
         assertEquals(expected = 1, paymentDataSource.
             insert(
-                billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024),
+                billID = id, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024),
                 price = bill.price, isPayed = false
             )
         )
         assertEquals(expected = 2, paymentDataSource.
             insert(
-                billID = 1L, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024),
+                billID = id, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024),
                 price = bill.price, isPayed = false
             )
         )
         assertEquals(expected = 3, paymentDataSource.
             insert(
-                billID = 1L, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024),
+                billID = id, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024),
                 price = bill.price, isPayed = false
             )
         )
-        assertEquals(expected = 3, paymentDataSource.getBillPayments(1).size)
+        assertEquals(expected = 3, paymentDataSource.getBillPayments(id).size)
     }
 
 

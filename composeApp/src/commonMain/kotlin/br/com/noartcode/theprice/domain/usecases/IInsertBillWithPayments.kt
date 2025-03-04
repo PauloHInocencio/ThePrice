@@ -19,7 +19,7 @@ interface IInsertBillWithPayments {
     suspend operator fun invoke(
         bill: Bill,
         currentDate:DayMonthAndYear,
-    ) : Resource<Long>
+    ) : Resource<String>
 }
 
 class InsertBillWithPayments(
@@ -29,7 +29,7 @@ class InsertBillWithPayments(
     override suspend fun invoke(
         bill: Bill,
         currentDate: DayMonthAndYear
-    ): Resource<Long> = withContext(dispatcher) {
+    ): Resource<String> = withContext(dispatcher) {
         try {
             val start = bill.billingStartDate.toLocalDate()
             val numOfPayments = start.until(
@@ -39,7 +39,7 @@ class InsertBillWithPayments(
 
             val payments = List(numOfPayments) { i ->
                 Payment(
-                    billId = 0L,
+                    billId = "",
                     dueDate = start.plus(i, DateTimeUnit.MONTH).toDayMonthAndYear(),
                     price = bill.price,
                     isPayed = false

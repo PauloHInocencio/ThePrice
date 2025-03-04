@@ -11,7 +11,7 @@ data class BillDto(
     val userID: String,
     val name:String,
     val description:String?,
-    val price:Int,
+    val price:Long,
     val type:String,
     @SerialName("billing_start_date")
     val billingStartDate:String,

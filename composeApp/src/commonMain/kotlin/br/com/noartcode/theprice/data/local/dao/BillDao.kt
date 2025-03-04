@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 import br.com.noartcode.theprice.domain.model.Payment
@@ -20,46 +21,29 @@ interface BillDao {
     fun getBillsBy(status:String): Flow<List<BillEntity>>
 
     @Insert
-    suspend fun insert(bill: BillEntity) : Long
+    suspend fun insert(bill: BillEntity)
 
-    @Query(
-        """
-            UPDATE bills 
-            SET name = :name, 
-                description = :description, 
-                price = :price, 
-                type = :type, 
-                status = :status, 
-                billingStartDate = :billingStartDate 
-            WHERE id == :id
-        """
-    )
-    suspend fun update(
-        id:Long,
-        name:String,
-        description:String?,
-        price:Long,
-        type:String,
-        status:String,
-        billingStartDate:Long
-    )
+    @Insert
+    suspend fun insert(bills:List<BillEntity>)
+
+    @Update
+    suspend fun update(bill:BillEntity)
 
     @Query("SELECT * FROM bills WHERE id == :id")
-    suspend fun getBill(id:Long) : BillEntity?
+    suspend fun getBill(id:String) : BillEntity?
 
     @Query("DELETE FROM bills WHERE id == :id")
-    suspend fun deleteBill(id:Long)
+    suspend fun deleteBill(id:String)
 
     @Insert
     suspend fun insertPayments(payments:List<PaymentEntity>)
 
     @Transaction
-    suspend fun insertBillWithPayments(bill:BillEntity, payments:List<PaymentEntity>) : Long {
-        val billId = insert(bill)
+    suspend fun insertBillWithPayments(bill:BillEntity, payments:List<PaymentEntity>) {
+        insert(bill)
         val paymentsWithBillId = payments.map {
-            it.copy(billId = billId)
+            it.copy(billId = bill.id)
         }
         insertPayments(paymentsWithBillId)
-        return billId
     }
 }

@@ -4,7 +4,7 @@ import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 
 
 data class PaymentEditUiState(
-    val billId:Long = 0L,
+    val billId:String = "",
     val billName:String = "",
     val paymentStatus: PaymentUi.Status = PaymentUi.Status.PENDING,
     val payedValue:String = "",
