@@ -8,7 +8,10 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class PaymentLocalDataSourceImp (
     private val database: ThePriceDatabase
 ): PaymentLocalDataSource {
@@ -27,46 +30,37 @@ class PaymentLocalDataSourceImp (
             }
     }
 
-    override suspend fun getPayment(billID: Long, month: Int, year: Int): Payment? {
+    override suspend fun getPayment(billID: String, month: Int, year: Int): Payment? {
         return dao
             .getPayment(billId = billID, month = month, year = year)
             ?.toDomain()
     }
 
-    override suspend fun getPayment(id: Long): Payment? {
+    override suspend fun getPayment(id: String): Payment? {
         return dao.getPayment(id)?.toDomain()
     }
 
-    override suspend fun updatePayment(id:Long, dueDate: DayMonthAndYear, price:Long, isPayed: Boolean) {
-        dao.updatePayment(
-            paymentId = id,
-            price = price,
-            dueDay = dueDate.day,
-            dueMonth = dueDate.month,
-            dueYear = dueDate.year,
-            isPayed = isPayed
-        )
+    override suspend fun updatePayment(payment: Payment) {
+        dao.updatePayment(payment.toEntity())
     }
 
-    override suspend fun insert(billID: String, dueDate: DayMonthAndYear, price:Long, isPayed:Boolean) : Long {
-        return dao.insert(
-            PaymentEntity(
-                billId = billID,
-                price = price,
-                dueDay = dueDate.day,
-                dueMonth = dueDate.month,
-                dueYear = dueDate.year,
-                isPayed = isPayed
-            )
-        )
+    override suspend fun insert(payment:Payment) : String {
+        val paymentEntity = payment.copy(id = payment.id.ifEmpty { Uuid.random().toString() }).toEntity()
+        dao.insert(paymentEntity)
+        return paymentEntity.id
+
     }
 
     override suspend fun insert(payments: List<Payment>) {
-        return dao.insert(payments.toEntity())
+        return dao.insert(
+            payments.map {
+                it.copy(id = it.id.ifEmpty { Uuid.random().toString() })
+            }.toEntity()
+        )
     }
 
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: String) {
         TODO("Not yet implemented")
     }
 }

@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.data.local.datasource.payment
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -25,6 +26,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,26 +65,34 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
 
     @Test
     fun `Should successfully add new items into the database`() = runTest {
-        val bill = stubBills[0]
         val id = billDataSource.insert(bill = stubBills[0])
 
 
-        assertEquals(expected = 1, paymentDataSource.
-            insert(
-                billID = id, dueDate = DayMonthAndYear( day = 5, month = 1, year = 2024),
-                price = bill.price, isPayed = false
+        assertEquals(
+            expected = "7b98a36f-2694-429d-897f-cc61ca22eccb",
+            actual =  paymentDataSource.insert(
+                stubPayments[0].copy(
+                    id = "7b98a36f-2694-429d-897f-cc61ca22eccb",
+                    billId = id,
+                )
             )
         )
-        assertEquals(expected = 2, paymentDataSource.
-            insert(
-                billID = id, dueDate = DayMonthAndYear( day = 5, month = 2, year = 2024),
-                price = bill.price, isPayed = false
+        assertEquals(
+            expected = "9d94ae70-7d60-422e-bd86-eace3b713a04",
+            actual =  paymentDataSource.insert(
+                stubPayments[1].copy(
+                    id = "9d94ae70-7d60-422e-bd86-eace3b713a04",
+                    billId = id,
+                )
             )
         )
-        assertEquals(expected = 3, paymentDataSource.
-            insert(
-                billID = id, dueDate = DayMonthAndYear(day = 5, month = 3, year = 2024),
-                price = bill.price, isPayed = false
+        assertEquals(
+            expected = "5dfe3b88-ea9e-4f04-9cd3-9eac88d0bce2",
+            actual =  paymentDataSource.insert(
+                stubPayments[2].copy(
+                    id = "5dfe3b88-ea9e-4f04-9cd3-9eac88d0bce2",
+                    billId = id,
+                )
             )
         )
         assertEquals(expected = 3, paymentDataSource.getBillPayments(id).size)
@@ -95,16 +105,15 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
         // Adding payments for a bill
         val bill = stubBills[0]
         val billId = billDataSource.insert(bill)
-        val paidValue = bill.price
         val numOfPayments = 3
         with(paymentDataSource) {
             repeat(numOfPayments) { i ->
                 val paymentMonth = bill.billingStartDate.month + i
                 insert(
-                    billID = billId,
-                    dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024),
-                    price = paidValue,
-                    isPayed = true,
+                    stubPayments[0].copy(
+                        billId = billId,
+                        dueDate = DayMonthAndYear(day = 5, month = paymentMonth, year = 2024)
+                    )
                 )
             }
         }

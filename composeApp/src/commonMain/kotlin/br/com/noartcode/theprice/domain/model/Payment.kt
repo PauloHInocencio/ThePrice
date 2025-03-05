@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.domain.model
 
 data class Payment(
-    val id: Long = 0L,
+    val id: String = "",
     val billId: String,
     val dueDate: DayMonthAndYear,
     val price: Long,

@@ -69,6 +69,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
     fun `Add New Bill Should Succeed`() = runTest {
         val result = insertBill(
             Bill(
+                id = "7b98a36f-2694-429d-897f-cc61ca22eccb",
                 name = "Internet",
                 description = "My internet bill.",
                 price = 12099,
@@ -81,7 +82,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
         )
 
         assertTrue(result is Resource.Success)
-        assertNotEquals(illegal = "", actual = result.data)
+        assertEquals(expected = "7b98a36f-2694-429d-897f-cc61ca22eccb", actual = result.data)
     }
 
     @Test

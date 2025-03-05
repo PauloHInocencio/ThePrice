@@ -36,21 +36,24 @@ class BillLocalDataSourceImp(
     override suspend fun insert(
         bill: Bill
     ) : String {
-        val id = Uuid.random().toString()
-        dao.insert(bill.copy(id = id).toEntity())
-        return id
+        val billEntity = bill.copy(id = bill.id.ifEmpty { Uuid.random().toString() }).toEntity()
+        dao.insert(billEntity)
+        return billEntity.id
     }
 
     override suspend fun insertBillWithPayments(
         bill: Bill,
         payments: List<Payment>
     ) : String {
-        val id = Uuid.random().toString()
+        val billEntity = bill.copy(id = bill.id.ifEmpty { Uuid.random().toString() }).toEntity()
         dao.insertBillWithPayments(
-            bill = bill.copy(id = id).toEntity(),
-            payments = payments.toEntity()
+            bill = billEntity,
+            payments = payments
+                .map{
+                    it.copy(id = it.id.ifEmpty { Uuid.random().toString() })
+                }.toEntity()
         )
-        return id
+        return billEntity.id
     }
 
     override suspend fun update(bill: Bill) {

@@ -31,7 +31,7 @@ fun PaymentItemView(
     payment: PaymentUi,
     modifier: Modifier = Modifier,
     onStatusClicked: (PaymentUi) -> Unit,
-    onPaymentClicked : (Long) -> Unit
+    onPaymentClicked : (String) -> Unit
 ) {
 
     ListItem(

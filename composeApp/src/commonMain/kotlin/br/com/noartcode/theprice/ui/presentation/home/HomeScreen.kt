@@ -31,7 +31,7 @@ fun HomeScreen(
     state:HomeUiState,
     onEvent: (HomeEvent) -> Unit,
     onNavigateToNewBill: () -> Unit,
-    onNavigateToEditPayment: (paymentId:Long) -> Unit,
+    onNavigateToEditPayment: (paymentId:String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }

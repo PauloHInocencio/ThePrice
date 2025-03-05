@@ -12,7 +12,7 @@ fun PaymentItemView_Preview() {
     Column {
         PaymentItemView(
             payment = PaymentUi(
-                id = 1,
+                id = "",
                 statusDescription = "Paga em 12/08/2024",
                 status = PaymentUi.Status.PAYED,
                 billName = "Internet",
@@ -24,7 +24,7 @@ fun PaymentItemView_Preview() {
 
         PaymentItemView(
             payment = PaymentUi(
-                id = 2,
+                id = "",
                 statusDescription = "Vence em 5 dias",
                 status = PaymentUi.Status.PENDING,
                 billName = "Luz",
@@ -36,7 +36,7 @@ fun PaymentItemView_Preview() {
 
         PaymentItemView(
             payment = PaymentUi(
-                id = 2,
+                id = "",
                 statusDescription = "Venceu faz 10 dias",
                 status = PaymentUi.Status.OVERDUE,
                 billName = "Internet Mãe",

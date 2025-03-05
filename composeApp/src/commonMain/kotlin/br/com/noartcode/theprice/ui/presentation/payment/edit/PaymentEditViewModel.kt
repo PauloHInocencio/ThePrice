@@ -104,10 +104,14 @@ class PaymentEditViewModel(
                     )
                 }
                 updatePayment(
-                    id = payment!!.id,
-                    price = _state.value.payedValue,
-                    dueDate =  epochFormatter.to(_state.value.paidAtDate),
-                    isPayed = _state.value.paymentStatus == PAYED
+                    Payment(
+                        id = payment!!.id,
+                        billId = payment!!.billId,
+                        price = currencyFormatter.clenup(_state.value.payedValue),
+                        dueDate =  epochFormatter.to(_state.value.paidAtDate),
+                        isPayed = _state.value.paymentStatus == PAYED
+                    )
+
                 )
                 _state.update {
                     it.copy(
@@ -137,7 +141,7 @@ class PaymentEditViewModel(
         }
 
 
-    private suspend fun setupPayment(paymentId:Long) {
+    private suspend fun setupPayment(paymentId:String) {
         payment = checkNotNull(getPayment(paymentId))
         bill = getBill(payment!!.billId)
         paymentUi = paymentUiMapper.mapFrom(payment!!)

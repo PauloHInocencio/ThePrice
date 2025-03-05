@@ -92,7 +92,7 @@ fun commonModule() = module {
     single<IInsertMissingPayments> { InsertMissingPayments(billsLDS = get(), paymentLDS = get())}
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), insertMissingPayments = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(datasource = get(), currencyFormatter = get())}
+    single<IUpdatePayment> { UpdatePayment(datasource = get())}
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
     single<IGetOldestPaymentRecordDate> {
         GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )

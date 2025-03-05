@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 
 interface IUpdatePaymentStatus {
-    suspend operator fun invoke(id: Long, isPayed:Boolean) : Resource<Unit>
+    suspend operator fun invoke(id: String, isPayed:Boolean) : Resource<Unit>
 }
 
 class UpdatePaymentStatus (
@@ -17,17 +17,15 @@ class UpdatePaymentStatus (
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : IUpdatePaymentStatus {
     override suspend fun invoke(
-        id: Long,
+        id: String,
         isPayed: Boolean
     ): Resource<Unit> = withContext(dispatcher) {
         try {
-            val originalPayment = datasource.getPayment(id)!!
-            datasource.updatePayment(
-                id = id,
-                price = originalPayment.price,
-                dueDate = originalPayment.dueDate,
-                isPayed = isPayed,
-            )
+            val payment = datasource
+                .getPayment(id)!!
+                .copy(isPayed = isPayed)
+
+            datasource.updatePayment(payment)
             return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(

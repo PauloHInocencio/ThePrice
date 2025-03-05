@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
@@ -16,6 +17,7 @@ import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
 import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
+import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -33,6 +35,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest : KoinTest, RobolectricTests() {
@@ -287,12 +290,14 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     fun `Payment Amount and Due Date Should Not Change when User Update Payment Status`() = runTest {
 
         // Populating the database with 1 bill
-        insertBillWithPayments(
+        val result = insertBillWithPayments(
             bill = stubBills[1].copy(
                 billingStartDate = DayMonthAndYear(day = 12, month = 9, year = 2024)
             ),
             currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
         )
+
+        assertTrue(result is Resource.Success)
 
         // Set Current Day to November 21th
         (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
@@ -331,10 +336,14 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Simulate user changing payment info
             paymentDataSource.updatePayment(
-                id = originalPayment.id,
-                price = 10000,
-                dueDate = DayMonthAndYear(day = 5, month = 11, year = 2024),
-                isPayed = false,
+                Payment(
+                    id = originalPayment.id,
+                    billId = result.data,
+                    price = 10000,
+                    dueDate = DayMonthAndYear(day = 5, month = 11, year = 2024),
+                    isPayed = false,
+                )
+
             )
 
 

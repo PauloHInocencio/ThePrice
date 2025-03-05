@@ -113,7 +113,7 @@ fun AppNavGraph(
                 }
             )
             LaunchedEffect(Unit){
-                val paymentId = checkNotNull(backStackEntry?.arguments?.getLong("paymentId"))
+                val paymentId = checkNotNull(backStackEntry?.arguments?.getString("paymentId"))
                 viewModel.onEvent(PaymentEditEvent.OnGetPayment(paymentId))
             }
         }

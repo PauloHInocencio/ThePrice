@@ -16,21 +16,21 @@ fun HomeScreen_Preview() {
                 monthName = "Sep 2024",
                 payments = listOf(
                     PaymentUi(
-                        id = 1,
+                        id = "",
                         statusDescription = "Paga em 12/08/2024",
                         status = PaymentUi.Status.PAYED,
                         billName = "Internet",
                         price = "R$ 120,00"
                     ),
                     PaymentUi(
-                        id = 2,
+                        id = "",
                         statusDescription = "Vence em 5 dias",
                         status = PaymentUi.Status.PENDING,
                         billName = "Luz",
                         price = "R$ 320,22"
                     ),
                     PaymentUi(
-                        id = 3,
+                        id = "",
                         statusDescription = "Venceu faz 10 dias",
                         status = PaymentUi.Status.OVERDUE,
                         billName = "Internet Mãe",

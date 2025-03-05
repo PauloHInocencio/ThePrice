@@ -29,8 +29,10 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
     private val testScope = TestScope()
@@ -75,7 +77,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
         //WHEN
         val uiPayment = paymentUiMapper.mapFrom(
             Payment(
-                id = 1,
+                id = Uuid.random().toString(),
                 billId = billID,
                 dueDate = DayMonthAndYear(day = 3, month = 8, year = 2024),
                 price = bill.price,
@@ -103,7 +105,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
         //WHEN
         val uiPayment = paymentUiMapper.mapFrom(
             Payment(
-                id = 1,
+                id = Uuid.random().toString(),
                 billId = billID,
                 dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
                 price = bill.price,
@@ -131,7 +133,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
         //WHEN
         val uiPayment = paymentUiMapper.mapFrom(
             Payment(
-                id = 1,
+                id = Uuid.random().toString(),
                 billId = billID,
                 dueDate = DayMonthAndYear(day = bill.billingStartDate.day, month = 8, year = 2024),
                 price = bill.price,

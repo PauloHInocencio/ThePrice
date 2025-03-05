@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentLocalDataSource {
     fun getMonthPayments(month:Int, year:Int) : Flow<List<Payment>>
     suspend fun getBillPayments(billID:String) : List<Payment>
-    suspend fun getPayment(billID:Long, month:Int, year:Int) : Payment?
-    suspend fun getPayment(id:Long) : Payment?
-    suspend fun updatePayment(id:Long, dueDate: DayMonthAndYear, price:Long, isPayed: Boolean)
-    suspend fun insert(billID: String, dueDate: DayMonthAndYear, price:Long, isPayed:Boolean) : Long
+    suspend fun getPayment(billID:String, month:Int, year:Int) : Payment?
+    suspend fun getPayment(id:String) : Payment?
+    suspend fun updatePayment(payment: Payment)
+    suspend fun insert(payment: Payment) : String
     suspend fun insert(payments:List<Payment>)
-    suspend fun delete(id:Long)
+    suspend fun delete(id:String)
 }

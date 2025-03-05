@@ -6,6 +6,7 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -218,10 +219,10 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
             // Updates one of the payments
             paymentDataSource.updatePayment(
-                id = originalPayment.id,
-                price = 1111,
-                dueDate = originalPayment.dueDate,
-                isPayed = true
+                originalPayment.copy(
+                    price = 1111,
+                    isPayed = true
+                )
             )
 
             with(awaitItem() as Resource.Success) {

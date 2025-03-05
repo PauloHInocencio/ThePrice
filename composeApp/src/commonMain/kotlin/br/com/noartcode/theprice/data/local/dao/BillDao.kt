@@ -20,10 +20,10 @@ interface BillDao {
     @Query("SELECT * FROM bills WHERE status == :status")
     fun getBillsBy(status:String): Flow<List<BillEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(bill: BillEntity)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(bills:List<BillEntity>)
 
     @Update
@@ -35,7 +35,7 @@ interface BillDao {
     @Query("DELETE FROM bills WHERE id == :id")
     suspend fun deleteBill(id:String)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayments(payments:List<PaymentEntity>)
 
     @Transaction

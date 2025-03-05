@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.home.model
 
 data class PaymentUi(
-    val id:Long,
+    val id:String,
     val statusDescription:String,
     val billName:String,
     val price: String,
