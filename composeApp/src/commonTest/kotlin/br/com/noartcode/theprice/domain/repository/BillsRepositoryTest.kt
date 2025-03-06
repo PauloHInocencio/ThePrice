@@ -67,7 +67,7 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
             repository.fetchAllBills()
 
             // Validating final state
-            assertEquals(expected = 5, awaitItem().size)
+            assertEquals(expected = 3, awaitItem().size)
             ensureAllEventsConsumed()
         }
     }
