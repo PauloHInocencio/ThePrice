@@ -10,9 +10,13 @@ import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourc
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSourceImp
+import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
+import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSourceImp
 import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
+import br.com.noartcode.theprice.data.repository.PaymentsRepositoryImp
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
@@ -82,22 +86,22 @@ fun commonModule() = module {
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
     single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
+    single<PaymentRemoteDataSource> { PaymentRemoteDataSourceImp(client = get(), session = get())}
     single<SessionStorage> { SessionStorageImp(dataStore = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<IInsertBill> { InsertBill(localDataSource = get()) }
     single<IUpdateBill> { UpdateBill(localDataSource = get()) }
-    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get())}
-    single<IInsertMissingPayments> { InsertMissingPayments(billsLDS = get(), paymentLDS = get())}
+    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get())}
+    single<IInsertMissingPayments> { InsertMissingPayments(billsLDS = get(), paymentLDS = get(), getTodayDate = get())}
     single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), insertMissingPayments = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(datasource = get())}
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
-    single<IGetOldestPaymentRecordDate> {
-        GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() )
-    }
-    single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get())}
+    single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() ) }
+    single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
+    single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserInfo> { IGetUserInfo(get<SessionStorage>()::getUser) }
     single<ISignInUser> {
         SignInUser(
@@ -155,6 +159,7 @@ fun viewModelsModule() = module {
             currencyFormatter = get(),
             updatePayment = get(),
             paymentUiMapper = get(),
+            getTodayDate = get(),
         )
     }
 

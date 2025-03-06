@@ -29,4 +29,6 @@ data class PaymentEntity(
     val dueMonth:Int,
     val dueYear:Int,
     val price:Long,
+    val createdAt:Long,
+    val updatedAt:Long,
 )

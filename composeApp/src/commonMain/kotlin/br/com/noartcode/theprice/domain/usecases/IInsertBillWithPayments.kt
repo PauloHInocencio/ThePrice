@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.model.toLocalDate
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,6 +25,7 @@ interface IInsertBillWithPayments {
 
 class InsertBillWithPayments(
     private val localDataSource: BillLocalDataSource,
+    private val getTodayDate: IGetTodayDate,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : IInsertBillWithPayments {
     override suspend fun invoke(
@@ -36,13 +38,15 @@ class InsertBillWithPayments(
                 other = currentDate.toLocalDate(),
                 unit = DateTimeUnit.MONTH
             ) + 1
-
+            val timeStamp = getTodayDate().toEpochMilliseconds()
             val payments = List(numOfPayments) { i ->
                 Payment(
                     billId = "",
                     dueDate = start.plus(i, DateTimeUnit.MONTH).toDayMonthAndYear(),
                     price = bill.price,
-                    isPayed = false
+                    isPayed = false,
+                    createdAt = timeStamp,
+                    updatedAt = timeStamp,
                 )
             }
 

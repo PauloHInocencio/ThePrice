@@ -31,6 +31,14 @@ object ThePriceApiMock {
             )
         }
 
+        if (path.contains("api/v1/payments") && method == HttpMethod.Get) {
+            return respond(
+                content = MockedApiResponses.GET_PAYMENTS_MOCK_RESPONSE,
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
         return null
     }
 

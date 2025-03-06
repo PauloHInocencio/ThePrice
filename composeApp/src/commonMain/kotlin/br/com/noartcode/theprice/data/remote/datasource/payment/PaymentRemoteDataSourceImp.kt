@@ -1,31 +1,29 @@
-package br.com.noartcode.theprice.data.remote.datasource.bill
+package br.com.noartcode.theprice.data.remote.datasource.payment
 
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
-import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.client.request.headers
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
+import io.ktor.http.headers
 import kotlinx.coroutines.flow.first
 
-class BillRemoteDataSourceImp(
+class PaymentRemoteDataSourceImp(
     private val client:HttpClient,
-    private val session: SessionStorage,
-) : BillRemoteDataSource {
+    private val session: SessionStorage
+) : PaymentRemoteDataSource {
 
-    override suspend fun fetchAllBills(): Resource<List<BillDto>> =
+    override suspend fun fetchAllPayments(): Resource<List<PaymentDto>> =
         safeCall {
             val accessToken = session.getAccessToken().first()
-            client.get{
-                url("bills")
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $accessToken")
+            client.get {
+                url("payments")
+                headers{
+                  append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }
             }
-
         }
-
 }

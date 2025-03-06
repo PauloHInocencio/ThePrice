@@ -10,7 +10,9 @@ fun PaymentEntity.toDomain() : Payment {
         billId = this.billId,
         dueDate = DayMonthAndYear(day = this.dueDay, month = this.dueMonth, year = this.dueYear),
         price = this.price,
-        isPayed = isPayed
+        isPayed = isPayed,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
     )
 }
 
@@ -23,6 +25,8 @@ fun Payment.toEntity() =
         dueDay = this.dueDate.day,
         dueMonth = this.dueDate.month,
         dueYear = this.dueDate.year,
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt,
     )
 
 fun Iterable<Payment>.toEntity() = this.map { model ->

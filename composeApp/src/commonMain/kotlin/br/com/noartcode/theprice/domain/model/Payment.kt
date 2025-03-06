@@ -6,4 +6,6 @@ data class Payment(
     val dueDate: DayMonthAndYear,
     val price: Long,
     val isPayed:Boolean,
+    val createdAt: Long,
+    val updatedAt: Long,
 )

@@ -342,6 +342,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                     price = 10000,
                     dueDate = DayMonthAndYear(day = 5, month = 11, year = 2024),
                     isPayed = false,
+                    createdAt = 0L,
+                    updatedAt = 0L,
                 )
 
             )

@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -18,6 +19,7 @@ interface IInsertMissingPayments {
 class InsertMissingPayments(
     private val billsLDS: BillLocalDataSource,
     private val paymentLDS: PaymentLocalDataSource,
+    private val getTodayDate: IGetTodayDate,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : IInsertMissingPayments {
 
@@ -30,6 +32,7 @@ class InsertMissingPayments(
             .associateBy { it.billId }
 
         val paymentsToAdd = mutableListOf<Payment>()
+        val timeStamp = getTodayDate().toEpochMilliseconds()
         for (bill in bills) {
             if (existingPayments.containsKey(bill.id).not()) {
                 paymentsToAdd.add(
@@ -38,6 +41,8 @@ class InsertMissingPayments(
                         dueDate = date.copy(day = bill.billingStartDate.day),
                         price = bill.price,
                         isPayed = false,
+                        createdAt = timeStamp,
+                        updatedAt = timeStamp,
                     )
                 )
             }
