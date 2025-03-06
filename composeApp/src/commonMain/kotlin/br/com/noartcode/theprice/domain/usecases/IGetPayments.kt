@@ -5,6 +5,8 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,8 +33,8 @@ interface IGetPayments {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetPayments(
-    private val billLDS: BillLocalDataSource,
-    private val paymentLDS: PaymentLocalDataSource,
+    private val billsRepository: BillsRepository,
+    private val paymentsRepository: PaymentsRepository,
     private val insertMissingPayments: IInsertMissingPayments,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IGetPayments {
@@ -41,8 +43,8 @@ class GetPayments(
         date: DayMonthAndYear,
         billStatus: Bill.Status
     ): Flow<Resource<List<Payment>>> = combine(
-        billLDS.getBillsBy(billStatus),
-        paymentLDS.getMonthPayments(month = date.month, year = date.year)
+        billsRepository.getBillsBy(billStatus),
+        paymentsRepository.getMonthPayments(month = date.month, year = date.year)
     ) { activeBills, monthPayments -> activeBills to monthPayments }
         .flatMapLatest {  (activeBills, monthPayments) ->
             flow<Resource<List<Payment>>>{

@@ -27,5 +27,5 @@ fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) 
         }
     }
     single<IGetTodayDate> { GetTodayDateStub() }
-    single<IGetPayments> { GetPayments(billLDS = get(), paymentLDS = get(), insertMissingPayments = get(), dispatcher = testDispatcher)}
+    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), dispatcher = testDispatcher)}
 }
