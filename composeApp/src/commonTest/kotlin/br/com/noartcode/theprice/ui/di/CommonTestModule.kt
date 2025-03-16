@@ -4,13 +4,13 @@ import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
-import br.com.noartcode.theprice.data.remote.workes.SyncBillWorkFake
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.flowOf
@@ -24,7 +24,9 @@ fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) 
         createHttpClient(ThePriceApiMock.engine, localDataSource = get())
     }
     single<ISyncBillWorker> {
-        SyncBillWorkFake()
+        mock<ISyncBillWorker>().apply {
+            every { this@apply.sync(billID = any()) } returns Unit
+        }
     }
     single<SessionStorage> {
         mock<SessionStorage>().apply {
