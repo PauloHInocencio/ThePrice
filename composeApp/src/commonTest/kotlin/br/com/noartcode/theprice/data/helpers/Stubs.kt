@@ -14,6 +14,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate = DayMonthAndYear(day = 5, month = 9, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Mom's Internet",
@@ -22,6 +23,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 8, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Rent",
@@ -30,6 +32,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 7, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Health insurance",
@@ -38,6 +41,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 6, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Son's School",
@@ -46,6 +50,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 5, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Condo",
@@ -54,6 +59,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 4, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Credit Card",
@@ -62,6 +68,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 3, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Accountant",
@@ -70,6 +77,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 2, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         ),
         Bill(
             name = "Myself",
@@ -78,6 +86,7 @@ val stubBills:List<Bill> by lazy {
             billingStartDate =  DayMonthAndYear(day = 5, month = 1, year = 2024),
             createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
             updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+            isSynced = false,
         )
     )
 }

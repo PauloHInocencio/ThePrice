@@ -7,8 +7,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BillDto(
     val id: String,
-    @SerialName("user_id")
-    val userID: String,
     val name:String,
     val description:String?,
     val price:Long,
@@ -19,4 +17,6 @@ data class BillDto(
     val createdAt: String,
     @SerialName("updated_at")
     val updatedAt: String,
+    @SerialName("is_synced")
+    val isSynced:Boolean
 )

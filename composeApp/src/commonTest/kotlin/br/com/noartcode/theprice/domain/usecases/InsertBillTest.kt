@@ -78,6 +78,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
                 billingStartDate = DayMonthAndYear(day = 5, month = 9, year = 2024),
                 createdAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
                 updatedAt = DayMonthAndYear(day = 19, month = 2, year = 2025).toEpochMilliseconds(),
+                isSynced = false,
             )
         )
 

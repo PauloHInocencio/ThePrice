@@ -9,8 +9,9 @@ interface BillsRepository {
     fun getAllBills() : Flow<List<Bill>>
     fun getBillsBy(status:Bill.Status) : Flow<List<Bill>>
     suspend fun fetchAllBills() : Resource<Unit>
-    suspend fun insert(bill: Bill)
-    suspend fun getBill(id:Int) : Bill?
-    suspend fun getBill(name:String) : Bill?
+    suspend fun insert(bill: Bill) : String
+    suspend fun post(bill:Bill) : Resource<Unit>
+    suspend fun getBill(id:String) : Bill?
+    suspend fun update(bill:Bill)
     suspend fun delete(id:Int)
 }

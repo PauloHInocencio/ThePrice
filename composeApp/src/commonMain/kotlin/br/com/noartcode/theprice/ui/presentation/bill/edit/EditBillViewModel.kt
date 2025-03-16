@@ -40,6 +40,7 @@ class EditBillViewModel(
             billingStartDate = getTodayDate(),
             createdAt = getTodayDate().toEpochMilliseconds(),
             updatedAt = getTodayDate().toEpochMilliseconds(),
+            isSynced = false,
         )
     )
     private val state = MutableStateFlow(EditBillUiState())

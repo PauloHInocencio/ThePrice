@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.data.remote.networking
 
+import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -9,6 +10,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.readText
+import kotlinx.serialization.json.Json
 
 object ThePriceApiMock {
 
@@ -17,7 +22,7 @@ object ThePriceApiMock {
     }
 
 
-    private fun MockRequestHandleScope.mockResponse(
+    private suspend fun MockRequestHandleScope.mockResponse(
         request: HttpRequestData
     ) : HttpResponseData? {
         val path = request.url.encodedPath
@@ -31,6 +36,17 @@ object ThePriceApiMock {
             )
         }
 
+        if (path.contains("api/v1/bills") && method == HttpMethod.Post) {
+            val requestBody =  (request.body as? ByteReadChannel)?.readRemaining()?.readText()
+            requestBody?.let { Json.decodeFromString<BillDto>(it) } ?: errorResponse()
+
+            return respond(
+                content = "",
+                status = HttpStatusCode.Created,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
         if (path.contains("api/v1/payments") && method == HttpMethod.Get) {
             return respond(
                 content = MockedApiResponses.GET_PAYMENTS_MOCK_RESPONSE,
@@ -38,6 +54,7 @@ object ThePriceApiMock {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
+
 
         return null
     }

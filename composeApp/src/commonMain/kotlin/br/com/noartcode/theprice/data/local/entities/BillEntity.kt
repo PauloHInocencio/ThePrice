@@ -16,4 +16,5 @@ data class BillEntity(
     val billingStartDate:Long,
     val createdAt:Long,
     val updatedAt:Long,
+    val isSynced:Boolean,
 )

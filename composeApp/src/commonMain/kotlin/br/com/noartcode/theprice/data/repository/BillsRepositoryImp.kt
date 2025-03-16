@@ -33,17 +33,23 @@ class BillsRepositoryImp(
         }
     }
 
-    override suspend fun insert(bill: Bill) {
-        TODO("Not yet implemented")
+    override suspend fun insert(bill: Bill) : String {
+        val id = local.insert(bill)
+        return id
     }
 
-    override suspend fun getBill(id: Int): Bill? {
-        TODO("Not yet implemented")
+    override suspend fun post(bill: Bill): Resource<Unit> {
+        return remote.post(bill)
     }
 
-    override suspend fun getBill(name: String): Bill? {
-        TODO("Not yet implemented")
+    override suspend fun getBill(id: String): Bill? {
+        return local.getBill(id)
     }
+
+    override suspend fun update(bill: Bill) {
+        local.update(bill)
+    }
+
 
     override suspend fun delete(id: Int) {
         TODO("Not yet implemented")

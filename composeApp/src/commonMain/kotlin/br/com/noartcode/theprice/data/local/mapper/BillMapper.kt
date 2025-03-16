@@ -17,6 +17,7 @@ fun BillEntity.toDomain() =
         billingStartDate = this.billingStartDate.toDayMonthAndYear(),
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
+        isSynced = this.isSynced,
     )
 
 fun Bill.toEntity() =
@@ -30,6 +31,7 @@ fun Bill.toEntity() =
         billingStartDate = this.billingStartDate.toEpochMilliseconds(),
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
+        isSynced = this.isSynced,
     )
 
 fun Iterable<BillEntity>.toDomain() = this.map { it.toDomain() }

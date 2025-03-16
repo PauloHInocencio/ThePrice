@@ -37,6 +37,7 @@ ktor = "3.0.1"
 datastore = "1.1.1"
 coil = "3.0.4"
 mokkery = "2.7.0"
+workmanager = "2.10.0"
 
 [libraries]
 # Kotlix DateTime
@@ -59,6 +60,10 @@ androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.r
 # DataStore
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# WorkManager
+androidx-workmanager = { module = "androidx.work:work-runtime-ktx", version.ref="workmanager"}
+androidx-workmanager-test = { module = "androidx.work:work-testing", version.ref="workmanager"}
 
 # Koin
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }

@@ -10,6 +10,7 @@ data class Bill(
     val billingStartDate: DayMonthAndYear,
     val createdAt: Long,
     val updatedAt: Long,
+    val isSynced:Boolean,
 ) {
     enum class Status {
         ACTIVE,

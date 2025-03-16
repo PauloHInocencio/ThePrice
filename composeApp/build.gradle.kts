@@ -64,6 +64,8 @@ kotlin {
             implementation(libs.credentials.auth)
             implementation(libs.googleid)
 
+            implementation(libs.androidx.workmanager)
+
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.android)
         }
@@ -129,6 +131,7 @@ kotlin {
                 implementation(libs.androidx.test.core)
                 implementation(libs.junit)
                 implementation(libs.roboletric)
+                implementation(libs.androidx.workmanager.test)
             }
         }
 

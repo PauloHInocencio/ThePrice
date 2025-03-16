@@ -1,0 +1,96 @@
+package br.com.noartcode.theprice.data.remote.workers
+
+import android.content.Context
+import android.os.Looper
+import androidx.test.core.app.ApplicationProvider
+import androidx.work.ListenableWorker
+import androidx.work.testing.TestListenableWorkerBuilder
+import androidx.work.workDataOf
+import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
+import br.com.noartcode.theprice.data.remote.workers.factories.SyncBillWorkerFactory
+import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.ui.di.commonModule
+import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.platformTestModule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.runner.RunWith
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+
+@RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalCoroutinesApi::class)
+class AndroidBillSyncWorkerTest : KoinTest{
+
+    private val testScope = TestScope()
+    private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
+    private val database: ThePriceDatabase by inject()
+    private val repository: BillsRepository by inject()
+
+
+    @BeforeTest
+    fun before() {
+        stopKoin()
+        Dispatchers.setMain(coroutineDispatcher)
+        startKoin {
+            modules(
+                platformTestModule(),
+                commonModule(),
+                commonTestModule(coroutineDispatcher),
+            )
+        }
+    }
+
+
+    @AfterTest
+    fun after() {
+        Shadows.shadowOf(Looper.getMainLooper()).idle()
+        database.close()
+        Dispatchers.resetMain()
+        stopKoin()
+    }
+
+    @Test
+    fun `Should Insert Bill locally and sync it remotely`() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        // Insert new bill
+        val billID = repository.insert(stubBills[0])
+
+        // Check bill's initial sync state
+        with(repository.getBill(billID)) {
+            assertEquals(expected = false, this?.isSynced)
+        }
+
+        // Call worker
+        val worker = TestListenableWorkerBuilder<AndroidSyncBillWorker>(context)
+            .setWorkerFactory(SyncBillWorkerFactory(billRepository = repository))
+            .setInputData(workDataOf(WORK_INPUT_KEY to billID))
+            .build()
+        val result = worker.doWork()
+
+        // Check worker result
+        assertTrue(result is ListenableWorker.Result.Success)
+
+        // Check bill's final sync state
+        with(repository.getBill(billID)) {
+            assertEquals(expected = true, this?.isSynced)
+        }
+    }
+}
