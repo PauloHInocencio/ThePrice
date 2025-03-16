@@ -3,6 +3,8 @@ package br.com.noartcode.theprice.ui.di
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
+import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
+import br.com.noartcode.theprice.data.remote.workes.SyncBillWorkFake
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -20,6 +22,9 @@ import org.koin.dsl.module
 fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) = module {
     single<HttpClient> {
         createHttpClient(ThePriceApiMock.engine, localDataSource = get())
+    }
+    single<ISyncBillWorker> {
+        SyncBillWorkFake()
     }
     single<SessionStorage> {
         mock<SessionStorage>().apply {

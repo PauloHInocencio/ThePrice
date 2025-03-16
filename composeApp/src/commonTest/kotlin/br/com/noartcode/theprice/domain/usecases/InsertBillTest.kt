@@ -1,12 +1,12 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
+import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -28,7 +28,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,7 +37,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
     private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
     private val database: ThePriceDatabase by inject()
-    private val billDataSource: BillLocalDataSource by inject()
+    private val billsRepository: BillsRepository by inject()
 
     // Unit Under Test
     private val insertBill: IInsertBill by inject()
@@ -90,7 +89,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
     fun `Bill Retrieval Should Return Correct Details`() = runTest {
         val id = (insertBill(stubBills[0]) as Resource.Success).data
 
-        with(billDataSource.getBill(id)) {
+        with(billsRepository.getBill(id)) {
             assertEquals(expected = "internet", this?.name)
             assertEquals(expected = "My internet bill.", this?.description)
             assertEquals(expected = "05/09/2024", this?.billingStartDate.toString())

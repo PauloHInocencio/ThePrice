@@ -1,7 +1,8 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ interface IInsertBill {
 }
 
 class InsertBill(
-    private val localDataSource: BillLocalDataSource,
+    private val repository: BillsRepository,
+    private val worker: ISyncBillWorker,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IInsertBill {
 
@@ -24,11 +26,9 @@ class InsertBill(
         bill: Bill
     ): Resource<String> = withContext(dispatcher) {
         try {
-
-            val id = localDataSource.insert(bill)
-
+            val id = repository.insert(bill)
+            worker.sync(id)
             return@withContext Resource.Success(id)
-
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 exception = e,
