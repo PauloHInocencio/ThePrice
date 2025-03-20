@@ -11,7 +11,7 @@ interface PaymentsRepository {
    suspend fun fetchAllPayments() : Resource<Unit>
    suspend fun getPayment(id:String) : Payment?
    suspend fun insert(payment: Payment)
-
+   suspend fun insert(payments: List<Payment>)
    suspend fun delete(id:String)
 
 }

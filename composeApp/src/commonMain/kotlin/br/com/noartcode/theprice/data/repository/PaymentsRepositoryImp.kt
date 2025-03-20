@@ -38,6 +38,10 @@ class PaymentsRepositoryImp(
         TODO("Not yet implemented")
     }
 
+    override suspend fun insert(payments: List<Payment>) {
+        local.insert(payments)
+    }
+
     override suspend fun delete(id: String) {
         TODO("Not yet implemented")
     }

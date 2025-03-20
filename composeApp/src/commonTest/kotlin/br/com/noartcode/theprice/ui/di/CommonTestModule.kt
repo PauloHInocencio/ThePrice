@@ -4,10 +4,12 @@ import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.matcher.any
@@ -27,6 +29,9 @@ fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) 
         mock<ISyncBillWorker>().apply {
             every { this@apply.sync(billID = any()) } returns Unit
         }
+    }
+    single<ISyncPaymentsWorker> {
+        mock<ISyncPaymentsWorker>(MockMode.autoUnit)
     }
     single<SessionStorage> {
         mock<SessionStorage>().apply {

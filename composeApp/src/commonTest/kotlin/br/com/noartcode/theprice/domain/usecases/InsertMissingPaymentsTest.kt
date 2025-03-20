@@ -92,4 +92,39 @@ class InsertMissingPaymentsTest : KoinTest, RobolectricTests() {
 
     }
 
+    @Test
+    fun `Should insert missing payments only for bills in the correct date range`() = runTest {
+        val date1 = DayMonthAndYear(day = 21, month = 1, year = 2024)
+        val date2 = DayMonthAndYear(day = 21, month = 4, year = 2024)
+        var index = 5
+        while(index >= 0) {
+            insertBill(
+                bill = stubBills[index].copy(
+                    billingStartDate = if (index >= 3) date1 else date2
+                )
+            )
+            index--
+        }
+
+        // Check whether there are six bills in the database
+        val bills = billDataSource.getAllBills().first()
+        assertEquals(expected = 6, actual = bills.size)
+
+        // Ensuring there are no payments in the database for the date1
+        var payments = paymentDataSource
+            .getMonthPayments(month = date1.month, year = date1.year)
+            .first()
+        assertEquals(expected = 0, actual = payments.size)
+
+        // Should add payments only for bills that are in the date1 range
+        insertMissingPayments(date1)
+
+        // Ensuring there are only payments for the correct date range
+        payments = paymentDataSource
+            .getMonthPayments(month = date1.month, year = date1.year)
+            .first()
+        assertEquals(expected = 3, actual = payments.size)
+
+    }
+
 }
