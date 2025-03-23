@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.data.repository
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
+import br.com.noartcode.theprice.data.remote.mapper.toDto
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
@@ -30,16 +31,28 @@ class PaymentsRepositoryImp(
         }
     }
 
+    override suspend fun getNotSynchronizedPayments(): List<Payment> {
+        return local.getNotSynchronizedPayments()
+    }
+
     override suspend fun getPayment(id: String): Payment? {
         TODO("Not yet implemented")
     }
 
     override suspend fun insert(payment: Payment) {
-        TODO("Not yet implemented")
+        local.insert(payment)
     }
 
     override suspend fun insert(payments: List<Payment>) {
         local.insert(payments)
+    }
+
+    override suspend fun post(payments: List<Payment>) : Resource<Unit> {
+        return remote.post(payments.toDto())
+    }
+
+    override suspend fun update(payments: List<Payment>) {
+        local.update(payments)
     }
 
     override suspend fun delete(id: String) {

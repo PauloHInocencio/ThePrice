@@ -23,7 +23,7 @@ class UpdatePayment(
         payment: Payment
     ): Resource<Unit> = withContext(dispatcher) {
         try {
-            datasource.updatePayment(payment)
+            datasource.update(payment)
             return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(

@@ -25,7 +25,7 @@ class UpdatePaymentStatus (
                 .getPayment(id)!!
                 .copy(isPayed = isPayed)
 
-            datasource.updatePayment(payment)
+            datasource.update(payment)
             return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(

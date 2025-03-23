@@ -6,6 +6,8 @@ import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headers
@@ -26,4 +28,17 @@ class PaymentRemoteDataSourceImp(
                 }
             }
         }
+
+    override suspend fun post(payments: List<PaymentDto>) : Resource<Unit> =
+        safeCall {
+            val accessToken = session.getAccessToken().first()
+            client.post {
+                url("payments")
+                setBody(payments)
+                headers{
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
+                }
+            }
+        }
+
 }

@@ -1,10 +1,8 @@
 package br.com.noartcode.theprice.data.local.datasource.payment
 
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.data.local.mapper.toEntity
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,6 +28,10 @@ class PaymentLocalDataSourceImp (
             }
     }
 
+    override suspend fun getNotSynchronizedPayments(): List<Payment> {
+        return dao.getNotSynchronizedPayments().map { it.toDomain() }
+    }
+
     override suspend fun getPayment(billID: String, month: Int, year: Int): Payment? {
         return dao
             .getPayment(billId = billID, month = month, year = year)
@@ -40,8 +42,12 @@ class PaymentLocalDataSourceImp (
         return dao.getPayment(id)?.toDomain()
     }
 
-    override suspend fun updatePayment(payment: Payment) {
-        dao.updatePayment(payment.toEntity())
+    override suspend fun update(payment: Payment) {
+        dao.update(payment.toEntity())
+    }
+
+    override suspend fun update(payments: List<Payment>) {
+        dao.update(payments.toEntity())
     }
 
     override suspend fun insert(payment:Payment) : String {

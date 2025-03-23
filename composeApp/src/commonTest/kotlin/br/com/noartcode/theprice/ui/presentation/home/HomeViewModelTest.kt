@@ -335,7 +335,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             ensureAllEventsConsumed()
 
             // Simulate user changing payment info
-            paymentDataSource.updatePayment(
+            paymentDataSource.update(
                 Payment(
                     id = originalPayment.id,
                     billId = result.data,
@@ -344,6 +344,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                     isPayed = false,
                     createdAt = 0L,
                     updatedAt = 0L,
+                    isSync = false,
                 )
 
             )

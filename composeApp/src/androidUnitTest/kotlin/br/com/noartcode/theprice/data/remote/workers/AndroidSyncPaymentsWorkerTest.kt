@@ -4,20 +4,20 @@ import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.workDataOf
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.remote.workers.factories.SyncBillWorkerTestFactory
-import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.data.remote.workers.factories.SyncPaymentsWorkerTestFactory
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.repository.PaymentsRepository
+import br.com.noartcode.theprice.domain.usecases.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
@@ -36,16 +36,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class AndroidBillSyncWorkerTest : KoinTest{
+class AndroidSyncPaymentsWorkerTest : KoinTest {
 
     private val testScope = TestScope()
     private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
     private val database: ThePriceDatabase by inject()
-    private val repository: BillsRepository by inject()
     private val context = ApplicationProvider.getApplicationContext<Context>()
+    private val paymentsRepository: PaymentsRepository by inject()
+    private val insertBill: IInsertBill by inject()
+    private val insertMissingPayments: IInsertMissingPayments by inject()
 
 
     @BeforeTest
@@ -56,11 +57,10 @@ class AndroidBillSyncWorkerTest : KoinTest{
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(coroutineDispatcher),
+                commonTestModule(coroutineDispatcher)
             )
         }
     }
-
 
     @AfterTest
     fun after() {
@@ -70,32 +70,48 @@ class AndroidBillSyncWorkerTest : KoinTest{
         stopKoin()
     }
 
+
     @Test
-    fun `Should Insert Bill locally and sync it remotely`() = runTest {
+    fun `Should Insert Payments locally and sync them remotely`() = runTest {
 
-        // Insert new bill
-        val billID = repository.insert(stubBills[0])
-
-        // Check bill's initial sync state
-        with(repository.getBill(billID)) {
-            assertEquals(expected = false, this?.isSynced)
+        // Create bills
+        val date = DayMonthAndYear(day = 21, month = 11, year = 2024)
+        repeat(3) { i ->
+            insertBill(
+                bill = stubBills[i].copy(
+                    billingStartDate = date
+                )
+            )
         }
 
+        // Create payments for the current month
+        insertMissingPayments(date)
+
+        // Check num of no sync payments
+        var numNotSyncPayments = paymentsRepository
+            .getMonthPayments(date.month, date.year)
+            .first()
+            .filter { it.isSync.not() }
+            .size
+
+        assertEquals(expected = 3, actual = numNotSyncPayments)
+
         // Check worker result
-        val worker = TestListenableWorkerBuilder<AndroidSyncBillWorker>(context)
-            .setWorkerFactory(SyncBillWorkerTestFactory(billRepository = repository, ioDispatcher = coroutineDispatcher))
-            .setInputData(workDataOf(SYNC_BILL_WORK_INPUT_KEY to billID))
+        val worker = TestListenableWorkerBuilder<AndroidSyncPaymentsWorker>(context)
+            .setWorkerFactory(SyncPaymentsWorkerTestFactory(paymentsRepository = paymentsRepository, ioDispatcher = coroutineDispatcher))
             .build()
         val result = worker.doWork()
 
         assertTrue(result is ListenableWorker.Result.Success)
 
-        // Check bill's final sync state
-        with(repository.getBill(billID)) {
-            assertEquals(expected = true, this?.isSynced)
-        }
+        // Check num of no sync payments
+        numNotSyncPayments = paymentsRepository
+            .getMonthPayments(date.month, date.year)
+            .first()
+            .filter { it.isSync.not() }
+            .size
+
+        assertEquals(expected = 0, actual = numNotSyncPayments)
     }
+
 }
-
-
-

@@ -7,11 +7,10 @@ import androidx.work.WorkerParameters
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncBillWorker
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
-class SyncBillWorkerFactory(
+class SyncBillWorkerTestFactory(
     private val billRepository: BillsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,

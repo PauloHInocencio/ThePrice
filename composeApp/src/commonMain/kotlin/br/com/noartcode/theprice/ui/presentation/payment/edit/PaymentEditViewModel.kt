@@ -115,6 +115,7 @@ class PaymentEditViewModel(
                         isPayed = _state.value.paymentStatus == PAYED,
                         createdAt = payment!!.createdAt,
                         updatedAt = getTodayDate().toEpochMilliseconds(),
+                        isSync = false,
                     )
 
                 )

@@ -6,7 +6,6 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -33,7 +32,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -218,7 +216,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             val originalPayment = result.data.first()
 
             // Updates one of the payments
-            paymentDataSource.updatePayment(
+            paymentDataSource.update(
                 originalPayment.copy(
                     price = 1111,
                     isPayed = true

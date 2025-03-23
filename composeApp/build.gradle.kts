@@ -55,6 +55,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.koin.android)
+            implementation(libs.koin.workmanager)
             implementation(libs.koin.androidx.compose)
             implementation(libs.kotlinx.coroutines.android)
 

@@ -50,6 +50,7 @@ class InsertMissingPayments(
                         isPayed = false,
                         createdAt = timeStamp,
                         updatedAt = timeStamp,
+                        isSync = false,
                     )
                 )
             }

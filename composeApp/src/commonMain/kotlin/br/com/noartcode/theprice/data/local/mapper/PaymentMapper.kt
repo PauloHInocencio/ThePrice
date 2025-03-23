@@ -13,6 +13,7 @@ fun PaymentEntity.toDomain() : Payment {
         isPayed = isPayed,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
+        isSync = this.isSync,
     )
 }
 
@@ -27,6 +28,7 @@ fun Payment.toEntity() =
         dueYear = this.dueDate.year,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
+        isSync = this.isSync,
     )
 
 fun Iterable<Payment>.toEntity() = this.map { model ->

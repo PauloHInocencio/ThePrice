@@ -17,6 +17,9 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE billId == :billId")
     suspend fun getBillPayments(billId:String) : List<PaymentEntity>
 
+    @Query("SELECT * FROM payments WHERE isSync == false")
+    suspend fun getNotSynchronizedPayments() : List<PaymentEntity>
+
     @Query("SELECT * FROM payments WHERE billId == :billId AND dueMonth == :month AND dueYear == :year")
     suspend fun getPayment(billId:String, month:Int, year:Int) : PaymentEntity?
 
@@ -24,7 +27,10 @@ interface PaymentDao {
     suspend fun getPayment(id:String) : PaymentEntity?
 
     @Update
-    suspend fun updatePayment(payment: PaymentEntity)
+    suspend fun update(payment: PaymentEntity)
+
+    @Update
+    suspend fun update(payments: List<PaymentEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(payment: PaymentEntity)

@@ -27,6 +27,7 @@ object ThePriceApiMock {
     ) : HttpResponseData? {
         val path = request.url.encodedPath
         val method = request.method
+        val requestBody =  (request.body as? ByteReadChannel)?.readRemaining()?.readText()
 
         if (path.contains("api/v1/bills") && method == HttpMethod.Get) {
             return respond(
@@ -37,7 +38,6 @@ object ThePriceApiMock {
         }
 
         if (path.contains("api/v1/bills") && method == HttpMethod.Post) {
-            val requestBody =  (request.body as? ByteReadChannel)?.readRemaining()?.readText()
             requestBody?.let { Json.decodeFromString<BillDto>(it) } ?: errorResponse()
 
             return respond(
@@ -50,6 +50,15 @@ object ThePriceApiMock {
         if (path.contains("api/v1/payments") && method == HttpMethod.Get) {
             return respond(
                 content = MockedApiResponses.GET_PAYMENTS_MOCK_RESPONSE,
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        if (path.contains("api/v1/payments") && method == HttpMethod.Post) {
+            requestBody?.let { Json.decodeFromString<List<BillDto>>(it) } ?: errorResponse()
+            return respond(
+                content = "",
                 status = HttpStatusCode.OK,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )

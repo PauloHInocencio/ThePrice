@@ -71,6 +71,7 @@ koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", versi
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCompose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinComposeViewModel" }
+koin-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin"}
 
 # Compose
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
