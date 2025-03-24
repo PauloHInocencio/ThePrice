@@ -17,7 +17,7 @@ fun BillDto.toDomain() =
         billingStartDate = this.billingStartDate.toDayMonthAndYear(),
         createdAt = Instant.parse(this.createdAt).toEpochMilliseconds(),
         updatedAt = Instant.parse(this.updatedAt).toEpochMilliseconds(),
-        isSynced = this.isSynced,
+        isSynced = true, // Since it's a DTO from the cloud, it's already synchronized.
     )
 
 fun Iterable<BillDto>.toDomain() = this.map { it.toDomain() }
@@ -34,5 +34,4 @@ fun Bill.toDto() =
         billingStartDate = this.billingStartDate.toLocalDate().toString(),
         createdAt = Instant.fromEpochMilliseconds(this.createdAt).toString(),
         updatedAt = Instant.fromEpochMilliseconds(this.updatedAt).toString(),
-        isSynced = this.isSynced,
     )

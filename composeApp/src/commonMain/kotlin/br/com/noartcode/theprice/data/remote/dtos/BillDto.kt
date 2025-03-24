@@ -17,6 +17,4 @@ data class BillDto(
     val createdAt: String,
     @SerialName("updated_at")
     val updatedAt: String,
-    @SerialName("is_synced")
-    val isSynced:Boolean
 )

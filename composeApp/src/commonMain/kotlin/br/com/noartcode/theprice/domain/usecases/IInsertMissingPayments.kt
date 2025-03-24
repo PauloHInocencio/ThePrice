@@ -29,8 +29,8 @@ class InsertMissingPayments(
 
         val bills = billsRepository.getBillsBy(Bill.Status.ACTIVE)
             .first()
-            .filter {
-                it.billingStartDate > date || (it.billingStartDate.month == date.month && it.billingStartDate.year == date.year)
+            .filter { bill ->
+                bill.billingStartDate < date || (bill.billingStartDate.month == date.month && bill.billingStartDate.year == date.year)
             }
 
         val existingPayments = paymentsRepository
