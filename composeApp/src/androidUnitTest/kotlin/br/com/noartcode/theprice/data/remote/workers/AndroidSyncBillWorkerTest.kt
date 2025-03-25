@@ -4,8 +4,6 @@ import android.content.Context
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
-import androidx.work.WorkerFactory
-import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.workDataOf
 import br.com.noartcode.theprice.data.helpers.stubBills
@@ -15,7 +13,6 @@ import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -39,7 +36,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class AndroidBillSyncWorkerTest : KoinTest{
+class AndroidSyncBillWorkerTest : KoinTest{
 
     private val testScope = TestScope()
     private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
@@ -64,7 +61,6 @@ class AndroidBillSyncWorkerTest : KoinTest{
 
     @AfterTest
     fun after() {
-        Shadows.shadowOf(Looper.getMainLooper()).idle()
         database.close()
         Dispatchers.resetMain()
         stopKoin()

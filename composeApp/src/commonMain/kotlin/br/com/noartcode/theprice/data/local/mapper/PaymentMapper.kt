@@ -17,6 +17,8 @@ fun PaymentEntity.toDomain() : Payment {
     )
 }
 
+fun Iterable<PaymentEntity>.toDomain() = this.map { it.toDomain() }
+
 fun Payment.toEntity() =
     PaymentEntity(
         id = this.id,

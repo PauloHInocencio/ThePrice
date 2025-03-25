@@ -16,20 +16,27 @@ class PaymentLocalDataSourceImp (
 
     private val dao by lazy { database.getPaymentDao() }
 
-    override fun getMonthPayments(month: Int, year: Int): Flow<List<Payment>> = dao
-        .getMonthPayments(month = month, year = year)
-        .map { list -> list.map { it.toDomain() } }
+    override fun getMonthPayments(month: Int, year: Int): Flow<List<Payment>> {
+        return dao
+            .getMonthPayments(month = month, year = year)
+            .map { it.toDomain() }
+    }
+
+    override fun getAllPayments(): Flow<List<Payment>> {
+        return dao
+            .getAll()
+            .map { it.toDomain() }
+    }
+
 
     override suspend fun getBillPayments(billID: String): List<Payment> {
         return dao
             .getBillPayments(billID)
-            .map {
-                it.toDomain()
-            }
+            .toDomain()
     }
 
     override suspend fun getNotSynchronizedPayments(): List<Payment> {
-        return dao.getNotSynchronizedPayments().map { it.toDomain() }
+        return dao.getNotSynchronizedPayments().toDomain()
     }
 
     override suspend fun getPayment(billID: String, month: Int, year: Int): Payment? {

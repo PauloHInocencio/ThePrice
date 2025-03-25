@@ -20,6 +20,10 @@ class PaymentsRepositoryImp(
         TODO("Not yet implemented")
     }
 
+    override fun getAllPayments(): Flow<List<Payment>> =
+        local.getAllPayments()
+
+
     override suspend fun fetchAllPayments(): Resource<Unit> {
         return when(val result = remote.fetchAllPayments()) {
             is Resource.Success -> {

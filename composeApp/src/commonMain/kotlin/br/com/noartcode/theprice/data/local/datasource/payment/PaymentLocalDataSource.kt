@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PaymentLocalDataSource {
     fun getMonthPayments(month:Int, year:Int) : Flow<List<Payment>>
+    fun getAllPayments() : Flow<List<Payment>>
     suspend fun getBillPayments(billID:String) : List<Payment>
     suspend fun getNotSynchronizedPayments() : List<Payment>
     suspend fun getPayment(billID:String, month:Int, year:Int) : Payment?

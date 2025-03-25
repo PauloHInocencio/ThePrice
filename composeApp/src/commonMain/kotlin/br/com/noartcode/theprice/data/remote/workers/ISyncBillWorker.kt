@@ -5,4 +5,4 @@ interface ISyncBillWorker {
     fun sync(billID:String)
 }
 
-expect class SyncBillWorker :  ISyncBillWorker
+expect class  SyncBillWorker :  ISyncBillWorker

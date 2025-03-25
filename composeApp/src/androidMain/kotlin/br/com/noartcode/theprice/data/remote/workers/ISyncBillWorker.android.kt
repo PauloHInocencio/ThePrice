@@ -3,10 +3,8 @@ package br.com.noartcode.theprice.data.remote.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
-import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import br.com.noartcode.theprice.domain.repository.BillsRepository
