@@ -8,5 +8,6 @@ interface BillRemoteDataSource {
 
     suspend fun fetchAllBills() : Resource<List<BillDto>>
     suspend fun post(bill: Bill) : Resource<Unit>
+    suspend fun put(bill:Bill) : Resource<Unit>
 
 }

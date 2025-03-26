@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,12 +15,15 @@ interface IUpdateBill {
 
 class UpdateBill(
     private val localDataSource: BillLocalDataSource,
+    private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : IUpdateBill {
 
     override suspend fun invoke(bill: Bill) = withContext(dispatcher) {
         try {
-            return@withContext Resource.Success(localDataSource.update(bill))
+            val result = Resource.Success(localDataSource.update(bill))
+            syncUpdatedBillWorker.invoke(bill.id)
+            return@withContext result
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 exception = e,

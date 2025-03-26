@@ -11,7 +11,8 @@ interface BillsRepository {
     suspend fun fetchAllBills() : Resource<Unit>
     suspend fun insert(bill: Bill) : String
     suspend fun post(bill:Bill) : Resource<Unit>
-    suspend fun getBill(id:String) : Bill?
+    suspend fun put(bill:Bill) : Resource<Unit>
+    suspend fun get(id:String) : Bill?
     suspend fun update(bill:Bill)
     suspend fun delete(id:Int)
 }

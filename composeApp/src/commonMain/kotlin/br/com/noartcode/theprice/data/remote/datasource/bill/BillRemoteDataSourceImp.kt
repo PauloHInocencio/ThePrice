@@ -10,6 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
@@ -36,6 +37,18 @@ class BillRemoteDataSourceImp(
         safeCall {
             val accessToken = session.getAccessToken().first()
             client.post{
+                url("bills")
+                setBody(bill.toDto())
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
+                }
+            }
+        }
+
+    override suspend fun put(bill: Bill): Resource<Unit> =
+        safeCall {
+            val accessToken = session.getAccessToken().first()
+            client.put {
                 url("bills")
                 setBody(bill.toDto())
                 headers {

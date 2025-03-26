@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -13,51 +14,48 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-const val SYNC_BILL_WORK_INPUT_KEY = "bill_id"
+const val SYNC_UPDATED_BILL_INPUT_KEY = "sync_updated_bill"
 
-actual class SyncBillWorker(
-    private val manager:WorkManager,
-): ISyncBillWorker {
-    override fun sync(billID:String) {
-        val workRequest = OneTimeWorkRequestBuilder<AndroidSyncBillWorker>()
-            .setInputData(workDataOf(SYNC_BILL_WORK_INPUT_KEY to billID))
+actual class SyncUpdatedBillWorker(
+    private val manager: WorkManager,
+) : ISyncUpdatedBillWorker {
+    override fun invoke(billID: String) {
+        val workRequest = OneTimeWorkRequestBuilder<AndroidSyncUpdatedBillWorker>()
+            .setInputData(workDataOf(SYNC_UPDATED_BILL_INPUT_KEY to billID))
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
         manager.enqueueUniqueWork(billID, ExistingWorkPolicy.KEEP, workRequest)
     }
 }
 
 
-class AndroidSyncBillWorker(
-    private val appContext:Context,
-    private val params: WorkerParameters,
-    private val billRepository:BillsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-)  : CoroutineWorker(appContext, params){
-
-    override suspend fun doWork(): Result = withContext(ioDispatcher){
-        val billID = inputData
-            .getString(SYNC_BILL_WORK_INPUT_KEY)
+class AndroidSyncUpdatedBillWorker(
+    appContext:Context,
+    params: WorkerParameters,
+    private val billsRepository:BillsRepository,
+    private val ioDispatcher:CoroutineDispatcher = Dispatchers.IO,
+) : CoroutineWorker(appContext, params) {
+    override suspend fun doWork(): Result = withContext(ioDispatcher) {
+        val billId = inputData
+            .getString(SYNC_UPDATED_BILL_INPUT_KEY)
             ?: return@withContext Result.failure(workDataOf("error_message" to "No Bill ID founded"))
 
-        val bill = billRepository.get(billID)
+        val bill = billsRepository.get(billId)
             ?: return@withContext Result.failure(workDataOf("error_message" to "Bill not founded"))
 
-        return@withContext when(val result = billRepository.post(bill)) {
+        return@withContext when(val result = billsRepository.put(bill)) {
             is Resource.Error -> Result.failure(workDataOf("error_message" to result.message))
             is Resource.Loading -> Result.failure(workDataOf("error_message" to "Invalid response"))
             is Resource.Success -> {
                 try {
-                    billRepository.update(bill.copy(isSynced = true))
+                    billsRepository.update(bill.copy(isSynced = true))
                     Result.success()
                 } catch (e:Throwable) {
                     Result.failure(workDataOf("error_message" to "Error when trying update bill"))
                 }
-
             }
         }
     }
-
 }
-
 
 

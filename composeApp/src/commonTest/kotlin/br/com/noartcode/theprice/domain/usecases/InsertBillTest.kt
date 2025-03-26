@@ -89,7 +89,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
     fun `Bill Retrieval Should Return Correct Details`() = runTest {
         val id = (insertBill(stubBills[0]) as Resource.Success).data
 
-        with(billsRepository.getBill(id)) {
+        with(billsRepository.get(id)) {
             assertEquals(expected = "internet", this?.name)
             assertEquals(expected = "My internet bill.", this?.description)
             assertEquals(expected = "05/09/2024", this?.billingStartDate.toString())

@@ -42,7 +42,11 @@ class BillsRepositoryImp(
         return remote.post(bill)
     }
 
-    override suspend fun getBill(id: String): Bill? {
+    override suspend fun put(bill: Bill): Resource<Unit> {
+        return remote.put(bill)
+    }
+
+    override suspend fun get(id: String): Bill? {
         return local.getBill(id)
     }
 

@@ -39,10 +39,18 @@ object ThePriceApiMock {
 
         if (path.contains("api/v1/bills") && method == HttpMethod.Post) {
             requestBody?.let { Json.decodeFromString<BillDto>(it) } ?: errorResponse()
-
             return respond(
                 content = "",
                 status = HttpStatusCode.Created,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        if (path.contains("api/v1/bills") && method == HttpMethod.Put) {
+            requestBody?.let { Json.decodeFromString<BillDto>(it) } ?: errorResponse()
+            return respond(
+                content = "",
+                status = HttpStatusCode.OK,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
