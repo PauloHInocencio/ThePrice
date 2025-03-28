@@ -2,6 +2,8 @@ package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
+import br.com.noartcode.theprice.data.remote.workers.ISyncInitializerWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncInitializerWorker
 import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfSuccess
@@ -21,6 +23,7 @@ class SignInUser(
     private val accountManager: IAccountManager,
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: SessionStorage,
+    private val syncInitializerWorker: ISyncInitializerWorker,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ISignInUser {
 
@@ -33,6 +36,7 @@ class SignInUser(
                     localDataSource.saveUser(data.user)
                     localDataSource.saveAccessToken(data.accessToken)
                     localDataSource.saveRefreshToken(data.refreshToken)
+                    syncInitializerWorker()
                 }
                 emit(signInResult.map {  })
             }

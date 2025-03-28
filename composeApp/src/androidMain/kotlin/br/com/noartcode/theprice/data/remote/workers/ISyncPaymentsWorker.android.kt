@@ -18,7 +18,7 @@ const val SYNC_PAYMENTS_WORKER_NAME = "sync_payments"
 actual class SyncPaymentsWorker(
     private val manager: WorkManager,
 ) : ISyncPaymentsWorker {
-    override fun invoke() {
+    override fun sync() {
         val workRequest = OneTimeWorkRequestBuilder<AndroidSyncPaymentsWorker>()
             .build()
         manager.enqueueUniqueWork(SYNC_PAYMENTS_WORKER_NAME, ExistingWorkPolicy.REPLACE, workRequest)
@@ -43,7 +43,7 @@ class AndroidSyncPaymentsWorker(
 
             when(val result = paymentsRepository.post(paymentsToSync)) {
                 is Resource.Success ->  {
-                    paymentsRepository.update(paymentsToSync.map{ it.copy(isSync = true) })
+                    paymentsRepository.update(paymentsToSync.map{ it.copy(isSynced = true) })
                     return@withContext Result.success()
                 }
                 is Resource.Error -> return@withContext Result.failure(workDataOf("error_message" to result.message))

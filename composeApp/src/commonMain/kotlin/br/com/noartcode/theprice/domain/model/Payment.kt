@@ -8,5 +8,5 @@ data class Payment(
     val isPayed:Boolean,
     val createdAt: Long,
     val updatedAt: Long,
-    val isSync:Boolean,
+    val isSynced:Boolean,
 )

@@ -344,7 +344,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                     isPayed = false,
                     createdAt = 0L,
                     updatedAt = 0L,
-                    isSync = false,
+                    isSynced = false,
                 )
 
             )

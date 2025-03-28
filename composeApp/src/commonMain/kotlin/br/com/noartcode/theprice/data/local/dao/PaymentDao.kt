@@ -20,7 +20,7 @@ interface PaymentDao {
     @Query("SELECT * FROM payments WHERE billId == :billId")
     suspend fun getBillPayments(billId:String) : List<PaymentEntity>
 
-    @Query("SELECT * FROM payments WHERE isSync == false")
+    @Query("SELECT * FROM payments WHERE isSynced == false")
     suspend fun getNotSynchronizedPayments() : List<PaymentEntity>
 
     @Query("SELECT * FROM payments WHERE billId == :billId AND dueMonth == :month AND dueYear == :year")

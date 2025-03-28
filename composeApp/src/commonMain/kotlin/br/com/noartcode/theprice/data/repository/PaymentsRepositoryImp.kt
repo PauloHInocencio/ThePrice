@@ -39,16 +39,20 @@ class PaymentsRepositoryImp(
         return local.getNotSynchronizedPayments()
     }
 
-    override suspend fun getPayment(id: String): Payment? {
-        TODO("Not yet implemented")
+    override suspend fun get(id: String): Payment? {
+        return local.getPayment(id)
     }
 
-    override suspend fun insert(payment: Payment) {
-        local.insert(payment)
+    override suspend fun insert(payment: Payment) : String {
+        return local.insert(payment)
     }
 
     override suspend fun insert(payments: List<Payment>) {
         local.insert(payments)
+    }
+
+    override suspend fun put(payment: Payment): Resource<Unit> {
+        return remote.put(payment.toDto())
     }
 
     override suspend fun post(payments: List<Payment>) : Resource<Unit> {
@@ -57,6 +61,10 @@ class PaymentsRepositoryImp(
 
     override suspend fun update(payments: List<Payment>) {
         local.update(payments)
+    }
+
+    override suspend fun update(payment: Payment) {
+        local.update(payment)
     }
 
     override suspend fun delete(id: String) {

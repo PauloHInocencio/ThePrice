@@ -15,7 +15,7 @@ fun PaymentDto.toDomain() : Payment =
         isPayed = this.isPayed,
         createdAt = Instant.parse(this.createdAt).toEpochMilliseconds(),
         updatedAt = Instant.parse(this.updatedAt).toEpochMilliseconds(),
-        isSync = true //TODO("Not sure if I need get this information from the server")
+        isSynced = true //TODO("Not sure if I need get this information from the server")
     )
 
 fun Iterable<PaymentDto>.toDomain() = this.map { it.toDomain() }

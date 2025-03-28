@@ -7,4 +7,5 @@ interface PaymentRemoteDataSource {
 
     suspend fun fetchAllPayments() : Resource<List<PaymentDto>>
     suspend fun post(payments:List<PaymentDto>) : Resource<Unit>
+    suspend fun put(payment:PaymentDto) : Resource<Unit>
 }

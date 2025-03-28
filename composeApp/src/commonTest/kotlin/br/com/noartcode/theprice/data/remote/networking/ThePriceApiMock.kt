@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.remote.networking
 
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -65,6 +66,15 @@ object ThePriceApiMock {
 
         if (path.contains("api/v1/payments") && method == HttpMethod.Post) {
             requestBody?.let { Json.decodeFromString<List<BillDto>>(it) } ?: errorResponse()
+            return respond(
+                content = "",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        if(path.contains("api/v1/payments") && method == HttpMethod.Put) {
+            requestBody?.let { Json.decodeFromString<PaymentDto>(it) } ?: errorResponse()
             return respond(
                 content = "",
                 status = HttpStatusCode.OK,

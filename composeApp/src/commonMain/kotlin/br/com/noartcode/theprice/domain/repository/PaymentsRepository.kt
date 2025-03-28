@@ -10,10 +10,12 @@ interface PaymentsRepository {
    fun getAllPayments() : Flow<List<Payment>>
    suspend fun fetchAllPayments() : Resource<Unit>
    suspend fun getNotSynchronizedPayments() : List<Payment>
-   suspend fun getPayment(id:String) : Payment?
-   suspend fun insert(payment: Payment)
+   suspend fun get(id:String) : Payment?
+   suspend fun insert(payment: Payment) : String
    suspend fun insert(payments: List<Payment>)
+   suspend fun put(payment: Payment) : Resource<Unit>
    suspend fun post(payments: List<Payment>) : Resource<Unit>
    suspend fun update(payments: List<Payment>)
+   suspend fun update(payment: Payment)
    suspend fun delete(id:String)
 }

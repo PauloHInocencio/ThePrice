@@ -27,8 +27,8 @@ actual class SyncInitializerWorker(
 }
 
 class AndroidSyncInitializerWorker(
-    private val appContext: Context,
-    private val params: WorkerParameters,
+    appContext: Context,
+    params: WorkerParameters,
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,

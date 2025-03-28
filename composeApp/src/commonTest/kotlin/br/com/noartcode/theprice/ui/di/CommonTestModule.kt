@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
@@ -33,6 +34,13 @@ fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) 
     single<ISyncPaymentsWorker> {
         mock<ISyncPaymentsWorker>(MockMode.autoUnit)
     }
+
+    single<ISyncUpdatedPaymentWorker> {
+        mock<ISyncUpdatedPaymentWorker>().apply {
+            every { this@apply.sync(paymentID = any()) } returns Unit
+        }
+    }
+
     single<SessionStorage> {
         mock<SessionStorage>().apply {
             every { this@apply.getAccessToken() } returns flowOf("access_token")

@@ -6,11 +6,12 @@ import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
-import io.ktor.http.headers
 import kotlinx.coroutines.flow.first
 
 class PaymentRemoteDataSourceImp(
@@ -36,6 +37,18 @@ class PaymentRemoteDataSourceImp(
                 url("payments")
                 setBody(payments)
                 headers{
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
+                }
+            }
+        }
+
+    override suspend fun put(payment: PaymentDto): Resource<Unit> =
+        safeCall {
+            val accessToken = session.getAccessToken().first()
+            client.put {
+                url("payments")
+                setBody(payment)
+                headers {
                     append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }
             }

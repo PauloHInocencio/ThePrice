@@ -101,7 +101,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -110,7 +110,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -119,7 +119,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -128,7 +128,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -137,7 +137,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -146,7 +146,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -155,7 +155,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         ),
         Payment(
             billId = "",
@@ -164,7 +164,7 @@ val stubPayments:List<Payment> by lazy {
             isPayed = false,
             createdAt = 0L,
             updatedAt = 0L,
-            isSync = false,
+            isSynced = false,
         )
     )
 }

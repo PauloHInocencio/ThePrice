@@ -31,5 +31,5 @@ data class PaymentEntity(
     val price:Long,
     val createdAt:Long,
     val updatedAt:Long,
-    val isSync:Boolean,
+    val isSynced:Boolean,
 )

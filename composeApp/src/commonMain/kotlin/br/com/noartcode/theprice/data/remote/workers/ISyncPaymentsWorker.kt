@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.data.remote.workers
 
 interface ISyncPaymentsWorker {
-    operator fun invoke()
+     fun sync()
 }
 
 expect class SyncPaymentsWorker : ISyncPaymentsWorker

@@ -92,14 +92,14 @@ fun commonModule() = module {
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
     single<IInsertBill> { InsertBill(repository = get(), worker = get()) }
-    single<IUpdateBill> { UpdateBill(localDataSource = get(), syncUpdatedBillWorker = get()) }
+    single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get())}
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get() )}
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(datasource = get())}
-    single<IUpdatePaymentStatus> { UpdatePaymentStatus(datasource = get()) }
-    single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(localDataSource = get(), epochFormatter = get() ) }
+    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get())}
+    single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get()) }
+    single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserInfo> { IGetUserInfo(get<SessionStorage>()::getUser) }
@@ -107,7 +107,8 @@ fun commonModule() = module {
         SignInUser(
             accountManager = get(),
             localDataSource = get(),
-            remoteDataSource = get()
+            remoteDataSource = get(),
+            syncInitializerWorker = get(),
         )
     }
     single<ILogOutUser> {

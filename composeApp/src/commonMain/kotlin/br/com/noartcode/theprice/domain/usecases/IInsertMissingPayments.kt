@@ -50,14 +50,14 @@ class InsertMissingPayments(
                         isPayed = false,
                         createdAt = timeStamp,
                         updatedAt = timeStamp,
-                        isSync = false,
+                        isSynced = false,
                     )
                 )
             }
         }
 
         paymentsRepository.insert(paymentsToAdd)
-        syncPaymentsWorker()
+        syncPaymentsWorker.sync()
     }
 
 }

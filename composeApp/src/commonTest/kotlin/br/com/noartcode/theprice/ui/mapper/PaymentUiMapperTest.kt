@@ -84,7 +84,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
                 isPayed = true,
                 createdAt = 0L,
                 updatedAt = 0L,
-                isSync = false,
+                isSynced = false,
             )
         )
 
@@ -115,7 +115,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
                 isPayed = false,
                 createdAt = 0L,
                 updatedAt = 0L,
-                isSync = false,
+                isSynced = false,
             )
         )
 
@@ -146,7 +146,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
                 isPayed = false,
                 createdAt = 0L,
                 updatedAt = 0L,
-                isSync = false,
+                isSynced = false,
             )
         )
 

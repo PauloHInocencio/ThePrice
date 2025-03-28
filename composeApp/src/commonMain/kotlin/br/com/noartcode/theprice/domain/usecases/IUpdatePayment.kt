@@ -1,7 +1,8 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -16,14 +17,16 @@ interface IUpdatePayment {
 
 
 class UpdatePayment(
-    private val datasource: PaymentLocalDataSource,
+    private val repository: PaymentsRepository,
+    private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : IUpdatePayment {
     override suspend fun invoke(
         payment: Payment
     ): Resource<Unit> = withContext(dispatcher) {
         try {
-            datasource.update(payment)
+            repository.update(payment)
+            syncUpdatedPaymentWorker.sync(payment.id)
             return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(
