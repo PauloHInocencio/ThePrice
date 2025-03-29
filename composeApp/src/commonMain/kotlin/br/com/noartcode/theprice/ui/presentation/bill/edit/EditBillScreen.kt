@@ -15,8 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import br.com.noartcode.theprice.ui.presentation.bill.add.BillScreenContent
-import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
-import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillUiState
 import br.com.noartcode.theprice.ui.views.ConfirmBillDeletionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)

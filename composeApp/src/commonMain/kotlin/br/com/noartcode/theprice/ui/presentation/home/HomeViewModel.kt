@@ -12,10 +12,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.PAYED
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -73,7 +70,7 @@ class HomeViewModel(
         initialValue = HomeUiState()
     )
 
-    fun onEvent(event:HomeEvent) = viewModelScope.launch{
+    fun onEvent(event: HomeEvent) = viewModelScope.launch{
         when(event) {
             HomeEvent.OnBackToPreviousMonth -> {
                 _currentDate.update {

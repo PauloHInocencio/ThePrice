@@ -1,9 +1,8 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account
+package br.com.noartcode.theprice.ui.presentation.account
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountUiState
 
 @Preview
 @Composable

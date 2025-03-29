@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account.model
+package br.com.noartcode.theprice.ui.presentation.account
 
 import br.com.noartcode.theprice.domain.model.User
 

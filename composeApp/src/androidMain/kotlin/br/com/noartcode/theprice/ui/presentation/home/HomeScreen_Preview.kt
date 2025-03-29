@@ -3,9 +3,6 @@ package br.com.noartcode.theprice.ui.presentation.home
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 
 @Preview
 @Composable

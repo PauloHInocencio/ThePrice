@@ -2,7 +2,6 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditUiState
 
 @Preview
 @Composable

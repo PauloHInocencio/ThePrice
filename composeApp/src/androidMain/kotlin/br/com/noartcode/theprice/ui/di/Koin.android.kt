@@ -12,8 +12,8 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
-import br.com.noartcode.theprice.ui.presentation.auth.account.AccountManager
-import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
+import br.com.noartcode.theprice.ui.presentation.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.android.ext.koin.androidContext

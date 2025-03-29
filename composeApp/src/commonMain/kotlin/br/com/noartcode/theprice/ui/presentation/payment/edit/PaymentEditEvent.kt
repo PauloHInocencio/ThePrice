@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.payment.edit.model
+package br.com.noartcode.theprice.ui.presentation.payment.edit
 
 
 sealed interface PaymentEditEvent {

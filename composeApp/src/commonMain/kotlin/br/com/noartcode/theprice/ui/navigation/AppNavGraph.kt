@@ -21,12 +21,12 @@ import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillScreen
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillScreen
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
-import br.com.noartcode.theprice.ui.presentation.bill.edit.model.EditBillEvent
+import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillEvent
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditScreen
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
-import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
-import br.com.noartcode.theprice.ui.presentation.auth.account.AccountScreen
-import br.com.noartcode.theprice.ui.presentation.auth.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditEvent
+import br.com.noartcode.theprice.ui.presentation.account.AccountScreen
+import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 

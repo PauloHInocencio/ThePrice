@@ -11,8 +11,6 @@ import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
-import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
-import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillUiState
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.flow.MutableStateFlow

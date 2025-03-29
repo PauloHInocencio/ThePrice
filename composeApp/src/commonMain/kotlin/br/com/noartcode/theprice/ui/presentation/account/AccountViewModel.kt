@@ -1,13 +1,11 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account
+package br.com.noartcode.theprice.ui.presentation.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
-import br.com.noartcode.theprice.domain.usecases.ILogOutUser
-import br.com.noartcode.theprice.domain.usecases.ISignInUser
-import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountEvent
-import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountUiState
+import br.com.noartcode.theprice.domain.usecases.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,9 +17,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class AccountViewModel(
-    private val signInUser: ISignInUser,
+    private val signInUser: ILoginUser,
     private val getUserInfo: IGetUserInfo,
-    private val logOutUser: ILogOutUser,
+    private val logOutUser: ILogoutUser,
 ) : ViewModel() {
 
     private val user:StateFlow<User?> = getUserInfo()

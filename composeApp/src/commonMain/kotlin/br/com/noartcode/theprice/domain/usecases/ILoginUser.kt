@@ -3,8 +3,7 @@ package br.com.noartcode.theprice.domain.usecases
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.data.remote.workers.ISyncInitializerWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncInitializerWorker
-import br.com.noartcode.theprice.ui.presentation.auth.account.IAccountManager
+import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfSuccess
 import br.com.noartcode.theprice.util.map
@@ -15,21 +14,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-interface ISignInUser {
+interface ILoginUser {
     operator fun invoke() : Flow<Resource<Unit>>
 }
 
-class SignInUser(
+class LoginUser(
     private val accountManager: IAccountManager,
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: SessionStorage,
     private val syncInitializerWorker: ISyncInitializerWorker,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : ISignInUser {
+) : ILoginUser {
 
     override fun invoke(): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
-        when(val googleResult = accountManager.singInWithGoogle()) {
+        when(val googleResult = accountManager.signInWithGoogle()) {
             is Resource.Success -> {
                 val (tokenId, rawNonce) = googleResult.data
                 val signInResult = remoteDataSource.signUpUser(tokenId, rawNonce).doIfSuccess { data ->

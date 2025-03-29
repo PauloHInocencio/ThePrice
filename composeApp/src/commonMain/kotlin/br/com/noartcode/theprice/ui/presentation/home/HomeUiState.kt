@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.home.model
+package br.com.noartcode.theprice.ui.presentation.home
 
 
 data class HomeUiState(

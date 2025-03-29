@@ -1,6 +1,6 @@
-package br.com.noartcode.theprice.ui.presentation.payment.edit.model
+package br.com.noartcode.theprice.ui.presentation.payment.edit
 
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 
 
 data class PaymentEditUiState(

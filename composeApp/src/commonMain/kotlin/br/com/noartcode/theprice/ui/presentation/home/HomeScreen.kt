@@ -17,9 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeUiState
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
 import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
@@ -28,7 +25,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    state:HomeUiState,
+    state: HomeUiState,
     onEvent: (HomeEvent) -> Unit,
     onNavigateToNewBill: () -> Unit,
     onNavigateToEditPayment: (paymentId:String) -> Unit,
@@ -58,7 +55,7 @@ fun HomeScreen(
             LazyColumn {
                 itemsIndexed(
                     items = state.payments,
-                    key = { _, payment:PaymentUi-> payment.id }) { _, payment ->
+                    key = { _, payment: PaymentUi -> payment.id }) { _, payment ->
                     PaymentItemView(
                         payment = payment,
                         onStatusClicked = {

@@ -1,9 +1,7 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account
+package br.com.noartcode.theprice.ui.presentation.account
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -35,8 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.noartcode.theprice.domain.model.User
-import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountEvent
-import br.com.noartcode.theprice.ui.presentation.auth.account.model.AccountUiState
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 
@@ -64,7 +60,7 @@ fun AccountScreen(
                             TextButton(
                                 onClick = {
                                     data.dismiss()
-                                    onEvent( AccountEvent.ErrorMessageDismissed)
+                                    onEvent(AccountEvent.ErrorMessageDismissed)
                                 }
                             ) {
                                 Text("Ok")

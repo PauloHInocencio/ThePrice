@@ -3,8 +3,7 @@ package br.com.noartcode.theprice.ui.presentation.home.views
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
-import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 
 @Preview
 @Composable

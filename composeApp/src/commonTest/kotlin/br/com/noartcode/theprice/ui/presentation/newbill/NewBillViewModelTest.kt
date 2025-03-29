@@ -8,7 +8,7 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
-import br.com.noartcode.theprice.ui.presentation.bill.add.model.AddBillEvent
+import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

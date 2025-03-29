@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account.model
+package br.com.noartcode.theprice.ui.presentation.account
 
 sealed interface AccountEvent {
     data object SignInWithGoogle : AccountEvent

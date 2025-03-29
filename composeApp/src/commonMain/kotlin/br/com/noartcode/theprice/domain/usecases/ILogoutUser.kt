@@ -10,15 +10,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-interface ILogOutUser {
+interface ILogoutUser {
     operator fun invoke() : Flow<Resource<Unit>>
 }
 
-class LogOutUser(
+class LogoutUser(
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: SessionStorage,
     private val dispatcher:CoroutineDispatcher = Dispatchers.IO
-) : ILogOutUser {
+) : ILogoutUser {
     override fun invoke(): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
         when(val result = remoteDataSource.logoutUser()) {

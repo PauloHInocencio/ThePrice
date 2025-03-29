@@ -15,8 +15,6 @@ import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
-import br.com.noartcode.theprice.ui.presentation.home.model.HomeEvent
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -257,7 +255,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             assertEquals(expected = PaymentUi.Status.OVERDUE, originalPayment.status)
 
             // Simulate user changing payment status
-            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
+            viewModel.onEvent(
+                HomeEvent.OnPaymentStatusClicked(
                 id = originalPayment.id,
                 status = originalPayment.status,
             ))
@@ -320,7 +319,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             }
 
             // Simulate user changing payment status
-            viewModel.onEvent(HomeEvent.OnPaymentStatusClicked(
+            viewModel.onEvent(
+                HomeEvent.OnPaymentStatusClicked(
                 id = originalPayment.id,
                 status = originalPayment.status,
             ))

@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.auth.account
+package br.com.noartcode.theprice.ui.presentation.account
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -20,7 +20,7 @@ import java.util.UUID
 actual class AccountManager(
     private val context: Context
 ) : IAccountManager {
-    override suspend fun singInWithGoogle(): Resource<Pair<String, String>> {
+    override suspend fun signInWithGoogle(): Resource<Pair<String, String>> {
        return try {
             val activity = (context as ThePriceApp).getCurrentActivity() ?: return Resource.Error(
                 message = "The application has failed to start the authorization process."

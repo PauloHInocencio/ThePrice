@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.bill.add.model
+package br.com.noartcode.theprice.ui.presentation.bill.add
 
 sealed class AddBillEvent {
     data class OnPriceChanged(val value:String) : AddBillEvent()

@@ -13,10 +13,8 @@ import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi.Status.*
-import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditEvent
-import br.com.noartcode.theprice.ui.presentation.payment.edit.model.PaymentEditUiState
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -36,7 +34,7 @@ class PaymentEditViewModel(
 
     private var payment:Payment? = null
     private var bill:Bill? = null
-    private var paymentUi:PaymentUi? = null
+    private var paymentUi: PaymentUi? = null
 
 
     private val _state = MutableStateFlow(PaymentEditUiState())

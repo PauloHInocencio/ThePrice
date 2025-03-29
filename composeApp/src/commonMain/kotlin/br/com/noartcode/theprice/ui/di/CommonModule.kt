@@ -40,29 +40,29 @@ import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
-import br.com.noartcode.theprice.domain.usecases.ILogOutUser
+import br.com.noartcode.theprice.domain.usecases.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
-import br.com.noartcode.theprice.domain.usecases.ISignInUser
+import br.com.noartcode.theprice.domain.usecases.ILoginUser
 import br.com.noartcode.theprice.domain.usecases.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.InsertBill
 import br.com.noartcode.theprice.domain.usecases.InsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.InsertMissingPayments
-import br.com.noartcode.theprice.domain.usecases.LogOutUser
+import br.com.noartcode.theprice.domain.usecases.LogoutUser
 import br.com.noartcode.theprice.domain.usecases.MoveMonth
-import br.com.noartcode.theprice.domain.usecases.SignInUser
+import br.com.noartcode.theprice.domain.usecases.LoginUser
 import br.com.noartcode.theprice.domain.usecases.UpdateBill
 import br.com.noartcode.theprice.domain.usecases.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.UpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
-import br.com.noartcode.theprice.ui.presentation.home.model.PaymentUi
+import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
-import br.com.noartcode.theprice.ui.presentation.auth.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -103,16 +103,16 @@ fun commonModule() = module {
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserInfo> { IGetUserInfo(get<SessionStorage>()::getUser) }
-    single<ISignInUser> {
-        SignInUser(
+    single<ILoginUser> {
+        LoginUser(
             accountManager = get(),
             localDataSource = get(),
             remoteDataSource = get(),
             syncInitializerWorker = get(),
         )
     }
-    single<ILogOutUser> {
-        LogOutUser(
+    single<ILogoutUser> {
+        LogoutUser(
             localDataSource = get(),
             remoteDataSource = get()
         )

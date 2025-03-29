@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.ui.presentation.bill.edit.model
+package br.com.noartcode.theprice.ui.presentation.bill.edit
 
 sealed interface EditBillEvent {
     data class OnPriceChanged(val value:String) : EditBillEvent
