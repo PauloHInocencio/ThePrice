@@ -30,8 +30,8 @@ class AccountViewModel(
         )
 
 
-    private val _state = MutableStateFlow(AccountUiState())
-    val uiState = combine(_state, user) { s, u ->
+    private val _uiState = MutableStateFlow(AccountUiState())
+    val uiState = combine(_uiState, user) { s, u ->
         AccountUiState(
             user = u ?: s.user,
             singInStatus = s.singInStatus,
@@ -52,11 +52,11 @@ class AccountViewModel(
                     .onEach { result ->
                         when(result){
                             is Resource.Success -> {
-                                _state.update { it.copy(singInStatus = "User Login succeed", loading = false) }
+                                _uiState.update { it.copy(singInStatus = "User Login succeed", loading = false) }
                             }
-                            is Resource.Error -> _state.update { it.copy(errorMessage = result.message, loading = false) }
+                            is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
                             Resource.Loading ->  {
-                                _state.update { it.copy(loading = true) }
+                                _uiState.update { it.copy(loading = true) }
                             }
                        }
                    }.launchIn(viewModelScope)
@@ -67,16 +67,16 @@ class AccountViewModel(
                     .onEach { result ->
                         when(result) {
                             is Resource.Success -> {
-                                _state.update { AccountUiState() }
+                                _uiState.update { AccountUiState() }
                             }
-                            is Resource.Error -> _state.update { it.copy(errorMessage = result.message, loading = false) }
-                            Resource.Loading -> _state.update { it.copy(loading = true) }
+                            is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
+                            Resource.Loading -> _uiState.update { it.copy(loading = true) }
                         }
                     }.launchIn(viewModelScope)
             }
 
             AccountEvent.ErrorMessageDismissed -> {
-                _state.update { it.copy(errorMessage = null) }
+                _uiState.update { it.copy(errorMessage = null) }
             }
         }
     }

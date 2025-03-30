@@ -6,6 +6,7 @@ import theprice.composeapp.generated.resources.account
 import theprice.composeapp.generated.resources.edit_bill
 import theprice.composeapp.generated.resources.edit_payment
 import theprice.composeapp.generated.resources.home
+import theprice.composeapp.generated.resources.login
 import theprice.composeapp.generated.resources.new_bill
 
 enum class Routes(val title: StringResource) {
@@ -14,4 +15,5 @@ enum class Routes(val title: StringResource) {
     EDIT_PAYMENT(title = Res.string.edit_payment),
     EDIT_BILL(title = Res.string.edit_bill),
     ACCOUNT(title = Res.string.account),
+    LOGIN(title = Res.string.login),
 }

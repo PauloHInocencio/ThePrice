@@ -20,10 +20,10 @@ import br.com.noartcode.theprice.ui.views.ConfirmBillDeletionDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditBillScreen(
-    modifier: Modifier = Modifier,
     state: EditBillUiState,
     onEvent: (event: EditBillEvent) -> Unit,
-    onNavigateHome: () -> Unit
+    onNavigateHome: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {

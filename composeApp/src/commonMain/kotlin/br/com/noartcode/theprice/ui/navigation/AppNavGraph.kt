@@ -27,6 +27,8 @@ import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewMod
 import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditEvent
 import br.com.noartcode.theprice.ui.presentation.account.AccountScreen
 import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.login.LoginScreen
+import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -173,6 +175,36 @@ fun AppNavGraph(
                 onEvent = viewModel::onEvent,
                 onNavigateBack = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+
+        composable(
+            route = Routes.ACCOUNT.name,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tween(500)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    tween(300)
+                )
+            }
+        ) {
+            val viewModel = koinViewModel<LoginViewModel>()
+            LoginScreen(
+                uiState = viewModel.uiState.collectAsState().value,
+                onEvent = viewModel::onEvent,
+                onNavigateToHome = {
+                    navController.navigate(Routes.HOME.name) {
+                        popUpTo(Routes.HOME.name) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
