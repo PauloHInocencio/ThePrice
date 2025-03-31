@@ -27,7 +27,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeUiState,
     onEvent: (HomeEvent) -> Unit,
-    onNavigateToNewBill: () -> Unit,
+    onNavigateToAddBill: () -> Unit,
     onNavigateToEditPayment: (paymentId:String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -70,7 +70,7 @@ fun HomeScreen(
                 }
             }
             BottomCircularButton(
-                onClick = onNavigateToNewBill
+                onClick = onNavigateToAddBill
             )
         }
     }

@@ -61,8 +61,9 @@ import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
-import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
+import br.com.noartcode.theprice.ui.presentation.payment.edit.EditPaymentViewModel
 import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -152,7 +153,7 @@ fun viewModelsModule() = module {
         )
     }
     viewModel {
-        PaymentEditViewModel(
+        EditPaymentViewModel(
             getPayment = get(),
             getBill = get(),
             epochFormatter = get(),
@@ -169,6 +170,12 @@ fun viewModelsModule() = module {
             signInUser = get(),
             getUserInfo = get(),
             logOutUser = get()
+        )
+    }
+
+    viewModel {
+        LoginViewModel(
+            loginInUser = get(),
         )
     }
 }

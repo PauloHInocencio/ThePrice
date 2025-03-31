@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class PaymentEditViewModel(
+class EditPaymentViewModel(
     private val getPayment: IGetPaymentByID,
     private val getBill: IGetBillByID,
     private val currencyFormatter: ICurrencyFormatter,
@@ -37,17 +37,17 @@ class PaymentEditViewModel(
     private var paymentUi: PaymentUi? = null
 
 
-    private val _state = MutableStateFlow(PaymentEditUiState())
+    private val _state = MutableStateFlow(EditPaymentUiState())
     val uiState = _state.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = PaymentEditUiState()
+        initialValue = EditPaymentUiState()
     )
 
-    fun onEvent(event: PaymentEditEvent) = viewModelScope.launch {
+    fun onEvent(event: EditPaymentEvent) = viewModelScope.launch {
         when(event){
 
-            is PaymentEditEvent.OnPaidAtDateChanged -> {
+            is EditPaymentEvent.OnPaidAtDateChanged -> {
                 val originalPaidDate = (payment!!.dueDate).let { date -> epochFormatter.from(date) }
                 _state.update {
                     it.copy(
@@ -58,7 +58,7 @@ class PaymentEditViewModel(
                 }
             }
 
-            is PaymentEditEvent.OnPriceChanged -> {
+            is EditPaymentEvent.OnPriceChanged -> {
                 val value = currencyFormatter.clenup(event.value)
                 val newPrice = currencyFormatter.format(value)
                 _state.update {
@@ -70,7 +70,7 @@ class PaymentEditViewModel(
                 }
             }
 
-            is PaymentEditEvent.OnStatusChanged -> {
+            is EditPaymentEvent.OnStatusChanged -> {
                 val newStatus = generateNewPaymentStatus(_state.value.paymentStatus)
                 _state.update {
                     it.copy(
@@ -80,7 +80,7 @@ class PaymentEditViewModel(
                 }
             }
 
-            PaymentEditEvent.OnSave -> {
+            EditPaymentEvent.OnSave -> {
                 _state.update {
                     it.copy(
                         askingConfirmation = true,
@@ -88,16 +88,16 @@ class PaymentEditViewModel(
                 }
             }
 
-            is PaymentEditEvent.OnGetPayment -> {
+            is EditPaymentEvent.OnGetPayment -> {
                 setupPayment(event.id)
             }
 
 
-            PaymentEditEvent.OnChangeAllFuturePayments -> {
+            EditPaymentEvent.OnChangeAllFuturePayments -> {
 
             }
 
-            PaymentEditEvent.OnChangeOnlyCurrentPayment -> {
+            EditPaymentEvent.OnChangeOnlyCurrentPayment -> {
                 _state.update {
                     it.copy(
                         askingConfirmation = false,
@@ -125,7 +125,7 @@ class PaymentEditViewModel(
                 }
             }
 
-            PaymentEditEvent.OnDismissConfirmationDialog -> {
+            EditPaymentEvent.OnDismissConfirmationDialog -> {
                 _state.update {
                     it.copy(
                         askingConfirmation = false,

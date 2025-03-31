@@ -68,7 +68,7 @@ class HomeScreenTest : KoinTest, RobolectricTests() {
             HomeScreen(
                 state = viewModel.uiState.collectAsState().value,
                 onEvent = viewModel::onEvent,
-                onNavigateToNewBill = {},
+                onNavigateToAddBill = {},
                 onNavigateToEditPayment = {}
             )
         }

@@ -6,8 +6,8 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview
 @Composable
 fun PaymentEditScreen_Preview() {
-    PaymentEditScreen(
-        state = PaymentEditUiState(
+    EditPaymentScreen(
+        state = EditPaymentUiState(
             billName = "Internet",
             payedValue = "R$ 110,00",
             paidAtDate = 1727168591813,

@@ -3,10 +3,11 @@ package br.com.noartcode.theprice
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import androidx.work.Configuration
 import br.com.noartcode.theprice.ui.di.KoinInitializer
 import java.lang.ref.WeakReference
 
-class ThePriceApp : Application() {
+class ThePriceApp : Application(),  Configuration.Provider {
 
     private var currentActivity: WeakReference<Activity?> = WeakReference(null)
 
@@ -50,4 +51,9 @@ class ThePriceApp : Application() {
 
         })
     }
+
+    override val workManagerConfiguration: Configuration
+        get() =  Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.DEBUG)
+            .build()
 }

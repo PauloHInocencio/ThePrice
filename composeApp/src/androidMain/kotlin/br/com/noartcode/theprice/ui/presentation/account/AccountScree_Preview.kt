@@ -11,6 +11,7 @@ fun AccountScreen_Preview() {
         modifier = Modifier,
         state = AccountUiState(),
         onEvent = {},
-        onNavigateBack = {},
+        onNavigateToLogin = {},
+        onNavigateToHome = {},
     )
 }

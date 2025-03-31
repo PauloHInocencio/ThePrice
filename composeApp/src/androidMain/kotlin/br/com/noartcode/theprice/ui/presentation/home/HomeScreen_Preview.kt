@@ -36,7 +36,7 @@ fun HomeScreen_Preview() {
                 )
             ) ,
             onEvent = { },
-            onNavigateToNewBill = {},
+            onNavigateToAddBill = {},
             onNavigateToEditPayment = {},
         )
     }

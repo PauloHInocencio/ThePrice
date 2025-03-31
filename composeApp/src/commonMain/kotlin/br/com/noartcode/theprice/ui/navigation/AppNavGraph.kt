@@ -1,213 +1,60 @@
 package br.com.noartcode.theprice.ui.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import br.com.noartcode.theprice.ui.presentation.home.HomeScreen
-import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
-import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillScreen
-import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
-import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillScreen
-import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
-import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillEvent
-import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditScreen
-import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditViewModel
-import br.com.noartcode.theprice.ui.presentation.payment.edit.PaymentEditEvent
-import br.com.noartcode.theprice.ui.presentation.account.AccountScreen
-import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
-import br.com.noartcode.theprice.ui.presentation.login.LoginScreen
-import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
+import br.com.noartcode.theprice.ui.presentation.account.composeAccountScreen
+import br.com.noartcode.theprice.ui.presentation.bill.add.composeAddBillScreen
+import br.com.noartcode.theprice.ui.presentation.bill.add.navigateToAddBill
+import br.com.noartcode.theprice.ui.presentation.bill.edit.composeEditBillScreen
+import br.com.noartcode.theprice.ui.presentation.bill.edit.navigateToEditBillScreen
+import br.com.noartcode.theprice.ui.presentation.home.composeHomeScreen
+import br.com.noartcode.theprice.ui.presentation.home.navigateToHome
+import br.com.noartcode.theprice.ui.presentation.login.LoginDestination
+import br.com.noartcode.theprice.ui.presentation.login.composeLoginScreen
+import br.com.noartcode.theprice.ui.presentation.login.navigateToLogin
+import br.com.noartcode.theprice.ui.presentation.payment.edit.composeEditPaymentScreen
+import br.com.noartcode.theprice.ui.presentation.payment.edit.navigateToEditPaymentScreen
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
-
-    val backStackEntry by navController.currentBackStackEntryAsState()
-
     NavHost(
         navController = navController,
-        startDestination = Routes.ACCOUNT.name,
+        startDestination = LoginDestination,
         modifier = modifier.fillMaxSize()
     ) {
-        composable(
-            route = Routes.HOME.name
-        ) {
-            val viewModel = koinViewModel<HomeViewModel>()
-            HomeScreen(
-                state = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateToNewBill = {
-                    navController.navigate(Routes.NEW_BILL.name)
-                },
-                onNavigateToEditPayment = { paymentId ->
-                    navController.navigate("${Routes.EDIT_PAYMENT.name}?paymentId=$paymentId")
-                }
-            )
-        }
 
-        composable(
-            route = Routes.NEW_BILL.name,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    tween(300)
-                )
-            }
-        ) {
-            val viewModel = koinViewModel<AddBillViewModel>()
-            AddBillScreen(
-                state = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+        composeHomeScreen(
+            onNavigateToEditPayment = { id -> navController.navigateToEditPaymentScreen(id) },
+            onNavigateToAddBill = { navController.navigateToAddBill() }
+        )
 
-        composable(
-            route = "${Routes.EDIT_PAYMENT.name}?paymentId={paymentId}",
-            arguments = listOf(navArgument("paymentId"){ type = NavType.LongType }),
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    tween(300)
-                )
-            }
-        ){
-            val viewModel = koinViewModel<PaymentEditViewModel>()
-            PaymentEditScreen(
-                state = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateToEditBill = { billId ->
-                    navController.navigate("${Routes.EDIT_BILL.name}?billId=$billId")
-                },
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-            LaunchedEffect(Unit){
-                val paymentId = checkNotNull(backStackEntry?.arguments?.getString("paymentId"))
-                viewModel.onEvent(PaymentEditEvent.OnGetPayment(paymentId))
-            }
-        }
+        composeAddBillScreen(
+            onNavigateBack = { navController.popBackStack() }
+        )
 
-        composable(
-            route = "${Routes.EDIT_BILL.name}?billId={billId}",
-            arguments = listOf(navArgument("billId"){ type = NavType.LongType }),
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    tween(300)
-                )
-            }
-        ){
-            val viewModel = koinViewModel<EditBillViewModel>()
-            EditBillScreen(
-                state = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateHome = {
-                    navController.navigate(Routes.HOME.name) {
-                        popUpTo(Routes.HOME.name) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
-            LaunchedEffect(Unit){
-                val billId = checkNotNull(backStackEntry?.arguments?.getString("billId"))
-                viewModel.onEvent(EditBillEvent.OnGetBill(billId))
-            }
-        }
+        composeEditBillScreen (
+            onNavigateToHome = { navController.navigateToHome() }
+        )
 
-        composable(
-            route = Routes.ACCOUNT.name,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    tween(300)
-                )
-            }
-        ) {
-            val viewModel = koinViewModel<AccountViewModel>()
-            AccountScreen(
-                state = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+        composeEditPaymentScreen(
+            onNavigateToEditBill = { id -> navController.navigateToEditBillScreen(id) },
+            onNavigateBack = { navController.popBackStack() }
+        )
 
+        composeAccountScreen(
+            onNavigateToHome = { navController.navigateToHome() },
+            onNavigateToLogin = { navController.navigateToLogin() },
+        )
 
-        composable(
-            route = Routes.ACCOUNT.name,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tween(500)
-                )
-            },
-            popExitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    tween(300)
-                )
-            }
-        ) {
-            val viewModel = koinViewModel<LoginViewModel>()
-            LoginScreen(
-                uiState = viewModel.uiState.collectAsState().value,
-                onEvent = viewModel::onEvent,
-                onNavigateToHome = {
-                    navController.navigate(Routes.HOME.name) {
-                        popUpTo(Routes.HOME.name) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
-        }
+        composeLoginScreen(
+            onNavigateToHome = { navController.navigateToHome() }
+        )
     }
-
 }

@@ -25,6 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- On-demand initialization lets you create WorkManager only when that component is needed -->
+        <!-- https://developer.android.com/develop/background-work/background-tasks/persistent/configuration/custom-configuration#remove-default -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

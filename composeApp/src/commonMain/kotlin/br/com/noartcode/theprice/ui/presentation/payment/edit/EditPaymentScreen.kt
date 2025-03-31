@@ -39,10 +39,10 @@ import br.com.noartcode.theprice.ui.views.NormalEditField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentEditScreen(
+fun EditPaymentScreen(
     modifier: Modifier = Modifier,
-    state: PaymentEditUiState,
-    onEvent: (event: PaymentEditEvent) -> Unit,
+    state: EditPaymentUiState,
+    onEvent: (event: EditPaymentEvent) -> Unit,
     onNavigateToEditBill : (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -90,7 +90,7 @@ fun PaymentEditScreen(
                 fieldLabel = if (state.paymentStatus == PaymentUi.Status.PAYED) "Enter the payed amount" else "Enter the amount to pay",
                 value = state.payedValue,
                 hasError = state.priceHasError,
-                onValueChanged = { onEvent(PaymentEditEvent.OnPriceChanged(it)) },
+                onValueChanged = { onEvent(EditPaymentEvent.OnPriceChanged(it)) },
                 keyboardOptions = KeyboardOptions().copy(
                     keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Next
@@ -101,11 +101,11 @@ fun PaymentEditScreen(
                 title = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Paid on" else "Due date",
                 dateTitle = state.paidDateTitle,
                 selectedDate = state.paidAtDate,
-                onSelectDate = { date -> onEvent(PaymentEditEvent.OnPaidAtDateChanged(date)) },
+                onSelectDate = { date -> onEvent(EditPaymentEvent.OnPaidAtDateChanged(date)) },
             )
             Spacer(Modifier.height(20.dp))
             Button(
-                onClick = { onEvent(PaymentEditEvent.OnStatusChanged) },
+                onClick = { onEvent(EditPaymentEvent.OnStatusChanged) },
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = if (state.paymentStatus == PaymentUi.Status.PAYED) Color.Magenta else Color.LightGray
@@ -117,14 +117,14 @@ fun PaymentEditScreen(
                 isEnable = state.canSave,
                 icon = Icons.Filled.Check,
                 color = Color.Magenta,
-                onClick = { onEvent(PaymentEditEvent.OnSave) }
+                onClick = { onEvent(EditPaymentEvent.OnSave) }
             )
         }
         if (state.askingConfirmation) {
             ConfirmPaymentChangeDialog(
-                onDismiss = { onEvent(PaymentEditEvent.OnDismissConfirmationDialog) },
-                onConfirmToCurrent = { onEvent(PaymentEditEvent.OnChangeOnlyCurrentPayment) },
-                onConfirmToAll = { onEvent(PaymentEditEvent.OnChangeAllFuturePayments) }
+                onDismiss = { onEvent(EditPaymentEvent.OnDismissConfirmationDialog) },
+                onConfirmToCurrent = { onEvent(EditPaymentEvent.OnChangeOnlyCurrentPayment) },
+                onConfirmToAll = { onEvent(EditPaymentEvent.OnChangeAllFuturePayments) }
             )
         }
     }
@@ -133,27 +133,6 @@ fun PaymentEditScreen(
         if (state.isSaved) onNavigateBack()
     }
     
-}
-
-
-@Composable
-fun PaymentEditInfoContainer(
-    description:String,
-    value:String
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            description,
-            color = Color.Gray,
-            fontSize = 14.sp
-        )
-        Spacer(modifier = Modifier.width(20.dp))
-        Text(
-            value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
 }
 
 

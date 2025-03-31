@@ -42,7 +42,8 @@ fun AccountScreen(
     modifier: Modifier = Modifier,
     state: AccountUiState,
     onEvent: (event: AccountEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToLogin:() -> Unit,
 ) {
 
     val clipboardManager = LocalClipboardManager.current

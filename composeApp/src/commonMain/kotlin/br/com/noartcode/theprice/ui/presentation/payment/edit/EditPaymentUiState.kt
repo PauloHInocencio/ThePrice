@@ -3,7 +3,7 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 
 
-data class PaymentEditUiState(
+data class EditPaymentUiState(
     val billId:String = "",
     val billName:String = "",
     val paymentStatus: PaymentUi.Status = PaymentUi.Status.PENDING,
