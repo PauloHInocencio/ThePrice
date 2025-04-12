@@ -25,6 +25,7 @@ import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
+import br.com.noartcode.theprice.domain.usecases.GetUserData
 import br.com.noartcode.theprice.domain.usecases.IDeleteBill
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetBillByID
@@ -36,7 +37,8 @@ import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
+import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
+import br.com.noartcode.theprice.domain.usecases.IGetUserData
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
@@ -103,13 +105,14 @@ fun commonModule() = module {
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
-    single<IGetUserInfo> { IGetUserInfo(get<SessionStorage>()::getUser) }
+    single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
+    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get())}
     single<ILoginUser> {
         LoginUser(
             accountManager = get(),
             localDataSource = get(),
             remoteDataSource = get(),
-            syncInitializerWorker = get(),
+            getUserDate = get(),
         )
     }
     single<ILogoutUser> {
@@ -168,7 +171,7 @@ fun viewModelsModule() = module {
     viewModel {
         AccountViewModel(
             signInUser = get(),
-            getUserInfo = get(),
+            getAccountInfo = get(),
             logOutUser = get()
         )
     }
@@ -176,6 +179,7 @@ fun viewModelsModule() = module {
     viewModel {
         LoginViewModel(
             loginInUser = get(),
+            getAccountInfo = get(),
         )
     }
 }

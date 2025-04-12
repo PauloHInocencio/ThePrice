@@ -22,7 +22,7 @@ class UpdateBill(
     override suspend fun invoke(bill: Bill) = withContext(dispatcher) {
         try {
             val result = Resource.Success(repository.update(bill))
-            syncUpdatedBillWorker.invoke(bill.id)
+            syncUpdatedBillWorker.sync(bill.id)
             return@withContext result
         } catch (e:Throwable) {
             return@withContext Resource.Error(

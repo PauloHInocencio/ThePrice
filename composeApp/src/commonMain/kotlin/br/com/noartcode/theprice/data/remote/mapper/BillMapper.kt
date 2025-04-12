@@ -3,7 +3,7 @@ package br.com.noartcode.theprice.data.remote.mapper
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
-import br.com.noartcode.theprice.domain.model.toLocalDate
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import kotlinx.datetime.Instant
 
 fun BillDto.toDomain() =
@@ -31,7 +31,7 @@ fun Bill.toDto() =
         price = this.price,
         type = this.type.name,
         //status = this.status.name // TODO("Should Get this information from the server as well")
-        billingStartDate = this.billingStartDate.toLocalDate().toString(),
+        billingStartDate = Instant.fromEpochMilliseconds(this.billingStartDate.toEpochMilliseconds()).toString(),
         createdAt = Instant.fromEpochMilliseconds(this.createdAt).toString(),
         updatedAt = Instant.fromEpochMilliseconds(this.updatedAt).toString(),
     )

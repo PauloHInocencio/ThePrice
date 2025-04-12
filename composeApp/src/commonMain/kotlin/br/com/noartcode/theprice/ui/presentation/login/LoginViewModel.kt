@@ -2,10 +2,14 @@ package br.com.noartcode.theprice.ui.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -13,27 +17,42 @@ import kotlinx.coroutines.flow.update
 
 class LoginViewModel(
     private val loginInUser: ILoginUser,
+    private val getAccountInfo: IGetUserAccountInfo,
 ) : ViewModel() {
 
-
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
-    val uiState = _uiState
+    private val userInfoState: StateFlow<User?> = getAccountInfo()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(500),
-            initialValue = LoginUiState.Idle
+            initialValue = null,
         )
 
+    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+    val uiState = combine(_uiState, userInfoState) { ui, user ->
+        if (user != null) LoginUiState.LoggedIn
+        else ui
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(500),
+        initialValue = LoginUiState.Idle
+    )
+
     fun onEvent(event: LoginEvent) {
-        when(event) {
+        when (event) {
             LoginEvent.LoginInWithGoogle -> {
                 loginInUser()
                     .onEach { result ->
-                        when(result) {
+                        when (result) {
                             is Resource.Success -> {
-                                _uiState.update { LoginUiState.LoggedIn  }
+                                _uiState.update { LoginUiState.LoggedIn }
                             }
-                            is Resource.Error -> _uiState.update { LoginUiState.AuthError(errorMessage = result.message) }
+
+                            is Resource.Error -> _uiState.update {
+                                LoginUiState.AuthError(
+                                    errorMessage = result.message
+                                )
+                            }
+
                             is Resource.Loading -> _uiState.update { LoginUiState.Loading }
 
                         }

@@ -49,7 +49,7 @@ class BillRemoteDataSourceImp(
         safeCall {
             val accessToken = session.getAccessToken().first()
             client.put {
-                url("bills")
+                url("bills/${bill.id}")
                 setBody(bill.toDto())
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $accessToken")

@@ -2,7 +2,7 @@ package br.com.noartcode.theprice.data.local
 
 import android.content.Context
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.AndroidSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 
 fun getDatabase(context:Context) : ThePriceDatabase {
@@ -12,7 +12,7 @@ fun getDatabase(context:Context) : ThePriceDatabase {
         context = appContext,
         name = dbFile.absolutePath
     )
-        .setDriver(BundledSQLiteDriver())
+        .setDriver(AndroidSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }

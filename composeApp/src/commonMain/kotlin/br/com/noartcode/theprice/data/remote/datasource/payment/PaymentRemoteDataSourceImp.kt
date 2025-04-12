@@ -46,7 +46,7 @@ class PaymentRemoteDataSourceImp(
         safeCall {
             val accessToken = session.getAccessToken().first()
             client.put {
-                url("payments")
+                url("payments/${payment.id}")
                 setBody(payment)
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $accessToken")

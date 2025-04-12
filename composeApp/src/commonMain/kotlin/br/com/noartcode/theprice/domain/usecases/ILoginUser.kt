@@ -22,7 +22,7 @@ class LoginUser(
     private val accountManager: IAccountManager,
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: SessionStorage,
-    private val syncInitializerWorker: ISyncInitializerWorker,
+    private val getUserDate: IGetUserData,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ILoginUser {
 
@@ -35,7 +35,7 @@ class LoginUser(
                     localDataSource.saveUser(data.user)
                     localDataSource.saveAccessToken(data.accessToken)
                     localDataSource.saveRefreshToken(data.refreshToken)
-                    syncInitializerWorker()
+                    getUserDate()
                 }
                 emit(signInResult.map {  })
             }

@@ -20,7 +20,7 @@ class SyncBillWorkerTestFactory(
         return AndroidSyncBillWorker(
             appContext = appContext,
             params =  workerParameters,
-            billRepository = billRepository,
+            billsRepository = billRepository,
             ioDispatcher = ioDispatcher,
         )
     }

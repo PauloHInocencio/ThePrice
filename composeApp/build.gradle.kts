@@ -61,14 +61,20 @@ kotlin {
 
             implementation(libs.mockk)
 
+            //Credential Manager
             implementation(libs.credentials)
             implementation(libs.credentials.auth)
             implementation(libs.googleid)
 
+            //Work Manager
             implementation(libs.androidx.workmanager)
 
+            //Ktor
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.android)
+
+            //Room
+            implementation(libs.androidx.sqlite.native)
         }
 
 

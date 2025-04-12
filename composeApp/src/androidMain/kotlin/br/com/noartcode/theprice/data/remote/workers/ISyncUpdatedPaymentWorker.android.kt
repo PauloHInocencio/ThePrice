@@ -11,6 +11,7 @@ import androidx.work.workDataOf
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 const val SYNC_UPDATED_PAYMENT_INPUT_KEY = "sync_updated_payment"
@@ -31,7 +32,7 @@ class AndroidSyncUpdatedPaymentWorker(
     appContext: Context,
     params: WorkerParameters,
     private val paymentsRepository: PaymentsRepository,
-    private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
         val paymentId = inputData

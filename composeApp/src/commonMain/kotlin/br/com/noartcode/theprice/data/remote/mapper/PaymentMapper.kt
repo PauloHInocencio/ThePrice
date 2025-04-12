@@ -3,7 +3,7 @@ package br.com.noartcode.theprice.data.remote.mapper
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
-import br.com.noartcode.theprice.domain.model.toLocalDate
+import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import kotlinx.datetime.Instant
 
 fun PaymentDto.toDomain() : Payment =
@@ -23,9 +23,9 @@ fun Iterable<PaymentDto>.toDomain() = this.map { it.toDomain() }
 fun Payment.toDto() : PaymentDto =
     PaymentDto(
         id = this.id,
-        billID = this.id,
+        billID = this.billId,
         price = this.price,
-        dueDate = this.dueDate.toLocalDate().toString(),
+        dueDate = Instant.fromEpochMilliseconds(this.dueDate.toEpochMilliseconds()).toString(),
         isPayed = this.isPayed,
         createdAt = Instant.fromEpochMilliseconds(this.createdAt).toString(),
         updatedAt = Instant.fromEpochMilliseconds(this.updatedAt).toString(),

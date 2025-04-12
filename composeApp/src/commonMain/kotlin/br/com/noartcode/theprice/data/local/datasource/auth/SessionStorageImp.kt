@@ -6,11 +6,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import br.com.noartcode.theprice.data.remote.dtos.UserDto
 import br.com.noartcode.theprice.domain.model.User
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class SessionStorageImp(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SessionStorage {
     override suspend fun saveUser(user: UserDto) {
         dataStore.edit {
@@ -38,8 +43,8 @@ class SessionStorageImp(
         }
     }
 
-    override fun getUser(): Flow<User?> {
-        return dataStore.data.map {
+    override fun getUser(): Flow<User?> =
+        dataStore.data.map {
             val email = it[USER_EMAIL]
             val name = it[USER_NAME]
             val picture = it[USER_PICTURE]
@@ -52,15 +57,15 @@ class SessionStorageImp(
             } else {
                 null
             }
-        }
-    }
+        }.flowOn(ioDispatcher)
+
 
     override fun getAccessToken(): Flow<String?> =
-        dataStore.data.map { it[ACCESS_TOKEN] }
+        dataStore.data.map { it[ACCESS_TOKEN] }.flowOn(ioDispatcher)
 
 
     override fun getRefreshToken(): Flow<String?> =
-        dataStore.data.map { it[REFRESH_TOKEN] }
+        dataStore.data.map { it[REFRESH_TOKEN] }.flowOn(ioDispatcher)
 
 
     companion object {

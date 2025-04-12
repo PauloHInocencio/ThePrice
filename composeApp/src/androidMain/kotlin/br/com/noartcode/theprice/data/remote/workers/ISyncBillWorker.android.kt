@@ -30,7 +30,7 @@ actual class SyncBillWorker(
 class AndroidSyncBillWorker(
     private val appContext:Context,
     private val params: WorkerParameters,
-    private val billRepository:BillsRepository,
+    private val billsRepository:BillsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 )  : CoroutineWorker(appContext, params){
 
@@ -39,15 +39,15 @@ class AndroidSyncBillWorker(
             .getString(SYNC_BILL_WORK_INPUT_KEY)
             ?: return@withContext Result.failure(workDataOf("error_message" to "No Bill ID founded"))
 
-        val bill = billRepository.get(billID)
+        val bill = billsRepository.get(billID)
             ?: return@withContext Result.failure(workDataOf("error_message" to "Bill not founded"))
 
-        return@withContext when(val result = billRepository.post(bill)) {
+        return@withContext when(val result = billsRepository.post(bill)) {
             is Resource.Error -> Result.failure(workDataOf("error_message" to result.message))
             is Resource.Loading -> Result.failure(workDataOf("error_message" to "Invalid response"))
             is Resource.Success -> {
                 try {
-                    billRepository.update(bill.copy(isSynced = true))
+                    billsRepository.update(bill.copy(isSynced = true))
                     Result.success()
                 } catch (e:Throwable) {
                     Result.failure(workDataOf("error_message" to "Error when trying update bill"))

@@ -34,6 +34,7 @@ class AndroidSyncInitializerWorker(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
+        //TODO("Should Handle responses from the fetch calls. Try catch will never going to be executed.")
         try {
             billsRepository.fetchAllBills()
             paymentsRepository.fetchAllPayments()

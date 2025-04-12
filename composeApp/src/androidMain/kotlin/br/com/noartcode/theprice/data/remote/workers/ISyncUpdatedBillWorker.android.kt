@@ -19,7 +19,7 @@ const val SYNC_UPDATED_BILL_INPUT_KEY = "sync_updated_bill"
 actual class SyncUpdatedBillWorker(
     private val manager: WorkManager,
 ) : ISyncUpdatedBillWorker {
-    override fun invoke(billID: String) {
+    override fun sync(billID: String) {
         val workRequest = OneTimeWorkRequestBuilder<AndroidSyncUpdatedBillWorker>()
             .setInputData(workDataOf(SYNC_UPDATED_BILL_INPUT_KEY to billID))
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)

@@ -1,9 +1,10 @@
 package br.com.noartcode.theprice.ui.presentation.account
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.User
-import br.com.noartcode.theprice.domain.usecases.IGetUserInfo
+import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.ILoginUser
 import br.com.noartcode.theprice.util.Resource
@@ -18,11 +19,11 @@ import kotlinx.coroutines.flow.update
 
 class AccountViewModel(
     private val signInUser: ILoginUser,
-    private val getUserInfo: IGetUserInfo,
+    private val getAccountInfo: IGetUserAccountInfo,
     private val logOutUser: ILogoutUser,
 ) : ViewModel() {
 
-    private val user:StateFlow<User?> = getUserInfo()
+    private val user:StateFlow<User?> = getAccountInfo()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
