@@ -51,7 +51,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        stopKoin()
         Dispatchers.setMain(testDispatcher)
         startKoin{
             modules(

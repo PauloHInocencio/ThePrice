@@ -35,7 +35,6 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        stopKoin()
         Dispatchers.setMain(coroutineDispatcher)
         startKoin {
             modules(

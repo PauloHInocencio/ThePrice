@@ -47,8 +47,7 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(testDispatcher),
-                viewModelsModule()
+                commonTestModule(testDispatcher)
             )
         }
     }
@@ -77,7 +76,7 @@ class BillDataSourceTest : KoinTest, RobolectricTests() {
     }
 
     @Test
-    fun `Should successfully return items by status`() = runTest {
+    fun  `Should successfully return items by status`() = runTest {
         repeat(3) { i ->
             dataSource.insert(bill = stubBills[i])
         }

@@ -48,7 +48,6 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
     @BeforeTest
     fun before() {
         Dispatchers.setMain(testDispatcher)
-        stopKoin()
         startKoin {
             modules(
                 platformTestModule(),

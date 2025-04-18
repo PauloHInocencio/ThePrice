@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.ui.di
 import android.icu.text.DecimalFormatSymbols
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
+import br.com.noartcode.theprice.ThePriceAppTest
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.ThePriceDatabaseConstructor
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
@@ -11,7 +12,10 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.runner.RunWith
 import org.koin.dsl.module
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.util.Calendar
 import java.util.Locale
 
@@ -43,4 +47,9 @@ actual fun platformTestModule() = module {
 
 }
 
+@RunWith(RobolectricTestRunner::class)
+@Config(
+    manifest= Config.NONE,
+    application = ThePriceAppTest::class
+)
 actual abstract class RobolectricTests

@@ -43,7 +43,6 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
     @BeforeTest
     fun before() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        stopKoin()
         startKoin {
             modules(
                 platformTestModule(),

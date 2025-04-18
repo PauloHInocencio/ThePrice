@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
@@ -15,25 +16,21 @@ plugins {
 
 kotlin {
     androidTarget {
-
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant{
+        instrumentedTestVariant {
             sourceSetTree.set(KotlinSourceSetTree.test)
             dependencies {
                 implementation(libs.compose.ui.test.junit4.android)
                 implementation(libs.compose.ui.test.manifest)
                 implementation(libs.androidx.test.runner)
-                implementation(libs.roboletric)
+                implementation(libs.robolectric)
             }
         }
-
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions{
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     jvm("desktop")
     
     listOf(
@@ -136,8 +133,9 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation(libs.androidx.test.core)
-                implementation(libs.junit)
-                implementation(libs.roboletric)
+                implementation(libs.compose.ui.test.junit4.android)
+                implementation(libs.compose.ui.test.manifest)
+                implementation(libs.robolectric)
                 implementation(libs.androidx.workmanager.test)
             }
         }
@@ -179,11 +177,11 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "br.com.noartcode.theprice.InstrumentationTestRunner"
     }
     
     testOptions.unitTests.isIncludeAndroidResources = true
+    testOptions.unitTests.isReturnDefaultValues = true
 
     packaging {
         resources {

@@ -5,6 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.ListenableWorker
 import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.workDataOf
+import br.com.noartcode.theprice.ThePriceAppTest
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.helpers.stubPayments
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
@@ -27,6 +28,7 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,6 +37,10 @@ import kotlin.test.assertTrue
 
 
 @RunWith(RobolectricTestRunner::class)
+@Config(
+    manifest= Config.NONE,
+    application = ThePriceAppTest::class
+)
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidSyncUpdatedPaymentWorkerTest : KoinTest {
 
@@ -47,7 +53,6 @@ class AndroidSyncUpdatedPaymentWorkerTest : KoinTest {
 
     @BeforeTest
     fun before() {
-        stopKoin()
         Dispatchers.setMain(coroutineDispatcher)
         startKoin {
             modules(

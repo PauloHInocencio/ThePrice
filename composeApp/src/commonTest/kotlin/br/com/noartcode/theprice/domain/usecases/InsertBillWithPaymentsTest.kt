@@ -44,7 +44,6 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        stopKoin()
         Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(commonModule())
