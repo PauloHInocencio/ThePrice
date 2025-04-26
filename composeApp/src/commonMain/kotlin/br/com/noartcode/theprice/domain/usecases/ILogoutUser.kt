@@ -17,7 +17,7 @@ interface ILogoutUser {
 class LogoutUser(
     private val remoteDataSource: AuthRemoteDataSource,
     private val localDataSource: SessionStorage,
-    private val dispatcher:CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher:CoroutineDispatcher,
 ) : ILogoutUser {
     override fun invoke(): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)

@@ -16,7 +16,7 @@ interface IUpdateBill {
 class UpdateBill(
     private val repository: BillsRepository,
     private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher,
 ) : IUpdateBill {
 
     override suspend fun invoke(bill: Bill) = withContext(dispatcher) {

@@ -14,6 +14,7 @@ import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -36,9 +37,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
-    private val testScope = TestScope()
-    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
-
+    private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val getTodayDate:IGetTodayDate by inject()
     private val billDataSource: BillLocalDataSource by inject()
@@ -48,16 +47,15 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
                 platformTestModule(),
                 commonModule(),
                 dispatcherTestModule(),
                 commonTestModule(),
-                viewModelsModule()
             )
         }
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest

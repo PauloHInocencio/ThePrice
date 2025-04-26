@@ -1,8 +1,10 @@
 package br.com.noartcode.theprice.data.remote.workers
 
 import android.content.Context
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
@@ -11,7 +13,6 @@ import androidx.work.workDataOf
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 const val SYNC_UPDATED_BILL_INPUT_KEY = "sync_updated_bill"
@@ -20,7 +21,12 @@ actual class SyncUpdatedBillWorker(
     private val manager: WorkManager,
 ) : ISyncUpdatedBillWorker {
     override fun sync(billID: String) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         val workRequest = OneTimeWorkRequestBuilder<AndroidSyncUpdatedBillWorker>()
+            .setConstraints(constraints)
             .setInputData(workDataOf(SYNC_UPDATED_BILL_INPUT_KEY to billID))
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
@@ -33,7 +39,7 @@ class AndroidSyncUpdatedBillWorker(
     appContext:Context,
     params: WorkerParameters,
     private val billsRepository:BillsRepository,
-    private val ioDispatcher:CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher:CoroutineDispatcher,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
         val billId = inputData
@@ -44,7 +50,10 @@ class AndroidSyncUpdatedBillWorker(
             ?: return@withContext Result.failure(workDataOf("error_message" to "Bill not found"))
 
         return@withContext when(val result = billsRepository.put(bill)) {
-            is Resource.Error -> Result.failure(workDataOf("error_message" to result.message))
+            is Resource.Error -> {
+                result.exception?.printStackTrace()
+                Result.retry()
+            }
             is Resource.Loading -> Result.failure(workDataOf("error_message" to "Invalid response"))
             is Resource.Success -> {
                 try {

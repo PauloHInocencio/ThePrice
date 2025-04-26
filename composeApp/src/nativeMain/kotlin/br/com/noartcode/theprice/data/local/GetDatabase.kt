@@ -3,19 +3,20 @@ package br.com.noartcode.theprice.data.local
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-fun getDatabase(): ThePriceDatabase {
+fun getDatabase(ioDispatcher:CoroutineDispatcher): ThePriceDatabase {
     val dbFilePath = documentDirectory() + "/$dbFileName"
     return Room.databaseBuilder<ThePriceDatabase>(
         name = dbFilePath,
     )
         .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.IO)
+        .setQueryCoroutineContext(ioDispatcher)
         .build()
 }
 

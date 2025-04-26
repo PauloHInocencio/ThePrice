@@ -7,10 +7,9 @@ import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -26,8 +25,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class BillsRepositoryTest : KoinTest, RobolectricTests() {
 
-    private val testScope = TestScope()
-    private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
+    private val coroutineDispatcher:CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
 
     // Unit Under Test
@@ -36,7 +34,6 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(coroutineDispatcher)
         startKoin {
             modules(
                 platformTestModule(),
@@ -45,6 +42,7 @@ class BillsRepositoryTest : KoinTest, RobolectricTests() {
                 commonTestModule(),
             )
         }
+        Dispatchers.setMain(coroutineDispatcher)
     }
 
 

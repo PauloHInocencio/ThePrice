@@ -26,7 +26,7 @@ interface IInsertBillWithPayments {
 class InsertBillWithPayments(
     private val localDataSource: BillLocalDataSource,
     private val getTodayDate: IGetTodayDate,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher,
 ) : IInsertBillWithPayments {
     override suspend fun invoke(
         bill: Bill,

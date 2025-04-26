@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
 
 class SessionStorageImp(
     private val dataStore: DataStore<Preferences>,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : SessionStorage {
     override suspend fun saveUser(user: UserDto) {
         dataStore.edit {

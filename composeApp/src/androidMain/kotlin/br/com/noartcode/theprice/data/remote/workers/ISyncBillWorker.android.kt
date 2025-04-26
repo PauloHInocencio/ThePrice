@@ -12,7 +12,6 @@ import androidx.work.workDataOf
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 const val SYNC_BILL_WORK_INPUT_KEY = "bill_id"
@@ -42,10 +41,6 @@ class AndroidSyncBillWorker(
 )  : CoroutineWorker(appContext, params){
 
     override suspend fun doWork(): Result = withContext(ioDispatcher){
-
-        if(runAttemptCount > 5) {
-            return@withContext Result.failure(workDataOf("error_message" to "Max number of retries reached"))
-        }
 
         val billID = inputData
             .getString(SYNC_BILL_WORK_INPUT_KEY)

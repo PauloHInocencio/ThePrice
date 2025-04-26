@@ -5,8 +5,6 @@ import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 
@@ -19,12 +17,12 @@ interface IInsertBill {
 class InsertBill(
     private val repository: BillsRepository,
     private val worker: ISyncBillWorker,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher,
 ) : IInsertBill {
 
     override suspend fun invoke(
         bill: Bill
-    ): Resource<String> = withContext(dispatcher) {
+    ): Resource<String> = withContext(ioDispatcher) {
         try {
             val id = repository.insert(bill)
             worker.sync(id)

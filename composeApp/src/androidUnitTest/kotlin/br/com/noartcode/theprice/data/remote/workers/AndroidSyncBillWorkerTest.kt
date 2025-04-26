@@ -46,11 +46,11 @@ class AndroidSyncBillWorkerTest : KoinTest{
     private val coroutineDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val repository: BillsRepository by inject()
-    private val context = ApplicationProvider.getApplicationContext<Context>()
     private val workManager:WorkManager by inject()
+    private val context = ApplicationProvider.getApplicationContext<Context>()
     private var testDriver: TestDriver? = null
 
-    // Component Under Test
+    // Unit Under Test
     private val syncBillWorker:ISyncBillWorker by inject()
 
 

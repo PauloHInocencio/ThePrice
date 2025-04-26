@@ -12,6 +12,7 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -33,9 +34,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
 
-    private val testScope = TestScope()
-    private val testDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
-
+    private val testDispatcher:CoroutineDispatcher by inject()
     private val database:ThePriceDatabase by inject()
     private val billDataSource:BillLocalDataSource by inject()
     private val paymentDataSource:PaymentLocalDataSource by inject()
@@ -45,7 +44,6 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
                 commonModule(),
@@ -54,6 +52,7 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
                 platformTestModule()
             )
         }
+        Dispatchers.setMain(testDispatcher)
     }
 
 

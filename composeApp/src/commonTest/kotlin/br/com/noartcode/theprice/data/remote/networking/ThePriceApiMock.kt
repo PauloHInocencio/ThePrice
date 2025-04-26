@@ -2,7 +2,6 @@ package br.com.noartcode.theprice.data.remote.networking
 
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
-import io.ktor.http.content.OutgoingContent
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -11,9 +10,9 @@ import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.OutgoingContent
 import io.ktor.http.headersOf
 import io.ktor.utils.io.ByteChannel
-import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.readRemaining
 import io.ktor.utils.io.readText
 import kotlinx.serialization.json.Json
@@ -21,6 +20,7 @@ import kotlinx.serialization.json.Json
 object ThePriceApiMock {
 
     const val BILL_FAILED_ID = "bill_failed_id"
+    const val PAYMENT_FAILED_ID = "payment_failed_id"
 
     val engine = MockEngine { request ->
         mockResponse(request) ?:errorResponse()
@@ -54,7 +54,7 @@ object ThePriceApiMock {
 
         if (path.contains("api/v1/bills") && method == HttpMethod.Put) {
             val bill = requestBody?.let { Json.decodeFromString<BillDto>(it) }
-            if (bill == null) return errorResponse()
+            if (bill == null || bill.id == BILL_FAILED_ID) return errorResponse()
 
             return respond(
                 content = "",
@@ -72,8 +72,8 @@ object ThePriceApiMock {
         }
 
         if (path.contains("api/v1/payments") && method == HttpMethod.Post) {
-            val payment = requestBody?.let { Json.decodeFromString<List<PaymentDto>>(it) }
-            if (payment == null) return errorResponse()
+            val payments = requestBody?.let { Json.decodeFromString<List<PaymentDto>>(it) }
+            if (payments == null || payments.first().billID == BILL_FAILED_ID) return errorResponse()
 
             return respond(
                 content = "",
@@ -84,7 +84,7 @@ object ThePriceApiMock {
 
         if(path.contains("api/v1/payments") && method == HttpMethod.Put) {
             val payment = requestBody?.let { Json.decodeFromString<PaymentDto>(it) }
-            if (payment == null) return errorResponse()
+            if (payment == null || payment.id == PAYMENT_FAILED_ID) return errorResponse()
 
             return respond(
                 content = "",
@@ -92,7 +92,6 @@ object ThePriceApiMock {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-
 
         return null
     }

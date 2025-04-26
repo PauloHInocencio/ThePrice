@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.domain.usecases
 
-import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
@@ -13,11 +13,9 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -33,10 +31,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class InsertBillTest : KoinTest, RobolectricTests() {
-
-    private val testScope = TestScope()
-    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
-
+    private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val billsRepository: BillsRepository by inject()
 
@@ -46,7 +41,6 @@ class InsertBillTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
                 platformTestModule(),
@@ -55,6 +49,7 @@ class InsertBillTest : KoinTest, RobolectricTests() {
                 commonTestModule()
             )
         }
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest

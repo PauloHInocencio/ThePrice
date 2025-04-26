@@ -2,24 +2,26 @@ package br.com.noartcode.theprice.data.remote.workers
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.work.ListenableWorker
-import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.workDataOf
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.testing.TestDriver
+import androidx.work.testing.WorkManagerTestInitHelper
+import app.cash.turbine.test
 import br.com.noartcode.theprice.ThePriceAppTest
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.helpers.stubPayments
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.remote.workers.factories.SyncUpdatedPaymentWorkerTestFactory
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
+import br.com.noartcode.theprice.data.remote.workers.helpers.workManagerTestFactory
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -34,7 +36,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -45,24 +46,30 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidSyncUpdatedPaymentWorkerTest : KoinTest {
 
-    private val testScope = TestScope()
-    private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
+    private val coroutineDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val paymentsRepository: PaymentsRepository by inject()
     private val billsRepository:BillsRepository by inject()
+    private val workManager: WorkManager by inject()
     private val context = ApplicationProvider.getApplicationContext<Context>()
+    private var testDriver: TestDriver? = null
+
+    // Unit Under Test
+    private val syncUpdatedPaymentWorker:ISyncUpdatedPaymentWorker by inject()
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(coroutineDispatcher)
         startKoin {
+            workManagerTestFactory()
             modules(
-                platformTestModule(),
-                commonModule(),
                 dispatcherTestModule(),
+                commonModule(),
                 commonTestModule(),
+                platformTestModule(),
             )
         }
+        testDriver = WorkManagerTestInitHelper.getTestDriver(context)
+        Dispatchers.setMain(coroutineDispatcher)
     }
 
     @AfterTest
@@ -73,29 +80,77 @@ class AndroidSyncUpdatedPaymentWorkerTest : KoinTest {
     }
 
     @Test
-    fun `Should Persist Updated Bill Remotely`() = runTest {
+    fun `Should Persist Updated Payment Remotely`() = runTest {
 
-        // Insert new payment
+        // Given
         val billID = billsRepository.insert(stubBills[0])
         val paymentID = paymentsRepository.insert(stubPayments[0].copy(billId = billID))
 
-        // Check payment's initial sync state
-        with(paymentsRepository.get(paymentID)){
-            assertEquals(expected = false, this?.isSynced)
+        // When
+        syncUpdatedPaymentWorker.sync(paymentID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(paymentID).test {
+
+            // met all constraints
+            var workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+            // final state should be succeeded
+            skipItems(1)
+            workInfo = awaitItem().last()
+            assertEquals(expected = WorkInfo.State.SUCCEEDED, actual = workInfo.state)
         }
+    }
 
-        // Check worker result
-        val worker = TestListenableWorkerBuilder<AndroidSyncUpdatedPaymentWorker>(context)
-            .setWorkerFactory(SyncUpdatedPaymentWorkerTestFactory(paymentsRepository = paymentsRepository, ioDispatcher = coroutineDispatcher))
-            .setInputData(workDataOf(SYNC_UPDATED_PAYMENT_INPUT_KEY to paymentID))
-            .build()
-        val result = worker.doWork()
+    @Test
+    fun `Should Change Payment isSynced property to true`() = runTest {
 
-        assertTrue(result is ListenableWorker.Result.Success)
+        // Given
+        val billID = billsRepository.insert(stubBills[0])
+        val paymentID = paymentsRepository.insert(stubPayments[0].copy(billId = billID))
 
-        // Check payment's final sync state
-        with(paymentsRepository.get(paymentID)){
-            assertEquals(expected = true, this?.isSynced)
+        // When
+        syncUpdatedPaymentWorker.sync(paymentID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(paymentID).test {
+
+            // met all constraints
+            val workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+            skipItems(2)
+            ensureAllEventsConsumed()
+
+            assertEquals(expected = true, paymentsRepository.get(paymentID)?.isSynced)
+        }
+    }
+
+    @Test
+    fun `Should Receive An Error When Trying to Sync Bill And Retry`() = runTest {
+
+        // Given
+        val billID = billsRepository.insert(stubBills[0])
+        val paymentID = paymentsRepository.insert(
+            stubPayments[0].copy(id = ThePriceApiMock.PAYMENT_FAILED_ID, billId = billID)
+        )
+
+        // When
+        syncUpdatedPaymentWorker.sync(paymentID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(paymentID).test {
+
+            // met all constraints
+            var workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+            skipItems(1)
+            workInfo = awaitItem().last()
+
+            assertEquals(expected = WorkInfo.State.ENQUEUED, actual = workInfo.state)
+            cancelAndConsumeRemainingEvents()
         }
     }
 }

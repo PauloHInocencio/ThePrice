@@ -69,7 +69,7 @@ import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.koin.compose.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 fun commonModule() = module {
@@ -93,35 +93,37 @@ fun commonModule() = module {
     single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<PaymentRemoteDataSource> { PaymentRemoteDataSourceImp(client = get(), session = get())}
-    single<SessionStorage> { SessionStorageImp(dataStore = get()) }
+    single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
-    single<IInsertBill> { InsertBill(repository = get(), worker = get()) }
-    single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get()) }
-    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get())}
-    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get() )}
+    single<IInsertBill> { InsertBill(repository = get(), worker = get(), ioDispatcher = get()) }
+    single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get(), dispatcher = get()) }
+    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get())}
+    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get(), dispatcher = get() )}
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get())}
-    single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get()) }
+    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get())}
+    single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get()) }
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
-    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get())}
+    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get())}
     single<ILoginUser> {
         LoginUser(
             accountManager = get(),
             localDataSource = get(),
             remoteDataSource = get(),
             getUserDate = get(),
+            dispatcher = get(),
         )
     }
     single<ILogoutUser> {
         LogoutUser(
             localDataSource = get(),
-            remoteDataSource = get()
+            remoteDataSource = get(),
+            dispatcher = get(),
         )
     }
 }

@@ -16,7 +16,7 @@ interface IUpdatePaymentStatus {
 class UpdatePaymentStatus (
     private val repository: PaymentsRepository,
     private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher,
 ) : IUpdatePaymentStatus {
     override suspend fun invoke(
         id: String,

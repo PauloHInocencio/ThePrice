@@ -22,7 +22,7 @@ class InsertMissingPayments(
     private val paymentsRepository: PaymentsRepository,
     private val getTodayDate: IGetTodayDate,
     private val syncPaymentsWorker: ISyncPaymentsWorker,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher,
 ) : IInsertMissingPayments {
 
     override suspend fun invoke(date: DayMonthAndYear) = withContext(dispatcher) {

@@ -8,13 +8,11 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
-import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillEvent
+import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -29,9 +27,7 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewBillViewModelTest : KoinTest, RobolectricTests() {
-
-    private val testScope = TestScope()
-    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
+    private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
 
     // Unit Under Test
@@ -39,7 +35,6 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(
                 platformTestModule(),
@@ -49,6 +44,7 @@ class NewBillViewModelTest : KoinTest, RobolectricTests() {
                 viewModelsModule()
             )
         }
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest

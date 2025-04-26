@@ -15,7 +15,7 @@ interface IGetUserData {
 class GetUserData(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : IGetUserData {
     override suspend fun invoke() = withContext(ioDispatcher)  {
         return@withContext when(val billResult = billsRepository.fetchAllBills()) {

@@ -1,22 +1,19 @@
 package br.com.noartcode.theprice.domain.usecases
 
+import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
-import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import br.com.noartcode.theprice.ui.di.viewModelsModule
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -33,9 +30,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class InsertMissingPaymentsTest : KoinTest, RobolectricTests() {
 
-    private val testScope = TestScope()
-    private val testDispatcher: TestDispatcher = StandardTestDispatcher(testScope.testScheduler)
-
+    private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
     private val billDataSource: BillLocalDataSource by inject()
@@ -47,16 +42,15 @@ class InsertMissingPaymentsTest : KoinTest, RobolectricTests() {
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(testDispatcher)
         startKoin{
             modules(
                 platformTestModule(),
                 commonModule(),
                 dispatcherTestModule(),
                 commonTestModule(),
-                viewModelsModule()
             )
         }
+        Dispatchers.setMain(testDispatcher)
     }
 
     @AfterTest
