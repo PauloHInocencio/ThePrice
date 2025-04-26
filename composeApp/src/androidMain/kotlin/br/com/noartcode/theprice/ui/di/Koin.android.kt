@@ -71,6 +71,7 @@ actual fun platformModule() = module {
             appContext = androidContext(),
             params = get(),
             billsRepository = get(),
+            ioDispatcher = get(),
         )
     }
     worker {

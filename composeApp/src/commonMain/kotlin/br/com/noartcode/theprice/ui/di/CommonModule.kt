@@ -66,6 +66,9 @@ import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.EditPaymentViewModel
 import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
 import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -98,7 +101,7 @@ fun commonModule() = module {
     single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get())}
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get() )}
-    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get())}
+    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get())}
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get()) }
@@ -121,6 +124,10 @@ fun commonModule() = module {
             remoteDataSource = get()
         )
     }
+}
+
+fun dispatcherModule() = module {
+    single<CoroutineDispatcher> { Dispatchers.IO }
 }
 
 fun viewModelsModule() = module {

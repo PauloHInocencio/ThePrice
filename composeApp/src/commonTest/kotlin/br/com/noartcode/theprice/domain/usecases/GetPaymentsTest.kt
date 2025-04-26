@@ -9,6 +9,7 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.util.Resource
@@ -56,7 +57,8 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(testDispatcher),
+                dispatcherTestModule(),
+                commonTestModule(),
                 viewModelsModule()
             )
         }

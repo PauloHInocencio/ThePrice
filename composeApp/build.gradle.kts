@@ -150,6 +150,8 @@ kotlin {
             implementation(libs.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.ktor.client.mock)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.utils)
         }
 
         commonMain {
@@ -223,6 +225,7 @@ compose.desktop {
 }
 
 dependencies {
+    implementation(libs.androidx.workmanager.test)
     add("kspAndroid", libs.androidx.room.compiler)
     // Update: https://issuetracker.google.com/u/0/issues/342905180
     //add("kspCommonMainMetadata", libs.androidx.room.compiler)

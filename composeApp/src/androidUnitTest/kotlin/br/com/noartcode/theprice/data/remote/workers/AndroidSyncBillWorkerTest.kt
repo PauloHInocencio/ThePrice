@@ -2,21 +2,24 @@ package br.com.noartcode.theprice.data.remote.workers
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.work.ListenableWorker
-import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.workDataOf
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.testing.TestDriver
+import androidx.work.testing.WorkManagerTestInitHelper
+import app.cash.turbine.test
 import br.com.noartcode.theprice.ThePriceAppTest
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.remote.workers.factories.SyncBillWorkerTestFactory
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
+import br.com.noartcode.theprice.data.remote.workers.helpers.workManagerTestFactory
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -31,7 +34,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -41,24 +43,30 @@ import kotlin.test.assertTrue
 )
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidSyncBillWorkerTest : KoinTest{
-
-    private val testScope = TestScope()
-    private val coroutineDispatcher = StandardTestDispatcher(scheduler = testScope.testScheduler)
+    private val coroutineDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val repository: BillsRepository by inject()
     private val context = ApplicationProvider.getApplicationContext<Context>()
+    private val workManager:WorkManager by inject()
+    private var testDriver: TestDriver? = null
+
+    // Component Under Test
+    private val syncBillWorker:ISyncBillWorker by inject()
 
 
     @BeforeTest
     fun before() {
-        Dispatchers.setMain(coroutineDispatcher)
         startKoin {
+            workManagerTestFactory()
             modules(
-                platformTestModule(),
+                dispatcherTestModule(),
                 commonModule(),
-                commonTestModule(coroutineDispatcher),
+                commonTestModule(),
+                platformTestModule(),
             )
         }
+        testDriver = WorkManagerTestInitHelper.getTestDriver(context)
+        Dispatchers.setMain(coroutineDispatcher)
     }
 
 
@@ -72,26 +80,72 @@ class AndroidSyncBillWorkerTest : KoinTest{
     @Test
     fun `Should Insert Bill locally and sync it remotely`() = runTest {
 
-        // Insert new bill
+        // Given
         val billID = repository.insert(stubBills[0])
 
-        // Check bill's initial sync state
-        with(repository.get(billID)) {
-            assertEquals(expected = false, this?.isSynced)
+        // When
+        syncBillWorker.sync(billID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(billID).test {
+
+            // met all constraints
+            var workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+
+            // final state should be succeeded
+            skipItems(1)
+            workInfo = awaitItem().last()
+            assertEquals(expected = WorkInfo.State.SUCCEEDED, actual = workInfo.state)
         }
+    }
 
-        // Check worker result
-        val worker = TestListenableWorkerBuilder<AndroidSyncBillWorker>(context)
-            .setWorkerFactory(SyncBillWorkerTestFactory(billRepository = repository, ioDispatcher = coroutineDispatcher))
-            .setInputData(workDataOf(SYNC_BILL_WORK_INPUT_KEY to billID))
-            .build()
-        val result = worker.doWork()
+    @Test
+    fun `Should Change Bill isSynced property to true`() = runTest {
 
-        assertTrue(result is ListenableWorker.Result.Success)
+        // Given
+        val billID = repository.insert(stubBills[0])
 
-        // Check bill's final sync state
-        with(repository.get(billID)) {
-            assertEquals(expected = true, this?.isSynced)
+        // When
+        syncBillWorker.sync(billID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(billID).test {
+
+            // met all constraints
+            val workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+            skipItems(2)
+            ensureAllEventsConsumed()
+
+            assertEquals(expected = true, repository.get(billID)?.isSynced)
+        }
+    }
+
+
+    @Test
+    fun `Should Receive An Error When Trying to Sync Bill And Retry`() = runTest {
+
+        // Given
+        val billID = repository.insert(stubBills[0].copy(ThePriceApiMock.BILL_FAILED_ID))
+
+        // When
+       syncBillWorker.sync(billID)
+
+        // Then
+        workManager.getWorkInfosForUniqueWorkFlow(billID).test {
+
+            // met all constraints
+            var workInfo = awaitItem().last()
+            testDriver?.setAllConstraintsMet(workInfo.id)
+
+            skipItems(1)
+            workInfo = awaitItem().last()
+
+            assertEquals(expected = WorkInfo.State.ENQUEUED, actual = workInfo.state)
+            cancelAndConsumeRemainingEvents()
         }
     }
 }

@@ -6,8 +6,6 @@ import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.domain.usecases.GetPayments
-import br.com.noartcode.theprice.domain.usecases.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import dev.mokkery.MockMode
@@ -16,13 +14,15 @@ import dev.mokkery.every
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
 
 import org.koin.dsl.module
 
-fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) = module {
+fun commonTestModule() = module {
     single<HttpClient> {
         createHttpClient(ThePriceApiMock.engine, localDataSource = get())
     }
@@ -47,5 +47,8 @@ fun commonTestModule(testDispatcher: TestDispatcher = StandardTestDispatcher()) 
         }
     }
     single<IGetTodayDate> { GetTodayDateStub() }
-    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), dispatcher = testDispatcher)}
+}
+
+fun dispatcherTestModule() = module {
+    single<CoroutineDispatcher> { StandardTestDispatcher() }
 }

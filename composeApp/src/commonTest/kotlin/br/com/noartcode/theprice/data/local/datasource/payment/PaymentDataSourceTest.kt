@@ -8,6 +8,7 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +51,8 @@ class PaymentDataSourceTest : KoinTest, RobolectricTests() {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(testDispatcher),
+                dispatcherTestModule(),
+                commonTestModule(),
                 viewModelsModule()
             )
         }

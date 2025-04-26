@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,7 +43,8 @@ class PaymentsRepositoryTest : KoinTest, RobolectricTests() {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(testDispatcher),
+                dispatcherTestModule(),
+                commonTestModule(),
             )
         }
     }

@@ -57,7 +57,7 @@ class AndroidSyncInitializerWorkerTest : KoinTest {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(testDispatcher)
+                commonTestModule()
             )
         }
     }

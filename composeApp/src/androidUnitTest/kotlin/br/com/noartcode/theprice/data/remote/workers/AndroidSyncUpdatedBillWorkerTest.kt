@@ -12,6 +12,7 @@ import br.com.noartcode.theprice.data.remote.workers.factories.SyncUpdatedBillWo
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,7 +56,8 @@ class AndroidSyncUpdatedBillWorkerTest : KoinTest {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(coroutineDispatcher),
+                dispatcherTestModule(),
+                commonTestModule(),
             )
         }
     }

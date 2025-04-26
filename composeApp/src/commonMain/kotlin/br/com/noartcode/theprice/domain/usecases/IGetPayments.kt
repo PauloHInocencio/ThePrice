@@ -8,9 +8,7 @@ import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -34,7 +32,7 @@ class GetPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
     private val insertMissingPayments: IInsertMissingPayments,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher,
 ) : IGetPayments {
 
     override fun invoke(
@@ -69,6 +67,6 @@ class GetPayments(
                 message = "Something wrong happen when trying to get payments")
             )
         }
-        .flowOn(dispatcher)
+        .flowOn(ioDispatcher)
 
 }

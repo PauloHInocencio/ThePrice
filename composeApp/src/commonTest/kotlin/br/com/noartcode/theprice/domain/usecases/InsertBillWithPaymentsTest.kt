@@ -9,6 +9,7 @@ import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -46,9 +47,12 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
     fun before() {
         Dispatchers.setMain(testDispatcher)
         startKoin {
-            modules(commonModule())
-            modules(commonTestModule(testDispatcher))
-            modules(platformTestModule())
+            modules(
+                commonModule(),
+                dispatcherTestModule(),
+                commonTestModule(),
+                platformTestModule()
+            )
         }
     }
 

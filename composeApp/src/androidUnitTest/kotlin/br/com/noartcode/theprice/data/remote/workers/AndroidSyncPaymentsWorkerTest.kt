@@ -15,6 +15,7 @@ import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -60,7 +61,8 @@ class AndroidSyncPaymentsWorkerTest : KoinTest {
             modules(
                 platformTestModule(),
                 commonModule(),
-                commonTestModule(coroutineDispatcher)
+                dispatcherTestModule(),
+                commonTestModule()
             )
         }
     }
