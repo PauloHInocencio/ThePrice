@@ -11,6 +11,8 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import br.com.noartcode.theprice.ui.presentation.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.context.startKoin
@@ -20,7 +22,7 @@ import java.util.Calendar
 import java.util.Locale
 
 actual fun platformModule() = module {
-    single<ThePriceDatabase> { getDatabase() }
+    single<ThePriceDatabase> { getDatabase(ioDispatcher = get()) }
     single<ICurrencyFormatter> {
         CurrencyFormatter(
             symbols = DecimalFormatSymbols(Locale.getDefault())
@@ -29,12 +31,13 @@ actual fun platformModule() = module {
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }) }
     single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
+    factory<IAccountManager> { AccountManager() }
 }
 
 actual class KoinInitializer {
     actual fun init() {
         startKoin {
-            modules(platformModule(), viewModelsModule(), commonModule())
+            modules(dispatcherModule(),  platformModule(), viewModelsModule(), commonModule())
         }
     }
 }

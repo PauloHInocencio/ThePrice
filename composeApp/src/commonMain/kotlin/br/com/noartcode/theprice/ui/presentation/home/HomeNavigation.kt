@@ -6,12 +6,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
 @Serializable
-private data object HomeDestination
+data object HomeDestination
 
-@OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.composeHomeScreen(
     onNavigateToAddBill:() -> Unit,
     onNavigateToEditPayment: (paymentId:String) -> Unit,

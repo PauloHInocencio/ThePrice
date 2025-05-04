@@ -6,12 +6,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
 @Serializable
-private data object AccountDestination
+data object AccountDestination
 
-@OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.composeAccountScreen(
     onNavigateToHome:() -> Unit,
     onNavigateToLogin:() -> Unit,

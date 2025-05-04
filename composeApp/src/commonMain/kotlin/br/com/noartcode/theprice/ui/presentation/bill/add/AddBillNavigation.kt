@@ -8,12 +8,10 @@ import br.com.noartcode.theprice.ui.extensions.enterAnimation
 import br.com.noartcode.theprice.ui.extensions.exitAnimation
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
 @Serializable
-private data object AddBillDestination
+data object AddBillDestination
 
-@OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.composeAddBillScreen(
     onNavigateBack: () -> Unit,
 ) {

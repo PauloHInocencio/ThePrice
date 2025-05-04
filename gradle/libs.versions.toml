@@ -11,8 +11,8 @@ espresso = "3.5.1"
 material = "1.11.0"
 androidxJunit = "1.1.5"
 androidXTest = '1.6.1'
-compose = "1.7.6"
-composePlugin = "1.6.11"
+compose = "1.8.0"
+composePlugin = "1.8.0-rc01"
 junit4 = "4.13.2"
 kotlin = "2.1.0"
 ksp = "2.1.0-1.0.29"
@@ -20,6 +20,7 @@ lifecycle = "2.9.0-alpha08"
 androidxLifecycle = "2.8.7"
 koin = "4.0.2"
 jetbrainsNavigationCompose = "2.8.0-alpha10"
+jetbrainsIconsCompose = "1.7.3"
 room = "2.7.0"
 sqlite = "2.5.0"
 kotlinxDateTime = "0.6.0"
@@ -77,6 +78,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrainsNavigationCompose" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "jetbrainsIconsCompose"}
 
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
@@ -100,6 +102,8 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor"}
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"}
 
 # Unit Testing
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin"}

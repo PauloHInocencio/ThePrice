@@ -86,6 +86,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.compose.navigation)
+            implementation(libs.compose.material.icons)
 
             // Coil
             implementation(libs.coil.compose)
@@ -126,8 +127,11 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
 
+            // Ktor
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.jvm)
+            implementation(libs.ktor.server.core)
+            implementation(libs.ktor.server.netty)
         }
 
         val androidUnitTest by getting {
