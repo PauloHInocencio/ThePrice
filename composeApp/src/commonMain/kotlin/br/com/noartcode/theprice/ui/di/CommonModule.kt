@@ -10,6 +10,8 @@ import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourc
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSourceImp
+import br.com.noartcode.theprice.data.remote.datasource.events.EventRemoteDataSource
+import br.com.noartcode.theprice.data.remote.datasource.events.EventRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSourceImp
 import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
@@ -22,6 +24,7 @@ import br.com.noartcode.theprice.domain.usecases.GetDateFormat
 import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.GetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.GetEvent
 import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.GetPayments
 import br.com.noartcode.theprice.domain.usecases.GetTodayDate
@@ -33,6 +36,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
 import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.IGetDaysInMonth
 import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.IGetEvents
 import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.IGetPayments
@@ -93,6 +97,7 @@ fun commonModule() = module {
     single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<PaymentRemoteDataSource> { PaymentRemoteDataSourceImp(client = get(), session = get())}
+    single<EventRemoteDataSource> { EventRemoteDataSourceImp(client = get()) }
     single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
@@ -110,6 +115,7 @@ fun commonModule() = module {
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
     single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get())}
+    single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
     single<ILoginUser> {
         LoginUser(
             accountManager = get(),
@@ -189,6 +195,7 @@ fun viewModelsModule() = module {
         LoginViewModel(
             loginInUser = get(),
             getAccountInfo = get(),
+            getEvents = get(),
         )
     }
 }

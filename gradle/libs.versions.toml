@@ -3,52 +3,46 @@ agp = "8.7.3"
 android-compileSdk = "35"
 android-minSdk = "25"
 android-targetSdk = "34"
-activityCompose = "1.10.0"
-appcompat = "1.6.1"
-constraintLayout = "2.1.4"
-coreKtx = "1.13.0"
-espresso = "3.5.1"
-material = "1.11.0"
-androidxJunit = "1.1.5"
+activityCompose = "1.10.1"
 androidXTest = '1.6.1'
-compose = "1.8.0"
-composePlugin = "1.8.0-rc01"
+compose = "1.8.1"
+composePlugin = "1.8.0"
 junit4 = "4.13.2"
-kotlin = "2.1.0"
-ksp = "2.1.0-1.0.29"
-lifecycle = "2.9.0-alpha08"
-androidxLifecycle = "2.8.7"
+kotlin = "2.1.20"
+ksp = "2.1.20-2.0.1"
+lifecycle = "2.9.0"
 koin = "4.0.2"
 jetbrainsNavigationCompose = "2.8.0-alpha10"
 jetbrainsIconsCompose = "1.7.3"
-room = "2.7.0"
-sqlite = "2.5.0"
-kotlinxDateTime = "0.6.0"
+room = "2.7.1"
+sqlite = "2.5.1"
+kotlinxDateTime = "0.6.2"
 turbine = "1.1.0"
-coroutines = "1.8.1"
+coroutines = "1.10.2"
 mockk = "1.13.12"
 robolectric = "4.14.1"
 testRunnerVersion = "1.6.2"
-credentials = "1.3.0"
+credentials = "1.5.0"
 googleid = "1.1.1"
-ktor = "3.0.1"
-datastore = "1.1.1"
-coil = "3.0.4"
+ktor = "3.1.3"
+datastore = "1.1.6"
+coil = "3.1.0"
 mokkery = "2.7.0"
-workmanager = "2.10.0"
+workmanager = "2.10.1"
 
 [libraries]
+
 # Kotlix DateTime
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDateTime"}
 
 # Lifecycle
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 
 # Coroutines
 kotlinx-coroutines-core = {module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref="coroutines"}
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines"}
 
 #Room
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
@@ -72,6 +66,7 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 koin-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin"}
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
 
 # Compose
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -89,7 +84,6 @@ credentials = { module = "androidx.credentials:credentials", version.ref = "cred
 credentials-auth = {module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials"}
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid",  version.ref = "googleid"}
 
-
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
@@ -105,14 +99,19 @@ ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor"}
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"}
 
-# Unit Testing
+# Kotlin Test
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin"}
-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines"}
+
+# Turbine
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
+
+# Mockk
 mockk = { module = "io.mockk:mockk", version.ref = "mockk"}
+
 androidx-test-core = { module ="androidx.test:core", version.ref = "androidXTest" }
 junit4 = { module = "junit:junit", version.ref = "junit4"}
+
+# Robolectric
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric"}
 
 # UI Testing
@@ -121,6 +120,7 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "testRunnerVersion" }
 
 [plugins]
+
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }

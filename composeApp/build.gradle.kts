@@ -151,7 +151,7 @@ kotlin {
 
             implementation(libs.kotlin.test)
             implementation(libs.turbine)
-            implementation(libs.coroutines.test)
+            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
             implementation(libs.ktor.client.mock)
             implementation(libs.ktor.client.core)

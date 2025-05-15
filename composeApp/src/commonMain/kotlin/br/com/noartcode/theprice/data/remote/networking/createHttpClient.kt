@@ -13,6 +13,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -21,6 +22,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.seconds
 
 fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) : HttpClient {
     return HttpClient(engine) {
@@ -66,6 +68,12 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                     }
                 }
             }
+        }
+        install(SSE){
+            maxReconnectionAttempts = 4
+            reconnectionTime = 2.seconds
+            showCommentEvents()
+            showRetryEvents()
         }
         defaultRequest {
             url(API_BASE_URL)

@@ -3,9 +3,12 @@ package br.com.noartcode.theprice.ui.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.domain.usecases.IGetEvents
 import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.ILoginUser
 import br.com.noartcode.theprice.util.Resource
+import br.com.noartcode.theprice.util.doIfError
+import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +17,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val loginInUser: ILoginUser,
     private val getAccountInfo: IGetUserAccountInfo,
+    private val getEvents: IGetEvents,
 ) : ViewModel() {
 
     private val userInfoState: StateFlow<User?> = getAccountInfo()
@@ -36,6 +41,17 @@ class LoginViewModel(
         started = SharingStarted.WhileSubscribed(500),
         initialValue = LoginUiState.Idle
     )
+
+
+    init {
+        viewModelScope.launch {
+            getEvents().collect { result ->
+                result
+                    .doIfSuccess { println(it) }
+                    .doIfError { println(it.message) }
+            }
+        }
+    }
 
     fun onEvent(event: LoginEvent) {
         when (event) {
