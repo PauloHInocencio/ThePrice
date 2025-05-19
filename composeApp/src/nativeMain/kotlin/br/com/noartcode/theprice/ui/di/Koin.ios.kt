@@ -22,7 +22,7 @@ import platform.Foundation.currentLocale
 
 
 actual fun platformModule() = module {
-    single<ThePriceDatabase> { getDatabase() }
+    single<ThePriceDatabase> { getDatabase(ioDispatcher = get()) }
     single<ICurrencyFormatter> {
         CurrencyFormatter(formatter = NSNumberFormatter().also {
             it.usesGroupingSeparator = true
