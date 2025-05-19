@@ -48,7 +48,7 @@ fun main() = application {
     }
 
     val trayIcon = remember {
-        TrayIcon(image).apply {
+        TrayIcon(image, "The Price").apply {
             isImageAutoSize = true
             addMouseListener(object : MouseAdapter() {
                 override fun mouseReleased(e: MouseEvent) {
@@ -77,8 +77,6 @@ fun main() = application {
     Window(
         visible = showWindow,
         onCloseRequest = { showWindow = false },
-        focusable = true,
-        alwaysOnTop = true,
         title = "ThePrice",
     ) {
         App()

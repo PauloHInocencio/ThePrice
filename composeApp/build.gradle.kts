@@ -219,12 +219,14 @@ android {
 compose.desktop {
     application {
         mainClass = "MainKt"
-        jvmArgs.add("-Dapple.awt.UIElement=true") // hide docker icon
-
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "br.com.noartcode.theprice"
             packageVersion = "1.0.0"
+            macOS {
+                jvmArgs("-Dapple.awt.UIElement=true") // hide docker icon
+                //jvmArgs("-Dapple.awt.enableTemplateImages=true") // Implementing Automatic Icon Color Switching
+            }
         }
     }
 }
