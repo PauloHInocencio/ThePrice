@@ -77,6 +77,7 @@ fun main() = application {
     Window(
         visible = showWindow,
         onCloseRequest = { showWindow = false },
+        alwaysOnTop = true,
         title = "ThePrice",
     ) {
         App()
