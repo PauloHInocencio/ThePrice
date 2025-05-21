@@ -11,9 +11,6 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 
-const val API_BASE_URL = "http://192.168.1.3:8080/api/v1/"
-
-
 
 suspend inline fun <reified T> safeCall(execute: () -> HttpResponse) : Resource<T> {
     val response = try {

@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.data.remote.networking
 
+import br.com.noartcode.theprice.BuildKonfig
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.dtos.AccessTokenRequest
 import br.com.noartcode.theprice.data.remote.dtos.AccessTokenResponse
@@ -14,6 +15,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.sse.SSE
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
@@ -76,9 +78,9 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
             showRetryEvents()
         }
         defaultRequest {
-            url(API_BASE_URL)
+            url(BuildKonfig.apiBaseUrl)
             contentType(ContentType.Application.Json)
-            //header("x-api-key", "") //TODO("Configure API Key on Webserver")
+            header("x-api-key", BuildKonfig.apiKey) //TODO("Configure API Key on Webserver")
         }
     }
 }

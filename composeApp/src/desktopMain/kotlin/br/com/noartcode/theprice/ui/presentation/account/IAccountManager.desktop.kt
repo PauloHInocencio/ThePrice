@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.ui.presentation.account
 
+import br.com.noartcode.theprice.BuildKonfig
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -24,8 +25,6 @@ import java.util.UUID
 
 actual class AccountManager : IAccountManager {
 
-    private val clientId = "350302388547-dgrts0vl01dsdoh3fc809qvki9nc5po5.apps.googleusercontent.com"
-    private val clientSecret = "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"
     private val redirectUri = "http://localhost:8888/callback"
     private val scopes = listOf("openid", "email", "profile")
 
@@ -67,7 +66,7 @@ actual class AccountManager : IAccountManager {
         val scopeParam = scopes.joinToString("%20")
         return buildString {
             append("https://accounts.google.com/o/oauth2/v2/auth")
-            append("?client_id=$clientId")
+            append("?client_id=${BuildKonfig.googleAuthClientId}")
             append("&redirect_uri=$redirectUri")
             append("&response_type=code")
             append("&scope=$scopeParam")
@@ -89,8 +88,8 @@ actual class AccountManager : IAccountManager {
             setBody(
                 Parameters.build {
                     append("code", code)
-                    append("client_id", clientId)
-                    append("client_secret", clientSecret)
+                    append("client_id", BuildKonfig.googleAuthClientId)
+                    append("client_secret", BuildKonfig.googleAuthSecret)
                     append("redirect_uri", redirectUri)
                     append("grant_type", "authorization_code")
                 }.formUrlEncode()

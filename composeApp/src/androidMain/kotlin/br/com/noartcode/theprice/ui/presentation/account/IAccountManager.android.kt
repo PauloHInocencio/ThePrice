@@ -8,6 +8,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.PasswordCredential
 import androidx.credentials.PublicKeyCredential
+import br.com.noartcode.theprice.BuildKonfig
 import br.com.noartcode.theprice.ThePriceApp
 import br.com.noartcode.theprice.util.Resource
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -38,7 +39,7 @@ actual class AccountManager(
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
                 .setNonce(hashedNonce)
-                .setServerClientId("350302388547-tke4o9817b8qp74a75nav2te4evb77hd.apps.googleusercontent.com")
+                .setServerClientId(BuildKonfig.googleAuthClientId)
                 .build()
 
 

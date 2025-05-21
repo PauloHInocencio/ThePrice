@@ -1,7 +1,9 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -12,6 +14,7 @@ plugins {
     alias(libs.plugins.androidxRoom)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.mokkery)
+    alias(libs.plugins.buildKonfig)
 }
 
 kotlin {
@@ -244,8 +247,30 @@ dependencies {
     add("kspDesktop", libs.androidx.room.compiler)
 }
 
-
-
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+val localProps = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+buildkonfig {
+    packageName = "br.com.noartcode.theprice"
+
+    defaultConfigs{
+        buildConfigField(STRING, "apiBaseUrl", localProps["API_BASE_URL"] as String)
+        buildConfigField(STRING, "apiKey", localProps["API_KEY"] as String)
+    }
+
+    targetConfigs {
+        create("android"){
+            buildConfigField(STRING, "googleAuthClientId", localProps["GOOGLE_AUTH_CLIENT_ID_SERVER"] as String)
+        }
+
+        create("desktop") {
+            buildConfigField(STRING, "googleAuthClientId", localProps["GOOGLE_AUTH_CLIENT_ID_DESKTOP"] as String)
+            buildConfigField(STRING, "googleAuthSecret", localProps["GOOGLE_AUTH_CLIENT_SECRET_DESKTOP"] as String)
+        }
+    }
 }
