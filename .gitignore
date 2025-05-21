@@ -5,6 +5,7 @@
 xcuserdata
 !src/**/build/
 local.properties
+composeApp/src/androidMain/res/xml/network_security_config.xml
 .idea
 .DS_Store
 captures
