@@ -31,7 +31,7 @@ interface IGetPayments {
 class GetPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
-    private val insertMissingPayments: IInsertMissingPayments,
+    private val insertMissingPayments: IInsertMissingPayments, // TODO: use case should be in viewmodel
     private val ioDispatcher: CoroutineDispatcher,
 ) : IGetPayments {
 
@@ -53,20 +53,20 @@ class GetPayments(
             }
         }
         .onStart { emit(Resource.Loading) }
-        .retryWhen { cause, attempt ->
+        /*.retryWhen { cause, attempt ->
             if(cause is IllegalArgumentException && attempt == 0L) {
                 insertMissingPayments(date)
                 return@retryWhen true
             }
             return@retryWhen false
-        }
-        .catch { e ->
+        }*/
+        /*.catch { e ->
             if (e is CancellationException) throw e
             emit(Resource.Error(
                 exception = e,
                 message = "Something wrong happen when trying to get payments")
             )
-        }
+        }*/
         .flowOn(ioDispatcher)
 
 }

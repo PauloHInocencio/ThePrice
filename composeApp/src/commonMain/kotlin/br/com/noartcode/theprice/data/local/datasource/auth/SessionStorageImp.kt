@@ -37,6 +37,12 @@ class SessionStorageImp(
         }
     }
 
+    override suspend fun saveDeviceID(deviceID: String) {
+        dataStore.edit{
+            it[DEVICE_ID] = deviceID
+        }
+    }
+
     override suspend fun clean() {
         dataStore.edit {
             it.clear()
@@ -67,6 +73,10 @@ class SessionStorageImp(
     override fun getRefreshToken(): Flow<String?> =
         dataStore.data.map { it[REFRESH_TOKEN] }.flowOn(ioDispatcher)
 
+    override fun getDeviceID(): Flow<String?> =
+        dataStore.data.map { it[DEVICE_ID] }.flowOn(ioDispatcher)
+
+
 
     companion object {
         private val ACCESS_TOKEN = stringPreferencesKey("access_token")
@@ -74,5 +84,6 @@ class SessionStorageImp(
         private val USER_EMAIL = stringPreferencesKey("user_email")
         private val USER_NAME = stringPreferencesKey("user_name")
         private val USER_PICTURE = stringPreferencesKey("user_picture")
+        private val DEVICE_ID = stringPreferencesKey("device_id")
     }
 }

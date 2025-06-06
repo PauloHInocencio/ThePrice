@@ -9,6 +9,7 @@ import java.io.File
 
 fun getDatabase(ioDispatcher:CoroutineDispatcher): ThePriceDatabase {
     val dbFile = File(System.getProperty("java.io.tmpdir"), dbFileName)
+    println("DB path: ${dbFile.absolutePath}")
     return Room.databaseBuilder<ThePriceDatabase>(name = dbFile.absolutePath)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(ioDispatcher)

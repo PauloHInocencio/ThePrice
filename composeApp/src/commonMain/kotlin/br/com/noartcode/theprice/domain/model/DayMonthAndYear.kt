@@ -53,3 +53,13 @@ fun String.toDayMonthAndYear() =
         .toLocalDateTime(TimeZone.UTC)
         .date
         .toDayMonthAndYear()
+
+fun DayMonthAndYear.isValid() : Boolean {
+    try {
+        this.toLocalDate()
+        return true
+    } catch (e: Throwable) {
+        e.printStackTrace()
+        return false
+    }
+}

@@ -46,6 +46,7 @@ import br.com.noartcode.theprice.domain.usecases.IGetUserData
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.IInsertPayments
 import br.com.noartcode.theprice.domain.usecases.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.ILoginUser
@@ -97,7 +98,7 @@ fun commonModule() = module {
     single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<PaymentRemoteDataSource> { PaymentRemoteDataSourceImp(client = get(), session = get())}
-    single<EventRemoteDataSource> { EventRemoteDataSourceImp(client = get()) }
+    single<EventRemoteDataSource> { EventRemoteDataSourceImp(client = get(), session = get()) }
     single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
@@ -106,6 +107,7 @@ fun commonModule() = module {
     single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get(), dispatcher = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get())}
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get(), dispatcher = get() )}
+    single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert)}
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get())}
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get())}
@@ -148,6 +150,12 @@ fun viewModelsModule() = module {
             moveMonth = get(),
             getFirstPaymentDate = get(),
             updatePaymentStatus = get(),
+            getEvents = get(),
+            insertMissingPayments = get(),
+            updateBill = get(),
+            insertNewBill = get(),
+            updatePayment = get(),
+            insertPayments = get(),
         )
     }
     viewModel {
@@ -157,6 +165,7 @@ fun viewModelsModule() = module {
             getTodayDate = get(),
             epochFormatter = get(),
             getMonthName = get(),
+            syncBillWorker = get(),
         )
     }
     viewModel {
@@ -168,6 +177,7 @@ fun viewModelsModule() = module {
             getMonthName = get(),
             getBill = get(),
             deleteBill = get(),
+            syncUpdatedBillWorker = get(),
         )
     }
     viewModel {
@@ -180,6 +190,7 @@ fun viewModelsModule() = module {
             updatePayment = get(),
             paymentUiMapper = get(),
             getTodayDate = get(),
+            syncUpdatedPaymentWorker = get(),
         )
     }
 
@@ -195,7 +206,6 @@ fun viewModelsModule() = module {
         LoginViewModel(
             loginInUser = get(),
             getAccountInfo = get(),
-            getEvents = get(),
         )
     }
 }

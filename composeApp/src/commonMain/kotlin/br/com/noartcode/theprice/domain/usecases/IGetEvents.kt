@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 
 interface IGetEvents {
-    operator fun invoke() : Flow<Resource<EventDto>>
+    operator fun invoke() : Flow<Resource<String>>
 }
 
 class GetEvent(
     private val remoteDataSource: EventRemoteDataSource,
     private val dispatcher: CoroutineDispatcher,
 ) : IGetEvents {
-    override fun invoke(): Flow<Resource<EventDto>> = remoteDataSource
+    override fun invoke(): Flow<Resource<String>> = remoteDataSource
         .getEvents()
         .flowOn(dispatcher)
 

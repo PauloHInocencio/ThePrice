@@ -7,6 +7,8 @@ import br.com.noartcode.theprice.data.remote.dtos.AccessTokenResponse
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -36,9 +38,11 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                 }
             )
         }
+
         install(Logging) {
             level = LogLevel.ALL
         }
+
         install(Auth) {
             bearer {
                 refreshTokens {
@@ -46,13 +50,17 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                         .getRefreshToken()
                         .first() ?: return@refreshTokens null
 
-
+                    val deviceID = localDataSource
+                        .getDeviceID()
+                        .first() ?: return@refreshTokens null
+                    //TODO: this is throwing error at run time
                     val result = safeCall<AccessTokenResponse> {
                         client.post {
                             markAsRefreshTokenRequest()
                             url("users/renew-access-token")
                             setBody(AccessTokenRequest(
-                                refreshToken = refreshToken
+                                refreshToken = refreshToken,
+                                deviceID = deviceID,
                             ))
                         }
                     }
@@ -71,12 +79,19 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                 }
             }
         }
+
         install(SSE){
             maxReconnectionAttempts = 4
             reconnectionTime = 2.seconds
             showCommentEvents()
             showRetryEvents()
         }
+
+        install(HttpTimeout){
+            socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+            //connectTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+        }
+        
         defaultRequest {
             url(BuildKonfig.apiBaseUrl)
             contentType(ContentType.Application.Json)

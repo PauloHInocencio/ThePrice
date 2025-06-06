@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
@@ -15,6 +16,8 @@ import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.*
+import br.com.noartcode.theprice.util.doIfError
+import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -30,6 +33,7 @@ class EditPaymentViewModel(
     private val updatePayment: IUpdatePayment,
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val getTodayDate: IGetTodayDate,
+    private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker,
 ) : ViewModel() {
 
     private var payment:Payment? = null
@@ -115,13 +119,11 @@ class EditPaymentViewModel(
                         updatedAt = getTodayDate().toEpochMilliseconds(),
                         isSynced = false,
                     )
+                ).doIfSuccess {
+                    syncUpdatedPaymentWorker.sync(payment!!.id)
+                    _state.update { it.copy(isSaving = false, isSaved = true) }
+                }.doIfError {
 
-                )
-                _state.update {
-                    it.copy(
-                        isSaving = false,
-                        isSaved = true
-                    )
                 }
             }
 

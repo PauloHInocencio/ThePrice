@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.bill.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
@@ -31,6 +32,7 @@ class EditBillViewModel(
     private val getMonthName: IGetMonthName,
     private val getBill: IGetBillByID,
     private val deleteBill: IDeleteBill,
+    private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,
 ) : ViewModel() {
 
     private val bill = MutableStateFlow(
@@ -79,6 +81,7 @@ class EditBillViewModel(
                 state.update { it.copy(isSaving = true) }
                 updateBill(bill = bill.value)
                     .doIfSuccess {
+                        syncUpdatedBillWorker.sync(bill.value.id)
                         state.update { it.copy(canClose = true) }
                     }
                     .doIfError { error->

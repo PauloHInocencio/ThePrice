@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import java.util.Properties
+import java.io.File
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -271,6 +272,27 @@ buildkonfig {
         create("desktop") {
             buildConfigField(STRING, "googleAuthClientId", localProps["GOOGLE_AUTH_CLIENT_ID_DESKTOP"] as String)
             buildConfigField(STRING, "googleAuthSecret", localProps["GOOGLE_AUTH_CLIENT_SECRET_DESKTOP"] as String)
+        }
+    }
+}
+
+tasks.register("cleanDesktopDatabase") {
+    group = "cleanup"
+    description = "Deletes the Room database file used in the Desktop app"
+
+    doLast {
+        val dbFileName = "the_price_app.db" // Replace with your actual file name
+        val dbFile = File(System.getProperty("java.io.tmpdir"), dbFileName)
+        if (dbFile.exists()) {
+            println("Deleting database at: ${dbFile.absolutePath}")
+            val deleted = dbFile.delete()
+            if (deleted) {
+                println("Database deleted successfully.")
+            } else {
+                println("Failed to delete the database.")
+            }
+        } else {
+            println("No database file found at: ${dbFile.absolutePath}")
         }
     }
 }

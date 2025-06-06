@@ -21,7 +21,7 @@ class InsertMissingPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
     private val getTodayDate: IGetTodayDate,
-    private val syncPaymentsWorker: ISyncPaymentsWorker,
+    private val syncPaymentsWorker: ISyncPaymentsWorker, // TODO: work should be in viewmodel
     private val dispatcher: CoroutineDispatcher,
 ) : IInsertMissingPayments {
 

@@ -5,5 +5,5 @@ import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface EventRemoteDataSource {
-    fun getEvents() : Flow<Resource<EventDto>>
+    fun getEvents() : Flow<Resource<String>>
 }

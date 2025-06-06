@@ -17,11 +17,17 @@ class AuthRemoteDataSourceImp(
     private val session: SessionStorage
 ) : AuthRemoteDataSource {
 
-    override suspend fun signUpUser(tokenID: String, rawNonce: String): Resource<AuthInfo> =
+    override suspend fun signUpUser(tokenID: String, deviceID:String, rawNonce: String): Resource<AuthInfo> =
         safeCall {
             client.post {
                 url("users/login")
-                setBody(mapOf("token_id" to tokenID, "raw_nonce" to rawNonce))
+                setBody(
+                    mapOf(
+                        "token_id" to tokenID,
+                        "raw_nonce" to rawNonce,
+                        "device_id" to deviceID,
+                    )
+                )
             }
         }
 

@@ -16,7 +16,7 @@ interface IInsertBill {
 
 class InsertBill(
     private val repository: BillsRepository,
-    private val worker: ISyncBillWorker,
+    private val worker: ISyncBillWorker, // TODO: work should be in viewmodel
     private val ioDispatcher: CoroutineDispatcher,
 ) : IInsertBill {
 
@@ -25,7 +25,7 @@ class InsertBill(
     ): Resource<String> = withContext(ioDispatcher) {
         try {
             val id = repository.insert(bill)
-            worker.sync(id)
+            //worker.sync(id)
             return@withContext Resource.Success(id)
         } catch (e:Throwable) {
             return@withContext Resource.Error(

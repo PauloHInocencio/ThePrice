@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.bill.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
@@ -27,6 +28,7 @@ class AddBillViewModel(
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
+    private val syncBillWorker: ISyncBillWorker,
 ) : ViewModel() {
 
     private val bill = MutableStateFlow(
@@ -76,6 +78,7 @@ class AddBillViewModel(
 
                     insertNewBill(bill.value)
                         .doIfSuccess { id ->
+                            syncBillWorker.sync(id)
                             bill.update { it.copy(id = id) }
                         }
                         .doIfError { error->
