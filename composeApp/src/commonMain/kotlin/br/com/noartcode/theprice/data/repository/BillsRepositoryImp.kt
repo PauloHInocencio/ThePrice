@@ -53,9 +53,4 @@ class BillsRepositoryImp(
     override suspend fun update(bill: Bill) {
         local.update(bill)
     }
-
-
-    override suspend fun delete(id: Int) {
-        TODO("Not yet implemented")
-    }
 }

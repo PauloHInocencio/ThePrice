@@ -14,5 +14,4 @@ interface BillsRepository {
     suspend fun put(bill:Bill) : Resource<Unit>
     suspend fun get(id:String) : Bill?
     suspend fun update(bill:Bill)
-    suspend fun delete(id:Int)
 }

@@ -55,7 +55,7 @@ class HomeViewModel(
     private val updatePaymentStatus: IUpdatePaymentStatus,
     private val getEvents: IGetEvents,
     private val updateBill: IUpdateBill,
-    //private val deleteBill: IDeleteBill,
+    private val deleteBill: IDeleteBill,
     private val insertNewBill: IInsertBill,
     private val updatePayment: IUpdatePayment,
     private val insertMissingPayments: IInsertMissingPayments,
@@ -83,6 +83,10 @@ class HomeViewModel(
                         val bill = defaultJson.decodeFromString<BillDto>(event.data!!)
                         insertNewBill(bill.toDomain())
                     }
+                    ("bill" to "delete") -> {
+                        val bill = defaultJson.decodeFromString<BillDto>(event.data!!)
+                        deleteBill(bill.id)
+                    }
                     ("payment" to "create") -> {
                         val payments = defaultJson.decodeFromString<List<PaymentDto>>(event.data!!)
                         insertPayments(payments.toDomain())
@@ -91,12 +95,6 @@ class HomeViewModel(
                         val payment = defaultJson.decodeFromString<PaymentDto>(event.data!!)
                         val paymentDomain = payment.toDomain()
                         updatePayment(paymentDomain)
-                            .doIfError { error ->
-                                println("error during payment update: ${error.message}")
-                            }
-                            .doIfSuccess {
-                                println("success during payment update.")
-                            }
                     }
                     else -> {
                         println("unknown event: $event")
@@ -138,6 +136,7 @@ class HomeViewModel(
         val (currentDate, firstPaymentDate) = dates
         HomeUiState(
             monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
+            //TODO: this should be inside a separated function
             canGoBack = firstPaymentDate != null && moveMonth(by = -1, currentDate = currentDate).let { it  > firstPaymentDate || (it.month == firstPaymentDate.month && it.year == firstPaymentDate.year) },
             canGoNext = currentDate < initialDate,
             payments = (payments as? Resource.Success)?.data?.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }?.sortedBy { paymentUi -> paymentUi.status } ?: emptyList(),

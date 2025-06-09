@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.ui.presentation.bill.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
@@ -11,6 +12,7 @@ import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
@@ -25,10 +27,12 @@ import kotlinx.coroutines.launch
 class AddBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
     private val insertNewBill: IInsertBill,
+    private val insertBillWithPayments: IInsertBillWithPayments,
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
     private val syncBillWorker: ISyncBillWorker,
+    private val syncPayments: ISyncPaymentsWorker,
 ) : ViewModel() {
 
     private val bill = MutableStateFlow(
@@ -75,8 +79,7 @@ class AddBillViewModel(
             AddBillEvent.OnSave -> {
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
-
-                    insertNewBill(bill.value)
+/*                    insertNewBill(bill.value)
                         .doIfSuccess { id ->
                             syncBillWorker.sync(id)
                             bill.update { it.copy(id = id) }
@@ -84,8 +87,17 @@ class AddBillViewModel(
                         .doIfError { error->
                             state.update { it.copy(errorMessage = error.message) }
                             println("${error.message}, ${error.exception.toString()}" )
+                        }*/
+                    insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
+                        .doIfSuccess { id ->
+                            syncBillWorker.sync(id)
+                            syncPayments.sync()
+                            bill.update { it.copy(id = id) }
                         }
-
+                        .doIfError { error->
+                            state.update { it.copy(errorMessage = error.message) }
+                            println("${error.message}, ${error.exception.toString()}" )
+                        }
                     state.update { it.copy(isSaving = false) }
                 }
             }

@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
@@ -57,5 +58,14 @@ class BillRemoteDataSourceImp(
             }
         }
 
-
+    override suspend fun delete(id: String): Resource<BillDto> =
+        safeCall {
+            val accessToken = session.getAccessToken().first()
+            client.delete {
+                url("bills/$id")
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
+                }
+            }
+        }
 }

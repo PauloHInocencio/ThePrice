@@ -156,16 +156,19 @@ fun viewModelsModule() = module {
             insertNewBill = get(),
             updatePayment = get(),
             insertPayments = get(),
+            deleteBill = get(),
         )
     }
     viewModel {
         AddBillViewModel(
             currencyFormatter = get(),
             insertNewBill = get(),
+            insertBillWithPayments = get(),
             getTodayDate = get(),
             epochFormatter = get(),
             getMonthName = get(),
             syncBillWorker = get(),
+            syncPayments = get(),
         )
     }
     viewModel {
@@ -178,6 +181,7 @@ fun viewModelsModule() = module {
             getBill = get(),
             deleteBill = get(),
             syncUpdatedBillWorker = get(),
+            syncDeletedBillWorker = get(),
         )
     }
     viewModel {
