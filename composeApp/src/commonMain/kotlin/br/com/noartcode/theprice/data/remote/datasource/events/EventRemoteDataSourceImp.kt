@@ -24,33 +24,32 @@ class EventRemoteDataSourceImp(
 
     override fun getEvents(): Flow<Resource<String>> = callbackFlow {
         val accessToken = session.getAccessToken().first()
-        val session = client.sseSession {
-            url("events")
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $accessToken")
-            }
-        }
-        val job = launch {
-            session.incoming.collect { event ->
-               /* val dto = event.data?.let { Json.decodeFromString<EventDto>(it) }
-                val result = if (dto != null) {
-                    Resource.Success(data = dto)
-                } else {
-                    Resource.Error(message = "Event parsing failed")
-                }*/
-                val eventData = event.data
-                val result = if (eventData != null) {
-                    Resource.Success(eventData)
-                } else {
-                    Resource.Error(message = "Event aata is null")
+        val job = try {
+            val session = client.sseSession {
+                url("events")
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }
-                trySend(result)
             }
+            launch {
+                session.incoming.collect { event ->
+                    val eventData = event.data
+                    val result = if (eventData != null) {
+                        Resource.Success(eventData)
+                    } else {
+                        Resource.Error(message = "Event data is null")
+                    }
+                    trySend(result)
+                }
+            }
+        } catch (e:Throwable) {
+            trySend(Resource.Error(message = "Failed to connect to SSE", exception = e))
+            null
         }
 
         // Cancel the coroutine when the flow collector is cancelled
         awaitClose {
-            job.cancel()
+            job?.cancel()
         }
     }
 }

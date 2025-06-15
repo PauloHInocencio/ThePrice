@@ -53,7 +53,7 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                     val deviceID = localDataSource
                         .getDeviceID()
                         .first() ?: return@refreshTokens null
-                    //TODO: this is throwing error at run time
+
                     val result = safeCall<AccessTokenResponse> {
                         client.post {
                             markAsRefreshTokenRequest()
@@ -74,7 +74,14 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                                 refreshToken = localDataSource.getAccessToken().first()
                             )
                         }
-                        else -> null
+                        is Resource.Error -> {
+                            println("Error while authenticating: ${result.message}")
+                            null
+                        }
+                        Resource.Loading -> {
+                            println("Invalid response")
+                            null
+                        }
                     }
                 }
             }
