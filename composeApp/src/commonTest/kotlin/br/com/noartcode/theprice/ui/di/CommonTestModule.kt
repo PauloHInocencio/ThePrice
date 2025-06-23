@@ -6,7 +6,7 @@ import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -15,8 +15,6 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 

@@ -34,24 +34,24 @@ class BillRemoteDataSourceImp(
 
         }
 
-    override suspend fun post(bill: Bill): Resource<Unit> =
+    override suspend fun post(bill: BillDto): Resource<Unit> =
         safeCall {
             val accessToken = session.getAccessToken().first()
             client.post{
                 url("bills")
-                setBody(bill.toDto())
+                setBody(bill)
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }
             }
         }
 
-    override suspend fun put(bill: Bill): Resource<Unit> =
+    override suspend fun put(bill: BillDto): Resource<Unit> =
         safeCall {
             val accessToken = session.getAccessToken().first()
             client.put {
                 url("bills/${bill.id}")
-                setBody(bill.toDto())
+                setBody(bill)
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $accessToken")
                 }

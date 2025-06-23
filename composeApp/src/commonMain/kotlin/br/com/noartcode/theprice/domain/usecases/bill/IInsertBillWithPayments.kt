@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.domain.usecases
+package br.com.noartcode.theprice.domain.usecases.bill
 
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
@@ -7,10 +7,9 @@ import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.model.toLocalDate
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
@@ -20,7 +19,7 @@ interface IInsertBillWithPayments {
     suspend operator fun invoke(
         bill: Bill,
         currentDate:DayMonthAndYear,
-    ) : Resource<String>
+    ) : Resource<Pair<Bill, List<Payment>>>
 }
 
 class InsertBillWithPayments(
@@ -31,7 +30,7 @@ class InsertBillWithPayments(
     override suspend fun invoke(
         bill: Bill,
         currentDate: DayMonthAndYear
-    ): Resource<String> = withContext(dispatcher) {
+    ): Resource<Pair<Bill, List<Payment>>> = withContext(dispatcher) {
         try {
             val start = bill.billingStartDate.toLocalDate()
             val numOfPayments = start.until(
@@ -51,9 +50,8 @@ class InsertBillWithPayments(
                 )
             }
 
-            val id = localDataSource.insertBillWithPayments(bill, payments)
-
-            return@withContext Resource.Success(id)
+            val result = localDataSource.insertBillWithPayments(bill, payments)
+            return@withContext Resource.Success(result)
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 exception = e,

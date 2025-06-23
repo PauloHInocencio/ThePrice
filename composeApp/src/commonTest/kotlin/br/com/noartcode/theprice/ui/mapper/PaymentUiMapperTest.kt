@@ -5,21 +5,17 @@ import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
-import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -39,7 +35,7 @@ class PaymentUiMapperTest : KoinTest, RobolectricTests() {
 
     private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
-    private val getTodayDate:IGetTodayDate by inject()
+    private val getTodayDate: IGetTodayDate by inject()
     private val billDataSource: BillLocalDataSource by inject()
 
     // Unit Under Test

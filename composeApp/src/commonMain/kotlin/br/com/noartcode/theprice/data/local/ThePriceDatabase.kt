@@ -5,12 +5,14 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import br.com.noartcode.theprice.data.local.dao.BillDao
+import br.com.noartcode.theprice.data.local.dao.EventsDao
 import br.com.noartcode.theprice.data.local.dao.PaymentDao
 import br.com.noartcode.theprice.data.local.entities.BillEntity
+import br.com.noartcode.theprice.data.local.entities.EventEntity
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 
 @Database(
-    entities = [BillEntity::class, PaymentEntity::class],
+    entities = [BillEntity::class, PaymentEntity::class, EventEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -18,6 +20,7 @@ import br.com.noartcode.theprice.data.local.entities.PaymentEntity
 abstract class ThePriceDatabase : RoomDatabase() {
     abstract fun getBillDao (): BillDao
     abstract fun getPaymentDao() : PaymentDao
+    abstract fun getEventsDao() : EventsDao
 }
 
 // The Room compiler generates the `actual` implementations.

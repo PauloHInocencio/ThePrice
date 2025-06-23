@@ -1,8 +1,8 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.ui.di.commonModule
-import br.com.noartcode.theprice.ui.di.commonTestModule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 
 class MoveMonthTest: KoinTest {
 
-    private val moveMonth:IMoveMonth by inject()
+    private val moveMonth: IMoveMonth by inject()
 
     @BeforeTest
     fun before() {

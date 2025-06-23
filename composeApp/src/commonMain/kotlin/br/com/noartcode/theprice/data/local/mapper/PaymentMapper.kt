@@ -1,8 +1,13 @@
 package br.com.noartcode.theprice.data.local.mapper
 
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
+import br.com.noartcode.theprice.data.remote.mapper.toDto
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.SyncEvent
+import kotlinx.serialization.json.Json
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun PaymentEntity.toDomain() : Payment {
     return Payment(
@@ -35,4 +40,28 @@ fun Payment.toEntity() =
 
 fun Iterable<Payment>.toEntity() = this.map { model ->
     model.toEntity()
+}
+
+@OptIn(ExperimentalUuidApi::class)
+fun Payment.toSyncEvent(action:String) : SyncEvent {
+    val defaultJson = Json { ignoreUnknownKeys = true }
+    return SyncEvent(
+        id = Uuid.random().toString(),
+        endpoint = "payment",
+        action = action,
+        payload = defaultJson.encodeToString(this.toDto()),
+        createdAt = this.createdAt,
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+fun Iterable<Payment>.toSyncEvent(action:String) : SyncEvent {
+    val defaultJson = Json { ignoreUnknownKeys = true }
+    return  SyncEvent(
+        id = Uuid.random().toString(),
+        endpoint = "payment",
+        action = action,
+        payload = defaultJson.encodeToString(this.toDto()),
+        createdAt = this.last().createdAt,
+    )
 }

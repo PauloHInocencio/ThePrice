@@ -62,7 +62,5 @@ class AndroidSyncPaymentsWorker(
             e.printStackTrace()
             Result.failure(workDataOf("error_message" to "Error while trying sync payments"))
         }
-
     }
-
 }

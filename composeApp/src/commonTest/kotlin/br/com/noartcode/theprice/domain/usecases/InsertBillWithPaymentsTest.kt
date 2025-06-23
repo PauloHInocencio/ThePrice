@@ -6,6 +6,7 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -15,8 +16,6 @@ import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -40,7 +39,7 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
     private val paymentDataSource:PaymentLocalDataSource by inject()
 
     // Unit Under Test
-    private val insertBillWithPayments:IInsertBillWithPayments by inject()
+    private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
     @BeforeTest
     fun before() {

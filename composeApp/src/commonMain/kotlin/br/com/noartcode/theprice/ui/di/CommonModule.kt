@@ -21,47 +21,47 @@ import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.GetDateFormat
-import br.com.noartcode.theprice.domain.usecases.GetDateMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.GetDaysInMonth
-import br.com.noartcode.theprice.domain.usecases.GetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.datetime.GetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.datetime.GetDaysInMonth
+import br.com.noartcode.theprice.domain.usecases.datetime.GetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.GetEvent
-import br.com.noartcode.theprice.domain.usecases.GetOldestPaymentRecordDate
-import br.com.noartcode.theprice.domain.usecases.GetPayments
-import br.com.noartcode.theprice.domain.usecases.GetTodayDate
-import br.com.noartcode.theprice.domain.usecases.GetUserData
-import br.com.noartcode.theprice.domain.usecases.IDeleteBill
+import br.com.noartcode.theprice.domain.usecases.payment.GetOldestPaymentRecordDate
+import br.com.noartcode.theprice.domain.usecases.payment.GetPayments
+import br.com.noartcode.theprice.domain.usecases.datetime.GetTodayDate
+import br.com.noartcode.theprice.domain.usecases.user.GetUserData
+import br.com.noartcode.theprice.domain.usecases.bill.IDeleteLocalBill
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetBillByID
+import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
-import br.com.noartcode.theprice.domain.usecases.IGetDateMonthAndYear
-import br.com.noartcode.theprice.domain.usecases.IGetDaysInMonth
-import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetDateMonthAndYear
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetDaysInMonth
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.IGetEvents
-import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
-import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
-import br.com.noartcode.theprice.domain.usecases.IGetPayments
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
-import br.com.noartcode.theprice.domain.usecases.IGetUserData
-import br.com.noartcode.theprice.domain.usecases.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
-import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
-import br.com.noartcode.theprice.domain.usecases.IInsertPayments
-import br.com.noartcode.theprice.domain.usecases.ILogoutUser
-import br.com.noartcode.theprice.domain.usecases.IMoveMonth
-import br.com.noartcode.theprice.domain.usecases.ILoginUser
-import br.com.noartcode.theprice.domain.usecases.IUpdateBill
-import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
-import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
-import br.com.noartcode.theprice.domain.usecases.InsertBill
-import br.com.noartcode.theprice.domain.usecases.InsertBillWithPayments
-import br.com.noartcode.theprice.domain.usecases.InsertMissingPayments
-import br.com.noartcode.theprice.domain.usecases.LogoutUser
-import br.com.noartcode.theprice.domain.usecases.MoveMonth
-import br.com.noartcode.theprice.domain.usecases.LoginUser
-import br.com.noartcode.theprice.domain.usecases.UpdateBill
-import br.com.noartcode.theprice.domain.usecases.UpdatePayment
-import br.com.noartcode.theprice.domain.usecases.UpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.payment.IGetOldestPaymentRecordDate
+import br.com.noartcode.theprice.domain.usecases.payment.IGetPaymentByID
+import br.com.noartcode.theprice.domain.usecases.payment.IGetPayments
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
+import br.com.noartcode.theprice.domain.usecases.user.IGetUserData
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
+import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
+import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.bill.InsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.InsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.bill.InsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
+import br.com.noartcode.theprice.domain.usecases.datetime.MoveMonth
+import br.com.noartcode.theprice.domain.usecases.user.LoginUser
+import br.com.noartcode.theprice.domain.usecases.bill.UpdateBill
+import br.com.noartcode.theprice.domain.usecases.payment.UpdatePayment
+import br.com.noartcode.theprice.domain.usecases.payment.UpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
@@ -102,21 +102,21 @@ fun commonModule() = module {
     single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
-    single<IDeleteBill> { IDeleteBill(get<BillLocalDataSource>()::delete)}
+    single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
     single<IInsertBill> { InsertBill(repository = get(), worker = get(), ioDispatcher = get()) }
     single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get(), dispatcher = get()) }
-    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get())}
-    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get(), dispatcher = get() )}
-    single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert)}
-    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get())}
+    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get()) }
+    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get(), dispatcher = get() ) }
+    single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert) }
+    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get()) }
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get())}
+    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get()) }
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get()) }
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
-    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get())}
+    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
     single<ILoginUser> {
         LoginUser(
@@ -167,8 +167,7 @@ fun viewModelsModule() = module {
             getTodayDate = get(),
             epochFormatter = get(),
             getMonthName = get(),
-            syncBillWorker = get(),
-            syncPayments = get(),
+            eventSyncQueue = get(),
         )
     }
     viewModel {
@@ -180,8 +179,7 @@ fun viewModelsModule() = module {
             getMonthName = get(),
             getBill = get(),
             deleteBill = get(),
-            syncUpdatedBillWorker = get(),
-            syncDeletedBillWorker = get(),
+            eventSyncQueue = get()
         )
     }
     viewModel {
@@ -194,7 +192,7 @@ fun viewModelsModule() = module {
             updatePayment = get(),
             paymentUiMapper = get(),
             getTodayDate = get(),
-            syncUpdatedPaymentWorker = get(),
+            eventSyncQueue = get(),
         )
     }
 
@@ -202,7 +200,7 @@ fun viewModelsModule() = module {
         AccountViewModel(
             signInUser = get(),
             getAccountInfo = get(),
-            logOutUser = get()
+            logOutUser = get(),
         )
     }
 

@@ -9,19 +9,19 @@ import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.Payment
-import br.com.noartcode.theprice.domain.usecases.IDeleteBill
+import br.com.noartcode.theprice.domain.usecases.bill.IDeleteLocalBill
 import br.com.noartcode.theprice.domain.usecases.IGetEvents
-import br.com.noartcode.theprice.domain.usecases.IGetOldestPaymentRecordDate
+import br.com.noartcode.theprice.domain.usecases.payment.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
-import br.com.noartcode.theprice.domain.usecases.IGetPayments
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
-import br.com.noartcode.theprice.domain.usecases.IInsertPayments
-import br.com.noartcode.theprice.domain.usecases.IMoveMonth
-import br.com.noartcode.theprice.domain.usecases.IUpdateBill
-import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
-import br.com.noartcode.theprice.domain.usecases.IUpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.payment.IGetPayments
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
+import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
+import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
@@ -55,7 +55,7 @@ class HomeViewModel(
     private val updatePaymentStatus: IUpdatePaymentStatus,
     private val getEvents: IGetEvents,
     private val updateBill: IUpdateBill,
-    private val deleteBill: IDeleteBill,
+    private val deleteBill: IDeleteLocalBill,
     private val insertNewBill: IInsertBill,
     private val updatePayment: IUpdatePayment,
     private val insertMissingPayments: IInsertMissingPayments,

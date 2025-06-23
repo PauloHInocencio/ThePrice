@@ -1,9 +1,8 @@
-package br.com.noartcode.theprice.domain.usecases
+package br.com.noartcode.theprice.domain.usecases.datetime
 
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.periodUntil
 
 
 interface IGetDaysUntil {

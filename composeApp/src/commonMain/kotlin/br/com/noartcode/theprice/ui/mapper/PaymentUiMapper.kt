@@ -4,14 +4,11 @@ import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.isValid
-import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
-import br.com.noartcode.theprice.domain.model.toLocalDate
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
-import br.com.noartcode.theprice.domain.usecases.IGetDaysUntil
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetDaysUntil
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
-import kotlinx.datetime.Instant
 import kotlin.math.abs
 
 

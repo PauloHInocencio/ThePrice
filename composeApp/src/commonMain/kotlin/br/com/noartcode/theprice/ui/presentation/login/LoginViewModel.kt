@@ -2,10 +2,9 @@ package br.com.noartcode.theprice.ui.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.domain.model.User
-import br.com.noartcode.theprice.domain.usecases.IGetUserAccountInfo
-import br.com.noartcode.theprice.domain.usecases.ILoginUser
+import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
+import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

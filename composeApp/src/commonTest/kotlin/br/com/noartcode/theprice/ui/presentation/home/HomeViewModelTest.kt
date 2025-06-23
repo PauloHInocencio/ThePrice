@@ -6,9 +6,9 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.IInsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule

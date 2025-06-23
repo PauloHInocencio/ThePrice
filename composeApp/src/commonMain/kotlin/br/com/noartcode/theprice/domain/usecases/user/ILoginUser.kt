@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.domain.usecases
+package br.com.noartcode.theprice.domain.usecases.user
 
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource

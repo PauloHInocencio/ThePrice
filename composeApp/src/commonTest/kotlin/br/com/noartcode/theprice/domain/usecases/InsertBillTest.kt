@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule

@@ -2,17 +2,18 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetBillByID
+import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
-import br.com.noartcode.theprice.domain.usecases.IGetPaymentByID
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IUpdatePayment
+import br.com.noartcode.theprice.domain.usecases.payment.IGetPaymentByID
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.*
@@ -33,7 +34,7 @@ class EditPaymentViewModel(
     private val updatePayment: IUpdatePayment,
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val getTodayDate: IGetTodayDate,
-    private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker,
+    private val eventSyncQueue: EventSyncQueue,
 ) : ViewModel() {
 
     private var payment:Payment? = null
@@ -120,7 +121,7 @@ class EditPaymentViewModel(
                         isSynced = false,
                     )
                 ).doIfSuccess {
-                    syncUpdatedPaymentWorker.sync(payment!!.id)
+                    eventSyncQueue.enqueue(payment!!.toSyncEvent("update"))
                     _state.update { it.copy(isSaving = false, isSaved = true) }
                 }.doIfError {
 

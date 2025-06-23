@@ -14,7 +14,7 @@ interface BillLocalDataSource {
     suspend fun insertBillWithPayments(
         bill:Bill,
         payments:List<Payment>
-    ) : String
+    ) : Pair<Bill, List<Payment>>
     suspend fun getBill(id:String) : Bill?
     suspend fun delete(id:String)
 }

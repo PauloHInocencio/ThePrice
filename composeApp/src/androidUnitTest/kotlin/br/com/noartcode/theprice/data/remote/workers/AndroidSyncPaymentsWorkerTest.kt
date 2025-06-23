@@ -14,8 +14,8 @@ import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.remote.workers.helpers.workManagerTestFactory
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
-import br.com.noartcode.theprice.domain.usecases.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule

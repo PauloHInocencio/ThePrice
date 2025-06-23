@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.domain.usecases
+package br.com.noartcode.theprice.domain.usecases.datetime
 
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.domain.usecases.payment.IGetOldestPaymentRecordDate
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -33,7 +34,7 @@ class GetOldestPaymentRecordDateTest:KoinTest, RobolectricTests() {
     private val billDataSource: BillLocalDataSource by inject()
 
     // Unit Under Test
-    private val getFirstPaymentDate:IGetOldestPaymentRecordDate by inject()
+    private val getFirstPaymentDate: IGetOldestPaymentRecordDate by inject()
 
     @BeforeTest
     fun before() {

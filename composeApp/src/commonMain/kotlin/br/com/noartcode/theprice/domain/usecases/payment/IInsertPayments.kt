@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.domain.usecases
+package br.com.noartcode.theprice.domain.usecases.payment
 
 import br.com.noartcode.theprice.domain.model.Payment
 

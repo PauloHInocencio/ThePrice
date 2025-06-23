@@ -3,9 +3,11 @@ package br.com.noartcode.theprice.data.repository
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
+import br.com.noartcode.theprice.data.remote.mapper.toDto
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
+import br.com.noartcode.theprice.util.map
 import kotlinx.coroutines.flow.Flow
 
 
@@ -39,11 +41,11 @@ class BillsRepositoryImp(
     }
 
     override suspend fun post(bill: Bill): Resource<Unit> {
-        return remote.post(bill)
+        return remote.post(bill.toDto())
     }
 
     override suspend fun put(bill: Bill): Resource<Unit> {
-        return remote.put(bill)
+        return remote.put(bill.toDto())
     }
 
     override suspend fun get(id: String): Bill? {
@@ -52,5 +54,13 @@ class BillsRepositoryImp(
 
     override suspend fun update(bill: Bill) {
         local.update(bill)
+    }
+
+    override suspend fun deleteRemote(bill: Bill): Resource<Unit> {
+        return remote.delete(bill.id).map { Unit }
+    }
+
+    override suspend fun deleteLocal(bill: Bill) {
+        return local.delete(bill.id)
     }
 }

@@ -2,19 +2,18 @@ package br.com.noartcode.theprice.ui.presentation.bill.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
-import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
+import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
-import br.com.noartcode.theprice.domain.usecases.IDeleteBill
+import br.com.noartcode.theprice.domain.usecases.bill.IDeleteLocalBill
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
-import br.com.noartcode.theprice.domain.usecases.IGetBillByID
+import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
-import br.com.noartcode.theprice.domain.usecases.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
@@ -33,9 +32,8 @@ class EditBillViewModel(
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
     private val getBill: IGetBillByID,
-    private val deleteBill: IDeleteBill,
-    private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,
-    private val syncDeletedBillWorker: ISyncDeletedBillWorker,
+    private val deleteBill: IDeleteLocalBill,
+    private val eventSyncQueue: EventSyncQueue,
 ) : ViewModel() {
 
     private val bill = MutableStateFlow(
@@ -84,7 +82,7 @@ class EditBillViewModel(
                 state.update { it.copy(isSaving = true) }
                 updateBill(bill = bill.value)
                     .doIfSuccess {
-                        syncUpdatedBillWorker.sync(bill.value.id)
+                        eventSyncQueue.enqueue(bill.value.toSyncEvent("update"))
                         state.update { it.copy(canClose = true) }
                     }
                     .doIfError { error->
@@ -119,7 +117,7 @@ class EditBillViewModel(
                     )
                 }
                 deleteBill(bill.value.id)
-                syncDeletedBillWorker.sync(bill.value.id)
+                eventSyncQueue.enqueue(bill.value.toSyncEvent("delete"))
                 state.update {
                     it.copy(
                         canClose = true

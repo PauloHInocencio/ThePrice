@@ -44,16 +44,14 @@ class BillLocalDataSourceImp(
     override suspend fun insertBillWithPayments(
         bill: Bill,
         payments: List<Payment>
-    ) : String {
+    ) : Pair<Bill, List<Payment>> {
         val billEntity = bill.copy(id = bill.id.ifEmpty { Uuid.random().toString() }).toEntity()
+        val paymentEntity = payments.map{ it.copy(id = it.id.ifEmpty { Uuid.random().toString() }) }.toEntity()
         dao.insertBillWithPayments(
             bill = billEntity,
-            payments = payments
-                .map{
-                    it.copy(id = it.id.ifEmpty { Uuid.random().toString() })
-                }.toEntity()
+            payments = paymentEntity
         )
-        return billEntity.id
+        return billEntity.toDomain() to paymentEntity.toDomain()
     }
 
     override suspend fun update(bill: Bill) {
