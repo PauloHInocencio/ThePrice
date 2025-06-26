@@ -11,7 +11,6 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.util.doIfError
@@ -26,7 +25,6 @@ import kotlinx.coroutines.launch
 
 class AddBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
-    private val insertNewBill: IInsertBill,
     private val insertBillWithPayments: IInsertBillWithPayments,
     private val getTodayDate: IGetTodayDate,
     private val epochFormatter: IEpochMillisecondsFormatter,
@@ -78,15 +76,6 @@ class AddBillViewModel(
             AddBillEvent.OnSave -> {
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
-/*                    insertNewBill(bill.value)
-                        .doIfSuccess { id ->
-                            syncBillWorker.sync(id)
-                            bill.update { it.copy(id = id) }
-                        }
-                        .doIfError { error->
-                            state.update { it.copy(errorMessage = error.message) }
-                            println("${error.message}, ${error.exception.toString()}" )
-                        }*/
                     insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
                         .doIfSuccess { (b, p) ->
                             eventSyncQueue.enqueue(b.toSyncEvent("create"))

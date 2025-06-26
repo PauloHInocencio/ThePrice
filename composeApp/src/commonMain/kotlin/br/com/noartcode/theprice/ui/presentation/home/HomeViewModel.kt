@@ -3,6 +3,8 @@ package br.com.noartcode.theprice.ui.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import br.com.noartcode.theprice.data.remote.dtos.EventDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
@@ -60,6 +62,7 @@ class HomeViewModel(
     private val updatePayment: IUpdatePayment,
     private val insertMissingPayments: IInsertMissingPayments,
     private val insertPayments: IInsertPayments,
+    private val eventSyncQueue: EventSyncQueue,
 ): ViewModel() {
 
 
@@ -118,7 +121,8 @@ class HomeViewModel(
                 billStatus = Bill.Status.ACTIVE
             ).retryWhen { cause, attempt ->
                 if(cause is IllegalArgumentException && attempt == 0L) {
-                    insertMissingPayments(currentDate)
+                    val payments = insertMissingPayments(currentDate)
+                    eventSyncQueue.enqueue(payments.toSyncEvent("create"))
                     return@retryWhen true
                 }
                 return@retryWhen false
@@ -173,8 +177,8 @@ class HomeViewModel(
                 updatePaymentStatus(
                     id = event.id,
                     isPayed = event.status != PAYED
-                ).doIfSuccess {
-
+                ).doIfSuccess { payment ->
+                    eventSyncQueue.enqueue(payment.toSyncEvent("update"))
                 }.doIfError { error ->
                     _state.update { it.copy(errorMessage = error.message) }
                 }

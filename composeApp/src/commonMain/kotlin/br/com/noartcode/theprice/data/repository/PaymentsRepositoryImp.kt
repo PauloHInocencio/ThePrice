@@ -47,8 +47,8 @@ class PaymentsRepositoryImp(
         return local.insert(payment)
     }
 
-    override suspend fun insert(payments: List<Payment>) {
-        local.insert(payments)
+    override suspend fun insert(payments: List<Payment>) : List<Payment> {
+        return local.insert(payments)
     }
 
     override suspend fun put(payment: Payment): Resource<Unit> {

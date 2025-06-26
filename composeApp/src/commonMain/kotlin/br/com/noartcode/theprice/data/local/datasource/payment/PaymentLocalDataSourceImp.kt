@@ -64,12 +64,10 @@ class PaymentLocalDataSourceImp (
 
     }
 
-    override suspend fun insert(payments: List<Payment>) {
-        return dao.insert(
-            payments.map {
-                it.copy(id = it.id.ifEmpty { Uuid.random().toString() })
-            }.toEntity()
-        )
+    override suspend fun insert(payments: List<Payment>) : List<Payment> {
+        val paymentsWithIDs = payments.map { it.copy(id = it.id.ifEmpty { Uuid.random().toString() }) }
+        dao.insert(paymentsWithIDs.toEntity())
+        return paymentsWithIDs
     }
 
 

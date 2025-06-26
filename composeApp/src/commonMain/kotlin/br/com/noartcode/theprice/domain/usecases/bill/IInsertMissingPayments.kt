@@ -1,6 +1,5 @@
 package br.com.noartcode.theprice.domain.usecases.bill
 
-import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
@@ -13,18 +12,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 interface IInsertMissingPayments {
-    suspend operator fun invoke(date: DayMonthAndYear)
+    suspend operator fun invoke(date: DayMonthAndYear) : List<Payment>
 }
 
 class InsertMissingPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
     private val getTodayDate: IGetTodayDate,
-    private val syncPaymentsWorker: ISyncPaymentsWorker, // TODO: work should be in viewmodel
     private val dispatcher: CoroutineDispatcher,
 ) : IInsertMissingPayments {
 
-    override suspend fun invoke(date: DayMonthAndYear) = withContext(dispatcher) {
+    override suspend fun invoke(date: DayMonthAndYear) : List<Payment> = withContext(dispatcher) {
 
         val bills = billsRepository.getBillsBy(Bill.Status.ACTIVE)
             .first()
@@ -55,8 +53,7 @@ class InsertMissingPayments(
             }
         }
 
-        paymentsRepository.insert(paymentsToAdd)
-        syncPaymentsWorker.sync()
+        return@withContext paymentsRepository.insert(paymentsToAdd)
     }
 
 }

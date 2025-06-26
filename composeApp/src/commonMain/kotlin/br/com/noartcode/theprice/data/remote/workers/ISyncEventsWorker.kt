@@ -40,43 +40,52 @@ class SyncEventsWorker(
         if (syncJob?.isActive == true) return
 
         syncJob = scope.launch {
-            while (isActive) {
-                val  event = eventSyncQueue.peek()
-                if (event == null) {
-                    delay(5_000)
-                    continue
-                }
+            eventSyncQueue.isEmpty.collect { isEmpty ->
+                while (isActive && isEmpty.not()) {
+                    val  event = eventSyncQueue.peek()
+                    if (event == null) {
+                        println("No new events to sync...")
+                        break
+                    }
 
-                val result = when(Pair(event.endpoint, event.action)) {
-                    "payment" to "create"-> {
-                        val payments = defaultJson.decodeFromString<List<PaymentDto>>(event.payload)
-                        paymentsDataSource.post(payments)
+                    val result = when(Pair(event.endpoint, event.action)) {
+                        "payment" to "create"-> {
+                            val payments = defaultJson.decodeFromString<List<PaymentDto>>(event.payload)
+                            paymentsDataSource.post(payments)
+                        }
+                        "payment" to "update" -> {
+                            val payment = defaultJson.decodeFromString<PaymentDto>(event.payload)
+                            paymentsDataSource.put(payment)
+                        }
+                        "bill" to "create" -> {
+                            val bill = defaultJson.decodeFromString<BillDto>(event.payload)
+                            billRemoteDataSource.post(bill)
+                        }
+                        "bill" to "update" -> {
+                            val bill = defaultJson.decodeFromString<BillDto>(event.payload)
+                            billRemoteDataSource.put(bill)
+                        }
+                        "bill" to "delete" -> {
+                            val bill = defaultJson.decodeFromString<BillDto>(event.payload)
+                            billRemoteDataSource.delete(bill.id)
+                        }
+                        else -> {
+                            Resource.Error(message = "invalid unknown event: $event")
+                        }
                     }
-                    "payment" to "update" -> {
-                        val payment = defaultJson.decodeFromString<PaymentDto>(event.payload)
-                        paymentsDataSource.put(payment)
-                    }
-                    "bill" to "create" -> {
-                        val bill = defaultJson.decodeFromString<BillDto>(event.payload)
-                        billRemoteDataSource.post(bill)
-                    }
-                    "bill" to "update" -> {
-                        val bill = defaultJson.decodeFromString<BillDto>(event.payload)
-                        billRemoteDataSource.put(bill)
-                    }
-                    "bill" to "delete" -> {
-                        val bill = defaultJson.decodeFromString<BillDto>(event.payload)
-                        billRemoteDataSource.delete(bill.id)
-                    }
-                    else -> {
-                        Resource.Error(message = "invalid unknown event: $event")
-                    }
-                }
 
-                when (result) {
-                    is Resource.Success -> eventSyncQueue.remove(event.id)
-                    is Resource.Error -> result.exception?.printStackTrace()
-                    Resource.Loading -> println("invalid result while sending event: $event")
+                    when (result) {
+                        is Resource.Success ->  {
+                            eventSyncQueue.remove(event.id)
+                            println("Success sync event: ${event.id}")
+                        }
+                        is Resource.Error -> {
+                            println("Error during synchronization: ${result.message}")
+                            result.exception?.printStackTrace()
+                            delay(5_000) // TODO("Find a better way to retry, maybe based on exponential attempts")
+                        }
+                        Resource.Loading -> println("invalid result while sending event: $event")
+                    }
                 }
             }
         }

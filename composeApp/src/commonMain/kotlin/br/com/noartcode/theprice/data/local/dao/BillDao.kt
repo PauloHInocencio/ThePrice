@@ -41,9 +41,6 @@ interface BillDao {
     @Transaction
     suspend fun insertBillWithPayments(bill:BillEntity, payments:List<PaymentEntity>) {
         insert(bill)
-        val paymentsWithBillId = payments.map {
-            it.copy(billId = bill.id)
-        }
-        insertPayments(paymentsWithBillId)
+        insertPayments(payments)
     }
 }

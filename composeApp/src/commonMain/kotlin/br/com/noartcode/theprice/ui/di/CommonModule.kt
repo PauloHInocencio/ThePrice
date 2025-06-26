@@ -6,6 +6,8 @@ import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueueImp
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
@@ -14,6 +16,8 @@ import br.com.noartcode.theprice.data.remote.datasource.events.EventRemoteDataSo
 import br.com.noartcode.theprice.data.remote.datasource.events.EventRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSourceImp
+import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncEventsWorker
 import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
 import br.com.noartcode.theprice.data.repository.PaymentsRepositoryImp
 import br.com.noartcode.theprice.domain.model.Payment
@@ -101,23 +105,32 @@ fun commonModule() = module {
     single<EventRemoteDataSource> { EventRemoteDataSourceImp(client = get(), session = get()) }
     single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
     single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
+    single<EventSyncQueue> { EventSyncQueueImp(database = get(), ioDispatcher = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
     single<IInsertBill> { InsertBill(repository = get(), worker = get(), ioDispatcher = get()) }
     single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get(), dispatcher = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get()) }
-    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), syncPaymentsWorker = get(), dispatcher = get() ) }
+    single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), dispatcher = get() ) }
     single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert) }
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get()) }
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get()) }
-    single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), syncUpdatedPaymentWorker = get(), dispatcher = get()) }
+    single<IUpdatePayment> { UpdatePayment(repository = get(), dispatcher = get()) }
+    single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), dispatcher = get()) }
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
     single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
+    single<ISyncEventsWorker> {
+        SyncEventsWorker(
+            eventSyncQueue = get(),
+            billRemoteDataSource = get(),
+            paymentsDataSource = get(),
+            ioDispatcher = get(),
+        )
+    }
     single<ILoginUser> {
         LoginUser(
             accountManager = get(),
@@ -157,12 +170,12 @@ fun viewModelsModule() = module {
             updatePayment = get(),
             insertPayments = get(),
             deleteBill = get(),
+            eventSyncQueue = get(),
         )
     }
     viewModel {
         AddBillViewModel(
             currencyFormatter = get(),
-            insertNewBill = get(),
             insertBillWithPayments = get(),
             getTodayDate = get(),
             epochFormatter = get(),

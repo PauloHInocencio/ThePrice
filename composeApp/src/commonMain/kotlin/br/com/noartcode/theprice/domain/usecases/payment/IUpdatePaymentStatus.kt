@@ -1,6 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases.payment
 
-import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -8,18 +8,17 @@ import kotlinx.coroutines.withContext
 
 
 interface IUpdatePaymentStatus {
-    suspend operator fun invoke(id: String, isPayed:Boolean) : Resource<Unit>
+    suspend operator fun invoke(id: String, isPayed:Boolean) : Resource<Payment>
 }
 
 class UpdatePaymentStatus (
     private val repository: PaymentsRepository,
-    private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker,
     private val dispatcher: CoroutineDispatcher,
 ) : IUpdatePaymentStatus {
     override suspend fun invoke(
         id: String,
         isPayed: Boolean
-    ): Resource<Unit> = withContext(dispatcher) {
+    ): Resource<Payment> = withContext(dispatcher) {
         try {
             val payment = repository
                 .get(id)!!
@@ -29,8 +28,7 @@ class UpdatePaymentStatus (
                 )
 
             repository.update(payment)
-            syncUpdatedPaymentWorker.sync(payment.id)
-            return@withContext Resource.Success(Unit)
+            return@withContext Resource.Success(payment)
         } catch (e:Throwable) {
             return@withContext Resource.Error(
                 message = "Error when tried to update payment",

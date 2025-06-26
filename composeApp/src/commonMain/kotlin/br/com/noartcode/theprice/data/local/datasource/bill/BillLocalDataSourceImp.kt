@@ -46,7 +46,13 @@ class BillLocalDataSourceImp(
         payments: List<Payment>
     ) : Pair<Bill, List<Payment>> {
         val billEntity = bill.copy(id = bill.id.ifEmpty { Uuid.random().toString() }).toEntity()
-        val paymentEntity = payments.map{ it.copy(id = it.id.ifEmpty { Uuid.random().toString() }) }.toEntity()
+        val paymentEntity = payments
+            .map{
+                it.copy(
+                    id = it.id.ifEmpty { Uuid.random().toString() },
+                    billId = billEntity.id
+                )
+            }.toEntity()
         dao.insertBillWithPayments(
             bill = billEntity,
             payments = paymentEntity

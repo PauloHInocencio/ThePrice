@@ -1,6 +1,5 @@
 package br.com.noartcode.theprice.domain.usecases.payment
 
-import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.util.Resource
@@ -16,7 +15,6 @@ interface IUpdatePayment {
 
 class UpdatePayment(
     private val repository: PaymentsRepository,
-    private val syncUpdatedPaymentWorker: ISyncUpdatedPaymentWorker, // TODO: work should be in viewmodel
     private val dispatcher: CoroutineDispatcher,
 ) : IUpdatePayment {
     override suspend fun invoke(
@@ -24,7 +22,6 @@ class UpdatePayment(
     ): Resource<Unit> = withContext(dispatcher) {
         try {
             repository.update(payment)
-            //syncUpdatedPaymentWorker.sync(payment.id)
             return@withContext Resource.Success(Unit)
         } catch (e:Throwable) {
             return@withContext Resource.Error(
