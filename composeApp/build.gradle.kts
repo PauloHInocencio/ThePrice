@@ -253,7 +253,17 @@ room {
 }
 
 val localProps = Properties().apply {
-    load(rootProject.file("local.properties").inputStream())
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        load(localPropsFile.inputStream())
+    } else {
+        // Fallback dummy values for CI/environments without local.properties
+        setProperty("API_BASE_URL", "https://dummy-api.example.com/api/v1/")
+        setProperty("API_KEY", "dummy_api_key_for_tests")
+        setProperty("GOOGLE_AUTH_CLIENT_ID_SERVER", "dummy_client_id_server")
+        setProperty("GOOGLE_AUTH_CLIENT_ID_DESKTOP", "dummy_client_id_desktop")
+        setProperty("GOOGLE_AUTH_CLIENT_SECRET_DESKTOP", "dummy_client_secret_desktop")
+    }
 }
 
 buildkonfig {
