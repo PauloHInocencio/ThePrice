@@ -108,9 +108,13 @@ jobs:
 
     - name: Run iOS X64 Tests
       run: ./gradlew :composeApp:iosX64Test
+      env:
+        GRADLE_OPTS: -Djansi.force=false -Djansi.disable=true
 
     - name: Run iOS Simulator ARM64 Tests  
       run: ./gradlew :composeApp:iosSimulatorArm64Test
+      env:
+        GRADLE_OPTS: -Djansi.force=false -Djansi.disable=true
 
   test-common:
     runs-on: ubuntu-latest
