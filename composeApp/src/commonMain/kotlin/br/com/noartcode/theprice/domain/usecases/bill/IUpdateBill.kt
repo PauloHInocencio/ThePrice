@@ -13,14 +13,12 @@ interface IUpdateBill {
 
 class UpdateBill(
     private val repository: BillsRepository,
-    private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,  // TODO: work should be in viewmodel
     private val dispatcher: CoroutineDispatcher,
 ) : IUpdateBill {
 
     override suspend fun invoke(bill: Bill) = withContext(dispatcher) {
         try {
             val result = Resource.Success(repository.update(bill))
-            //syncUpdatedBillWorker.sync(bill.id)
             return@withContext result
         } catch (e:Throwable) {
             return@withContext Resource.Error(
