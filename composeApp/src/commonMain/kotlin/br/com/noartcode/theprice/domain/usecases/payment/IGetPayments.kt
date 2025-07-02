@@ -29,7 +29,6 @@ interface IGetPayments {
 class GetPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
-    private val insertMissingPayments: IInsertMissingPayments, // TODO: use case should be in viewmodel
     private val ioDispatcher: CoroutineDispatcher,
 ) : IGetPayments {
 

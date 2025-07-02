@@ -71,7 +71,9 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
         )
 
         assertTrue(result is Resource.Success)
-        assertNotEquals(illegal = "", actual = result.data)
+
+        val (bill, _) = result.data
+        assertNotEquals(illegal = "", actual = bill.id)
     }
 
     @Test
@@ -81,9 +83,9 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
             currentDate =  DayMonthAndYear(day = 21, month = 2, year = 2025)
         )
 
-        val id = (result as Resource.Success).data
+        val (bill, _) = (result as Resource.Success).data
 
-        with(billDataSource.getBill(id)) {
+        with(billDataSource.getBill(bill.id)) {
             assertEquals(expected = "internet", this?.name)
             assertEquals(expected = "My internet bill.", this?.description)
             assertEquals(expected = "05/09/2024", this?.billingStartDate.toString())
@@ -98,9 +100,7 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
             currentDate = DayMonthAndYear(day = 21, month = 2, year = 2025)
         )
 
-        val id = (result as Resource.Success).data
-
-        val payments = paymentDataSource.getBillPayments(id)
+        val (_, payments) = (result as Resource.Success).data
 
         assertEquals(expected = 6, payments.size)
     }
