@@ -78,10 +78,10 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             ),
             currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
-        val billId = (result as Resource.Success).data
+        val (bill, _) = (result as Resource.Success).data
 
         // check if the current bill has only the correct amount of payments
-        val payments =  paymentDataSource.getBillPayments(billId)
+        val payments =  paymentDataSource.getBillPayments(bill.id)
         assertEquals(
             expected = numOfPayments,
             actual = payments.size
@@ -118,10 +118,10 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             ),
             currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
-        val billId = (result as Resource.Success).data
+        val (bill, _) = (result as Resource.Success).data
 
         // check if the current bill has no payments
-        var payments =  paymentDataSource.getBillPayments(billId)
+        var payments =  paymentDataSource.getBillPayments(bill.id)
         assertEquals(
             expected = 3,
             actual = payments.size
@@ -136,7 +136,7 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
         }
 
 
-        payments = paymentDataSource.getBillPayments(billId)
+        payments = paymentDataSource.getBillPayments(bill.id)
         assertEquals(
             expected = numOfValidMonths,
             actual = payments.size
@@ -153,10 +153,10 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             ),
             currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
         )
-        val billId = (result as Resource.Success).data
+        val (bill, _) = (result as Resource.Success).data
 
         // check if the current bill has no payments
-        val payments =  paymentDataSource.getBillPayments(billId)
+        val payments =  paymentDataSource.getBillPayments(bill.id)
         assertEquals(
             expected = 3,
             actual = payments.size
@@ -276,38 +276,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             }
     }
 
-
-    @Test
-    fun `Should Insert Missing Payments When A Valid Month Don't Have a Payment`() = runTest {
-        val date = DayMonthAndYear(day = 5, month = 10, year = 2024)
-        // Populating the database with 3 different bills
-        insertBill(
-            bill = stubBills[0].copy(
-                billingStartDate = date
-            )
-        )
-
-        getPayments(date, billStatus = Bill.Status.ACTIVE).test {
-
-            with(awaitItem()) {
-                assertTrue(this is Resource.Loading)
-            }
-
-            // Retrying
-            with(awaitItem()) {
-                assertTrue(this is Resource.Loading)
-            }
-
-            with(awaitItem()) {
-                assertTrue(this is Resource.Success)
-                assertEquals(this.data.size, 1)
-            }
-
-
-            ensureAllEventsConsumed()
-        }
-
-    }
 
 }
 

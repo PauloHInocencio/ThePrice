@@ -331,10 +331,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             ensureAllEventsConsumed()
 
             // Simulate user changing payment info
+            val (bill, _) = result.data
             paymentDataSource.update(
                 Payment(
                     id = originalPayment.id,
-                    billId = result.data,
+                    billId = bill.id,
                     price = 10000,
                     dueDate = DayMonthAndYear(day = 5, month = 11, year = 2024),
                     isPayed = false,
