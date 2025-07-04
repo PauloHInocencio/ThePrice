@@ -13,7 +13,6 @@ interface IUpdateBill {
 
 class UpdateBill(
     private val repository: BillsRepository,
-    private val syncUpdatedBillWorker: ISyncUpdatedBillWorker,  // TODO: work should be in viewmodel
     private val dispatcher: CoroutineDispatcher,
 ) : IUpdateBill {
 

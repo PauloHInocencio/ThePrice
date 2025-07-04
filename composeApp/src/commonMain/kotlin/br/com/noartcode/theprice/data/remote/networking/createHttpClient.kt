@@ -88,7 +88,7 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
         }
 
         install(SSE){
-            maxReconnectionAttempts = 4
+            //maxReconnectionAttempts = 4
             reconnectionTime = 2.seconds
             showCommentEvents()
             showRetryEvents()
