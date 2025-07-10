@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.SyncEvent
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
