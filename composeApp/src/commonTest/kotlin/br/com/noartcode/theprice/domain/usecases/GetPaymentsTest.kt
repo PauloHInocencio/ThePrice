@@ -145,46 +145,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
 
 
     @Test
-    fun `Try To Get a Payments in a Invalid Day should return an Empty list`() = runTest {
-
-        val result = insertBillWithPayments(
-            bill = stubBills[0].copy(
-                billingStartDate = DayMonthAndYear(day = 5, month = 10, year = 2024)
-            ),
-            currentDate = DayMonthAndYear(day = 5, month = 12, year = 2024),
-        )
-        val (bill, _) = (result as Resource.Success).data
-
-        // check if the current bill has no payments
-        val payments =  paymentDataSource.getBillPayments(bill.id)
-        assertEquals(
-            expected = 3,
-            actual = payments.size
-        )
-
-
-
-        getPayments(
-            date = DayMonthAndYear(day = 3, month = 10, year = 2024),
-            billStatus = Bill.Status.ACTIVE
-        ).test {
-
-            with(awaitItem()) {
-                assertEquals(expected = true, this is Resource.Loading)
-            }
-
-            with(awaitItem()) {
-                assertEquals(
-                    expected = 0,
-                    actual = (this as Resource.Success).data.size
-                )
-            }
-        }
-    }
-
-
-
-    @Test
     fun `When individual payment is updated Get Payment should be re executed`() = runTest{
 
         // Populating the database with 3 different bills
@@ -248,8 +208,13 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
                 getPayments(date, billStatus = Bill.Status.ACTIVE)
             }.test {
 
+                //For all the 5 months
                 repeat(5) {
+
+                    //Skip the loading state
                     skipItems(1)
+
+                    //Check the list of payments
                     with(awaitItem()) {
                         val payment = (this as Resource.Success).data.first()
                         assertEquals(expected = currentDate.value.toString() , actual = payment.dueDate.toString())
@@ -276,7 +241,36 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
             }
     }
 
+    @Test
+    fun `Payment With Due Day Later this Month should be shown`() = runTest {
+        val currentDate = DayMonthAndYear(day = 5, month = 8, year = 2025)
 
+        insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 10, month = 8, year = 2025)
+            ),
+            currentDate = currentDate,
+        )
+
+        getPayments(currentDate, billStatus = Bill.Status.ACTIVE).test {
+
+            // First emission should be a Loading state
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = (this is Resource.Loading))
+            }
+
+            // Check the list of payments
+            with(awaitItem()) {
+                assertEquals(
+                    expected = 1,
+                    actual = (this as Resource.Success).data.size
+                )
+            }
+
+            ensureAllEventsConsumed()
+
+        }
+    }
 }
 
 
