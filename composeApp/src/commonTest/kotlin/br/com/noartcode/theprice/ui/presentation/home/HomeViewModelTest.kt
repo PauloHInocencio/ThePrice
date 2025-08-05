@@ -104,12 +104,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Start Loading Payments
             with(awaitItem()) {
-                assertEquals(expected = 0, actual = payments.size)
-                assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = true, actual = loading)
-                assertEquals(expected = null, actual = errorMessage)
-                assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
             }
 
 
@@ -120,11 +115,76 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
                 assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
 
             ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `Allows Navigation To Next Month From Current Month`() = runTest {
+        val currentDate = DayMonthAndYear(day = 4, month = 8, year = 2025)
+        insertBillWithPayments(
+            bill = stubBills[0].copy(
+                billingStartDate = DayMonthAndYear(day = 4, month = 7, year = 2025)
+            ),
+            currentDate = currentDate,
+        )
+
+        // Set Current Day to August 4th
+        (getTodayDate as GetTodayDateStub).date =  currentDate
+
+
+        viewModel.uiState.test{
+
+            // skip the initial-empty and loading states
+            skipItems(2)
+
+            // Check whether the user can navigate to the next month
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = canGoNext)
+            }
+
+            // Navigate to the next month
+            viewModel.onEvent(HomeEvent.OnGoToNexMonth)
+
+            // Skip loading state
+            skipItems(1)
+
+            // Check final state
+            with(awaitItem()) {
+                assertEquals(expected = 1, actual = payments.size)
+                assertEquals(expected = "Setembro - 2025", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = true, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
+        }
+    }
+
+
+    @Test
+    fun `When No Payments Found Navigation Should Not Be Allowed`() = runTest {
+        // Set Current Day to August 5th
+        (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 5, month = 8, year = 2025)
+
+        viewModel.uiState.test {
+
+            // skip the initial-empty and loading states
+            skipItems(2)
+
+            // Check final state
+            with(awaitItem()) {
+                assertEquals(expected = 0, actual = payments.size)
+                assertEquals(expected = "Agosto - 2025", actual = monthName)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
+                assertEquals(expected = false, actual = canGoBack)
+                assertEquals(expected = false, actual = canGoNext)
+            }
         }
     }
 
@@ -164,7 +224,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
             ensureAllEventsConsumed()
@@ -241,7 +301,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
             ensureAllEventsConsumed()
@@ -264,7 +324,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
             ensureAllEventsConsumed()
@@ -411,7 +471,6 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
     }
 
-
     @Test
     fun `Valid Payments Should Be Inserted and Returned If Not Exists`() = runTest {
 
@@ -440,12 +499,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Start Loading Payments
             with(awaitItem()) {
-                assertEquals(expected = 0, actual = payments.size)
-                assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = true, actual = loading)
-                assertEquals(expected = null, actual = errorMessage)
-                assertEquals(expected = false, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
             }
 
             // Final State
@@ -455,7 +509,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
                 assertEquals(expected = false, actual = canGoBack)
-                assertEquals(expected = false, actual = canGoNext)
+                assertEquals(expected = true, actual = canGoNext)
             }
 
 

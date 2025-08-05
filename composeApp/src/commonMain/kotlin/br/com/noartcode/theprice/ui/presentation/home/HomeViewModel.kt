@@ -138,12 +138,13 @@ class HomeViewModel(
     private val _state = MutableStateFlow(HomeUiState())
     val uiState = combine( _state, _homeScreenResults ) { state, (payments, dates) ->
         val (currentDate, firstPaymentDate) = dates
+        val rawPayments = (payments as? Resource.Success)?.data ?: listOf()
         HomeUiState(
             monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
             //TODO: this should be inside a separated function
             canGoBack = firstPaymentDate != null && moveMonth(by = -1, currentDate = currentDate).let { it  > firstPaymentDate || (it.month == firstPaymentDate.month && it.year == firstPaymentDate.year) },
-            canGoNext = currentDate < initialDate,
-            payments = (payments as? Resource.Success)?.data?.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }?.sortedBy { paymentUi -> paymentUi.status } ?: emptyList(),
+            canGoNext = currentDate < moveMonth(by = 1, initialDate) && rawPayments.isNotEmpty(),
+            payments = rawPayments.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }.sortedBy { paymentUi -> paymentUi.status },
             errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,
             loading = (payments is Resource.Loading),
         )
