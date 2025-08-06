@@ -36,6 +36,7 @@ import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.views.ConfirmPaymentChangeDialog
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
+import br.com.noartcode.theprice.ui.views.PriceEditField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,16 +86,12 @@ fun EditPaymentScreen(
                 fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(20.dp))
-            NormalEditField(
+            PriceEditField(
                 fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Payed amount" else "Amount to pay",
                 fieldLabel = if (state.paymentStatus == PaymentUi.Status.PAYED) "Enter the payed amount" else "Enter the amount to pay",
                 value = state.payedValue,
                 hasError = state.priceHasError,
                 onValueChanged = { onEvent(EditPaymentEvent.OnPriceChanged(it)) },
-                keyboardOptions = KeyboardOptions().copy(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
-                )
             )
             Spacer(Modifier.height(20.dp))
             DateEditFieldView(
