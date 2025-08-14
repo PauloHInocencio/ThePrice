@@ -185,7 +185,7 @@ android {
         applicationId = "br.com.noartcode.theprice"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
         testInstrumentationRunner = "br.com.noartcode.theprice.InstrumentationTestRunner"
     }
@@ -203,7 +203,10 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+
         }
     }
     buildFeatures {
