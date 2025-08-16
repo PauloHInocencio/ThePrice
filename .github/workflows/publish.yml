@@ -64,9 +64,9 @@ jobs:
       with:
         releaseDirectory: composeApp/build/outputs/bundle/release
         signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
-        keyStorePassword: ${{ secrets.KEY_PASSWORD }}
+        keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
         alias: ${{ secrets.KEY_ALIAS }}
-        keyPassword: ${{ secrets.KEY_PASSWORD }}
+        keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
 
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1.1.3
