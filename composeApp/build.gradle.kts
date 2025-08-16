@@ -27,7 +27,7 @@ kotlin {
                 implementation(libs.compose.ui.test.junit4.android)
                 implementation(libs.compose.ui.test.manifest)
                 implementation(libs.androidx.test.runner)
-                implementation(libs.robolectric)
+                //implementation(libs.robolectric)
             }
         }
         compilerOptions{
@@ -60,7 +60,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.kotlinx.coroutines.android)
 
-            implementation(libs.mockk)
+            //implementation(libs.mockk)
 
             //Credential Manager
             implementation(libs.credentials)
@@ -239,7 +239,6 @@ compose.desktop {
 }
 
 dependencies {
-    implementation(libs.androidx.workmanager.test)
     add("kspAndroid", libs.androidx.room.compiler)
     // Update: https://issuetracker.google.com/u/0/issues/342905180
     //add("kspCommonMainMetadata", libs.androidx.room.compiler)

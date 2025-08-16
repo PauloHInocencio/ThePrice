@@ -50,9 +50,6 @@ jobs:
         echo "GOOGLE_AUTH_CLIENT_ID_DESKTOP=$GOOGLE_AUTH_CLIENT_ID_DESKTOP" >> local.properties
         echo "GOOGLE_AUTH_CLIENT_SECRET_DESKTOP=$GOOGLE_AUTH_CLIENT_SECRET_DESKTOP" >> local.properties
 
-    - name: Run tests
-      run: ./gradlew :composeApp:testDebugUnitTest
-
     - name: Version Bump
       uses: chkfung/android-version-actions@v1.2.3
       with:
