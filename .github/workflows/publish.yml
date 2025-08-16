@@ -58,6 +58,12 @@ jobs:
     - name: Run tests
       run: ./gradlew :composeApp:testDebugUnitTest
 
+    - name: Version Bump
+      uses: chkfung/android-version-actions@v1.2.3
+      with:
+        gradlePath: composeApp/build.gradle.kts
+        versionCode: ${{ github.run_number }}
+
     - name: Build Release Bundle
       run: ./gradlew :composeApp:bundleRelease
 
@@ -78,8 +84,6 @@ jobs:
         releaseFiles: composeApp/build/outputs/bundle/release/composeApp-release.aab
         track: internal
         status: draft
-        inAppUpdatePriority: 2
-        userFraction: 1.0
 
     - name: Clean up generated files
       if: always()

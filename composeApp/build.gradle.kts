@@ -185,7 +185,7 @@ android {
         applicationId = "br.com.noartcode.theprice"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
+        versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "br.com.noartcode.theprice.InstrumentationTestRunner"
     }
