@@ -109,11 +109,11 @@ fun commonModule() = module {
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
     single<IInsertBill> { InsertBill(repository = get(), worker = get(), ioDispatcher = get()) }
-    single<IUpdateBill> { UpdateBill(repository = get(), syncUpdatedBillWorker = get(), dispatcher = get()) }
+    single<IUpdateBill> { UpdateBill(repository = get(), dispatcher = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get()) }
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), dispatcher = get() ) }
     single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert) }
-    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), insertMissingPayments = get(), ioDispatcher = get()) }
+    single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
     single<IUpdatePayment> { UpdatePayment(repository = get(), dispatcher = get()) }
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), dispatcher = get()) }

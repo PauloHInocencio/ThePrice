@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.NormalEditField
+import br.com.noartcode.theprice.ui.views.PriceEditField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,17 +95,13 @@ fun BillScreenContent(
         modifier = modifier
             .fillMaxSize()
     ) {
-        NormalEditField(
+        PriceEditField(
             modifier = Modifier.padding(20.dp),
             fieldName = "Price",
             fieldLabel = "enter the bill's price",
             value = price,
             hasError = priceHasError,
             onValueChanged = onPriceChanged,
-            keyboardOptions = KeyboardOptions().copy(
-                keyboardType = KeyboardType.NumberPassword,
-                imeAction = ImeAction.Next
-            )
         )
         Spacer(Modifier.height(10.dp))
         NormalEditField(

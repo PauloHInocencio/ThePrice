@@ -5,7 +5,6 @@
 xcuserdata
 !src/**/build/
 local.properties
-composeApp/src/androidMain/res/xml/network_security_config.xml
 composeApp/theprice_prefs.preferences_pb
 .idea
 .DS_Store
@@ -18,3 +17,9 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+*.jks
+debug.keystore
+
+# Built application files
+*.apk
+*.aab

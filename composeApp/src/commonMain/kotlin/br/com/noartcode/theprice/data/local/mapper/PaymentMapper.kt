@@ -6,6 +6,7 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.SyncEvent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

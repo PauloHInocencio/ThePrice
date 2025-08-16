@@ -29,7 +29,6 @@ interface IGetPayments {
 class GetPayments(
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
-    private val insertMissingPayments: IInsertMissingPayments, // TODO: use case should be in viewmodel
     private val ioDispatcher: CoroutineDispatcher,
 ) : IGetPayments {
 
@@ -44,27 +43,16 @@ class GetPayments(
             flow<Resource<List<Payment>>>{
                 val monthPaymentsMap = monthPayments.associateBy { it.billId }
                 val payments = activeBills.mapNotNull { bill ->
-                    if (date < bill.billingStartDate) return@mapNotNull null
-                    return@mapNotNull requireNotNull(monthPaymentsMap[bill.id])
+                    if (date > bill.billingStartDate ||
+                        (date.month == bill.billingStartDate.month && date.month == bill.billingStartDate.month)) {
+                        return@mapNotNull requireNotNull(monthPaymentsMap[bill.id])
+                    }
+                    return@mapNotNull null
                 }
                 emit(Resource.Success(payments))
             }
         }
         .onStart { emit(Resource.Loading) }
-        /*.retryWhen { cause, attempt ->
-            if(cause is IllegalArgumentException && attempt == 0L) {
-                insertMissingPayments(date)
-                return@retryWhen true
-            }
-            return@retryWhen false
-        }*/
-        /*.catch { e ->
-            if (e is CancellationException) throw e
-            emit(Resource.Error(
-                exception = e,
-                message = "Something wrong happen when trying to get payments")
-            )
-        }*/
         .flowOn(ioDispatcher)
 
 }
