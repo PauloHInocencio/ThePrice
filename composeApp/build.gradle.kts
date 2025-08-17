@@ -18,6 +18,21 @@ plugins {
     alias(libs.plugins.buildKonfig)
 }
 
+
+val localProps = Properties().apply {
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        load(localPropsFile.inputStream())
+    } else {
+        // Fallback dummy values for CI/environments without local.properties
+        setProperty("API_BASE_URL", "https://dummy-api.example.com/api/v1/")
+        setProperty("API_KEY", "dummy_api_key_for_tests")
+        setProperty("GOOGLE_AUTH_CLIENT_ID_SERVER", "dummy_client_id_server")
+        setProperty("GOOGLE_AUTH_CLIENT_ID_DESKTOP", "dummy_client_id_desktop")
+        setProperty("GOOGLE_AUTH_CLIENT_SECRET_DESKTOP", "dummy_client_secret_desktop")
+    }
+}
+
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -181,6 +196,15 @@ android {
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
+    signingConfigs {
+        create("release") {
+            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String
+            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String
+            storeFile = file(localProps["RELEASE_STORE_FILE"] as String)
+            storePassword = localProps["RELEASE_KEY_PASSWORD"] as String
+        }
+    }
+
     defaultConfig {
         applicationId = "br.com.noartcode.theprice"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -205,8 +229,16 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
 
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {
@@ -254,19 +286,7 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
-val localProps = Properties().apply {
-    val localPropsFile = rootProject.file("local.properties")
-    if (localPropsFile.exists()) {
-        load(localPropsFile.inputStream())
-    } else {
-        // Fallback dummy values for CI/environments without local.properties
-        setProperty("API_BASE_URL", "https://dummy-api.example.com/api/v1/")
-        setProperty("API_KEY", "dummy_api_key_for_tests")
-        setProperty("GOOGLE_AUTH_CLIENT_ID_SERVER", "dummy_client_id_server")
-        setProperty("GOOGLE_AUTH_CLIENT_ID_DESKTOP", "dummy_client_id_desktop")
-        setProperty("GOOGLE_AUTH_CLIENT_SECRET_DESKTOP", "dummy_client_secret_desktop")
-    }
-}
+
 
 buildkonfig {
     packageName = "br.com.noartcode.theprice"
