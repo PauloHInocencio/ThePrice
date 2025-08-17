@@ -198,10 +198,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String
-            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String
-            storeFile = file(localProps["RELEASE_STORE_FILE"] as String)
-            storePassword = localProps["RELEASE_KEY_PASSWORD"] as String
+            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String?
+            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String?
+            storeFile = (localProps["RELEASE_STORE_FILE"] as String?)?.let { file(it) }
+            storePassword = localProps["RELEASE_KEY_PASSWORD"] as String?
         }
     }
 
@@ -233,7 +233,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            //signingConfig = signingConfigs.getByName("release") // Used for SHA1 finger print
         }
 
         getByName("debug") {
