@@ -71,23 +71,10 @@
 # =========================
 # --- kotlinx.serialization: keep generated serializer classes & companions ---
 -dontwarn kotlinx.serialization.**
-#-keep @kotlinx.serialization.Serializable class * {*;}
 -if @kotlinx.serialization.Serializable class **
 -keepclassmembers class <1> {
     public static <1> INSTANCE;
     kotlinx.serialization.KSerializer serializer(...);
-}
-
-
-# ---- CRITICAL: keep the generated $$serializer *names* (don't let R8 rename them)
--keepnames class **$$serializer
-
-# Keep the factory methods so reflection can find them (names must stay "serializer")
--keepclassmembers class ** {
-    public static kotlinx.serialization.KSerializer serializer(...);
-}
--keepclassmembers class **$Companion {
-    public kotlinx.serialization.KSerializer serializer(...);
 }
 
 # =========================
@@ -119,3 +106,8 @@
 -dontwarn com.google.android.libraries.identity.**
 -dontwarn com.google.android.gms.**
 
+# =========================
+# Firebase Crashlytics keeps needed classes; default rules are fine.
+# Keep Kotlin metadata (common in Android projects):
+# =========================
+-keepclassmembers class kotlin.Metadata { *; }

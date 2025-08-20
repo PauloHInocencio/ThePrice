@@ -23,3 +23,6 @@ debug.keystore
 # Built application files
 *.apk
 *.aab
+composeApp/google-services.json
+composeApp/release/*
+composeApp/sampledata

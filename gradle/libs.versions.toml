@@ -30,6 +30,9 @@ coil = "3.0.4"
 mokkery = "2.7.0"
 workmanager = "2.10.1"
 buildKonfig = "0.17.0"
+crashlytics = "3.0.6"
+googleServices = "4.4.3"
+firebaseAndroidBom = "34.1.0"
 
 [libraries]
 
@@ -100,6 +103,12 @@ ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor"}
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"}
 
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseAndroidBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ndk" }
+# For breadcrumb logs: https://firebase.google.com/docs/crashlytics/customize-crash-reports?platform=android#get-breadcrumb-logs
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+
 # Kotlin Test
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin"}
 
@@ -132,6 +141,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 mokkery = { id = "dev.mokkery", version.ref = "mokkery"}
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig"}
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebaseCrashlytic = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 
 [bundles]
 ktor = [

@@ -16,6 +16,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.mokkery)
     alias(libs.plugins.buildKonfig)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytic)
 }
 
 
@@ -91,6 +93,11 @@ kotlin {
 
             //Room
             implementation(libs.androidx.sqlite.native)
+
+            //Firebase
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.crashlytics)
+            implementation(libs.firebase.analytics)
         }
 
 
@@ -196,16 +203,8 @@ android {
     sourceSets["main"].res.srcDirs("src/androidMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
-    signingConfigs {
-        create("release") {
-            keyAlias = localProps["RELEASE_KEY_ALIAS"] as String?
-            keyPassword = localProps["RELEASE_KEY_PASSWORD"] as String?
-            storeFile = (localProps["RELEASE_STORE_FILE"] as String?)?.let { file(it) }
-            storePassword = localProps["RELEASE_KEY_PASSWORD"] as String?
-        }
-    }
-
     defaultConfig {
+        resValue("string", "app_name", "ThePrice")
         applicationId = "br.com.noartcode.theprice"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
@@ -227,16 +226,17 @@ android {
     }
     buildTypes {
         getByName("release") {
+            resValue("string", "app_name", "ThePrice")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            //signingConfig = signingConfigs.getByName("release") // Used for SHA1 finger print
         }
 
         getByName("debug") {
+            resValue("string", "app_name", "ThePrice(Debug)")
             applicationIdSuffix = ".debug"
             signingConfig = signingConfigs.getByName("debug")
         }
