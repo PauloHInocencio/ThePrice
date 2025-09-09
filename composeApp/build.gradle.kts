@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidxRoom)
     alias(libs.plugins.kotlin.serialization)
@@ -167,6 +167,7 @@ kotlin {
                 implementation(libs.compose.ui.test.manifest)
                 implementation(libs.robolectric)
                 implementation(libs.androidx.workmanager.test)
+                implementation(libs.mockk)
             }
         }
 

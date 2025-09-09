@@ -10,6 +10,8 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import br.com.noartcode.theprice.ui.presentation.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import platform.Foundation.NSCalendar
@@ -33,6 +35,7 @@ actual fun platformModule() = module {
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore() }
     single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
+    factory<IAccountManager> { AccountManager() }
 }
 
 
@@ -40,7 +43,7 @@ actual class KoinInitializer {
 
     actual fun init() {
         startKoin {
-            modules(platformModule(), viewModelsModule(), commonModule())
+            modules(dispatcherModule(), platformModule(), viewModelsModule(), commonModule())
         }
     }
 }
