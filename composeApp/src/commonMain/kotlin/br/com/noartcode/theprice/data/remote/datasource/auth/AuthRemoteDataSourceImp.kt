@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.data.remote.datasource.auth
 
 import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
-import br.com.noartcode.theprice.data.remote.dtos.AuthInfo
+import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
@@ -17,7 +17,7 @@ class AuthRemoteDataSourceImp(
     private val session: SessionStorage
 ) : AuthRemoteDataSource {
 
-    override suspend fun signUpUser(tokenID: String, deviceID:String, rawNonce: String): Resource<AuthInfo> =
+    override suspend fun signUpUser(tokenID: String, deviceID:String, rawNonce: String): Resource<UserCredentialsDto> =
         safeCall {
             client.post {
                 url("users/login")

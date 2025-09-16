@@ -39,9 +39,7 @@ class LoginUser(
 
 
                 val signInResult = remoteDataSource.signUpUser(tokenId, deviceID, rawNonce).doIfSuccess { data ->
-                    localDataSource.saveUser(data.user)
-                    localDataSource.saveAccessToken(data.accessToken)
-                    localDataSource.saveRefreshToken(data.refreshToken)
+                    localDataSource.saveCredentials(data)
                     getUserDate()
                 }
                 emit(signInResult.map {  })

@@ -5,10 +5,12 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class AuthInfo(
+data class UserCredentialsDto(
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("refresh_token")
     val refreshToken: String,
-    val user: UserDto
+    val name: String,
+    val email: String,
+    val picture: String
 )

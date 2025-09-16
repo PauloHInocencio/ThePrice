@@ -4,11 +4,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import br.com.noartcode.theprice.data.remote.dtos.UserDto
+import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.domain.model.User
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -17,11 +15,13 @@ class SessionStorageImp(
     private val dataStore: DataStore<Preferences>,
     private val ioDispatcher: CoroutineDispatcher,
 ) : SessionStorage {
-    override suspend fun saveUser(user: UserDto) {
+    override suspend fun saveCredentials(credentials: UserCredentialsDto) {
         dataStore.edit {
-            it[USER_EMAIL] = user.email
-            it[USER_NAME] = user.name
-            it[USER_PICTURE] = user.picture
+            it[USER_EMAIL] = credentials.email
+            it[USER_NAME] = credentials.name
+            it[USER_PICTURE] = credentials.picture
+            it[ACCESS_TOKEN] = credentials.accessToken
+            it[REFRESH_TOKEN] = credentials.refreshToken
         }
     }
 
