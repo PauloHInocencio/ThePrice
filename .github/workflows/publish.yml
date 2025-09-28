@@ -42,6 +42,8 @@ jobs:
         API_KEY: ${{ secrets.API_KEY }}
         GOOGLE_AUTH_CLIENT_ID_SERVER: ${{ secrets.GOOGLE_AUTH_CLIENT_ID_SERVER }}
         GOOGLE_AUTH_CLIENT_ID_DESKTOP: ${{ secrets.GOOGLE_AUTH_CLIENT_ID_DESKTOP }}
+        GOOGLE_AUTH_CLIENT_ID_IOS: ${{ secrets.GOOGLE_AUTH_CLIENT_ID_IOS }}
+        GOOGLE_AUTH_IOS_REDIRECT_URI: ${{ secrets.GOOGLE_AUTH_IOS_REDIRECT_URI }}
         GOOGLE_AUTH_CLIENT_SECRET_DESKTOP: ${{ secrets.GOOGLE_AUTH_CLIENT_SECRET_DESKTOP }}
       run: |
         echo "API_BASE_URL=$API_BASE_URL" > local.properties
@@ -49,6 +51,8 @@ jobs:
         echo "GOOGLE_AUTH_CLIENT_ID_SERVER=$GOOGLE_AUTH_CLIENT_ID_SERVER" >> local.properties
         echo "GOOGLE_AUTH_CLIENT_ID_DESKTOP=$GOOGLE_AUTH_CLIENT_ID_DESKTOP" >> local.properties
         echo "GOOGLE_AUTH_CLIENT_SECRET_DESKTOP=$GOOGLE_AUTH_CLIENT_SECRET_DESKTOP" >> local.properties
+        echo "GOOGLE_AUTH_CLIENT_ID_IOS=GOOGLE_AUTH_CLIENT_ID_IOS" >> local.properties
+        echo "GOOGLE_AUTH_IOS_REDIRECT_URI=GOOGLE_AUTH_IOS_REDIRECT_URI" >> local.properties
         
 
     - name: Restore google-services.js
