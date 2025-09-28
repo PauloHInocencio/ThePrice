@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -35,7 +40,15 @@ fun HomeScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick= onNavigateToAddBill
+            ) {
+                Icon(Icons.Default.Add, "Add new Bill")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -69,9 +82,6 @@ fun HomeScreen(
                     )
                 }
             }
-            BottomCircularButton(
-                onClick = onNavigateToAddBill
-            )
         }
     }
 
