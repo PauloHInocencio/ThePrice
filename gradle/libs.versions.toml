@@ -33,6 +33,7 @@ buildKonfig = "0.17.1"
 crashlytics = "3.0.6"
 googleServices = "4.4.3"
 firebaseAndroidBom = "34.2.0"
+skie = "0.10.6"
 
 [libraries]
 
@@ -143,6 +144,7 @@ mokkery = { id = "dev.mokkery", version.ref = "mokkery"}
 buildKonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig"}
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebaseCrashlytic = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+skie = { id = "co.touchlab.skie", version.ref = "skie"}
 
 [bundles]
 ktor = [

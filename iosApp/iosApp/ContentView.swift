@@ -13,7 +13,10 @@ struct ComposeView: UIViewControllerRepresentable {
 struct ContentView: View {
     var body: some View {
         ComposeView()
-                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+            .onOpenURL { url in
+                _ = GoogleSignInIOS.shared.resume(url: url.absoluteString)
+            }
+            .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
     }
 }
 

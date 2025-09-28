@@ -1,6 +1,5 @@
 package br.com.noartcode.theprice.domain.usecases.bill
 
-import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource

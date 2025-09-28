@@ -6,11 +6,22 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.data.local.preferences.createDataStore
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
+import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
+import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncBillWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
+import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.ui.presentation.account.AccountManager
+import br.com.noartcode.theprice.ui.presentation.account.GoogleSignInProvider
 import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
@@ -35,15 +46,27 @@ actual fun platformModule() = module {
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore() }
     single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
-    factory<IAccountManager> { AccountManager() }
+    factory<IAccountManager> { AccountManager(signInProvider = get()) }
+    single<ISyncPaymentsWorker> { SyncPaymentsWorker() }
+    single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker()}
+    single<ISyncBillWorker> { SyncBillWorker() }
+    single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker()}
+    single<ISyncDeletedBillWorker> { SyncDeletedBillWorker() }
 }
 
 
-actual class KoinInitializer {
-
+actual class KoinInitializer(
+    private val signInProvider: GoogleSignInProvider
+) {
     actual fun init() {
         startKoin {
-            modules(dispatcherModule(), platformModule(), viewModelsModule(), commonModule())
+            modules(
+                module { single<GoogleSignInProvider> { signInProvider } },
+                dispatcherModule(),
+                platformModule(),
+                viewModelsModule(),
+                commonModule()
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.internal.utils.localPropertiesFile
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
@@ -18,6 +19,7 @@ plugins {
     alias(libs.plugins.buildKonfig)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.firebaseCrashlytic)
+    alias(libs.plugins.skie)
 }
 
 
@@ -32,10 +34,14 @@ val localProps = Properties().apply {
         setProperty("GOOGLE_AUTH_CLIENT_ID_SERVER", "dummy_client_id_server")
         setProperty("GOOGLE_AUTH_CLIENT_ID_DESKTOP", "dummy_client_id_desktop")
         setProperty("GOOGLE_AUTH_CLIENT_SECRET_DESKTOP", "dummy_client_secret_desktop")
+        setProperty("GOOGLE_AUTH_CLIENT_ID_IOS", "dummy_client_id_ios")
+        setProperty("GOOGLE_AUTH_IOS_REDIRECT_URI", "dummy.bundle.id:/oauth2redirect/google")
     }
 }
 
 kotlin {
+    applyDefaultHierarchyTemplate()  // <- ensures iosMain/iosTest exist
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant {
@@ -145,7 +151,7 @@ kotlin {
             implementation(libs.bundles.ktor)
         }
 
-        nativeMain.dependencies {
+        iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
 
@@ -190,8 +196,6 @@ kotlin {
             // Due to https://issuetracker.google.com/u/0/issues/342905180
             kotlin.srcDir("build/generated/ksp/metadata")
         }
-
-
     }
     task("testClasses") // work-around of the bug 'Cannot locate tasks that match :shared:testClasses'
 }
@@ -287,8 +291,6 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
-
-
 buildkonfig {
     packageName = "br.com.noartcode.theprice"
 
@@ -305,6 +307,11 @@ buildkonfig {
         create("desktop") {
             buildConfigField(STRING, "googleAuthClientId", localProps["GOOGLE_AUTH_CLIENT_ID_DESKTOP"] as String)
             buildConfigField(STRING, "googleAuthSecret", localProps["GOOGLE_AUTH_CLIENT_SECRET_DESKTOP"] as String)
+        }
+
+        create("ios") {
+            buildConfigField(STRING, "googleAuthClientId", localProps["GOOGLE_AUTH_CLIENT_ID_IOS"] as String)
+            buildConfigField(STRING, "iosRedirectURI", localProps["GOOGLE_AUTH_IOS_REDIRECT_URI"] as String)
         }
     }
 }
