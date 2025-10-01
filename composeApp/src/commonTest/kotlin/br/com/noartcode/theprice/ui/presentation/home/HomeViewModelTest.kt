@@ -94,7 +94,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // check initial state
             with(awaitItem()) {
-                assertEquals(expected = 0, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 0, actual = totalPayments)
+                assertEquals(expected = 0, actual = paymentSection.size)
                 assertEquals(expected = "", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -110,7 +112,10 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Final State
             with(awaitItem()) {
-                assertEquals(expected = 3, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 3, actual = totalPayments)
+                assertEquals(expected = 1, actual = paymentSection.size)
+                assertEquals(expected = "12 Novembro", actual = paymentSection[0].title)
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -155,7 +160,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Check final state
             with(awaitItem()) {
-                assertEquals(expected = 1, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 1, actual = totalPayments)
+                assertEquals(expected = "4 Setembro", actual = paymentSection[0].title)
                 assertEquals(expected = "Setembro - 2025", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -178,7 +185,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Check final state
             with(awaitItem()) {
-                assertEquals(expected = 0, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { paymentSection.size }
+                assertEquals(expected = 0, actual = totalPayments)
                 assertEquals(expected = "Agosto - 2025", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -220,7 +228,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Final State
             with(awaitItem()) {
-                assertEquals(expected = 3, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 3, actual = totalPayments)
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
@@ -240,7 +249,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Final State
             with(awaitItem()) {
-                assertEquals(expected = 2, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 2, actual = totalPayments)
                 assertEquals(expected = "Outubro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
@@ -259,7 +269,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Final State
             with(awaitItem()) {
-                assertEquals(expected = 1, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { paymentSection.size }
+                assertEquals(expected = 1, actual = totalPayments)
                 assertEquals(expected = "Setembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = false, actual = canGoBack)
@@ -297,7 +308,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             // Final State
             val result = awaitItem()
             with(result) {
-                assertEquals(expected = 3, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 3, actual = totalPayments)
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
@@ -307,7 +319,11 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             ensureAllEventsConsumed()
 
             // Check payment info
-            val originalPayment = assertNotNull(result.payments.find { it.billName == "mom's internet" })
+            val originalPayment = result
+                .paymentSection
+                .flatMap { it.paymentUis }
+                .find { it.billName == "mom's internet" }!!
+
             assertEquals(expected = PaymentUi.Status.OVERDUE, originalPayment.status)
 
             // Simulate user changing payment status
@@ -320,7 +336,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             // Check final state
             val newResult = awaitItem()
             with(newResult) {
-                assertEquals(expected = 3, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 3, actual = totalPayments)
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = true, actual = canGoBack)
@@ -330,9 +347,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             ensureAllEventsConsumed()
 
             // Confirm that selected payment has changed
-            val updatedPayment = assertNotNull(newResult
-                .payments
-                .find { it.billName == "mom's internet" })
+            val updatedPayment = newResult.paymentSection
+                .flatMap { it.paymentUis }
+                .find { it.billName == "mom's internet" }!!
 
             assertEquals(expected = originalPayment.id, actual = updatedPayment.id)
             assertEquals(expected = PaymentUi.Status.PAYED, updatedPayment.status)
@@ -362,9 +379,10 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             // Ignoring states
             skipItems(2)
 
-            val originalPayment = assertNotNull(awaitItem()
-                .payments
-                .find { it.billName == "mom's internet" })
+            val originalPayment = awaitItem()
+                .paymentSection
+                .flatMap { it.paymentUis }
+                .find { it.billName == "mom's internet" }!!
 
             ensureAllEventsConsumed()
 
@@ -384,7 +402,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Confirm the new status
             with(awaitItem()) {
-                val payment = payments.find { it.billName == "mom's internet" }
+                val payment = paymentSection
+                    .flatMap { it.paymentUis }
+                    .find { it.billName == "mom's internet" }
                 assertEquals(PaymentUi.Status.PAYED, payment?.status)
             }
 
@@ -408,9 +428,10 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
 
             // Get the update version of the payment
-            val updatedPayment = assertNotNull(awaitItem()
-                .payments
-                .find { it.billName == "mom's internet" })
+            val updatedPayment = awaitItem()
+                .paymentSection
+                .flatMap { it.paymentUis }
+                .find { it.billName == "mom's internet" }!!
 
 
             ensureAllEventsConsumed()
@@ -436,14 +457,15 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         // Set Current Day to November 21th
         (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 5, month = 12, year = 2024)
 
-
         val monthNames = listOf("Novembro - 2024", "Outubro - 2024", "Setembro - 2024", "Agosto - 2024")
         viewModel.uiState.test {
 
             skipItems(2)
             with(awaitItem()) {
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 1, actual = totalPayments)
                 assertEquals(expected = "Dezembro - 2024", actual = monthName)
-                assertEquals(expected = 1, actual = payments.size)
+
             }
 
             repeat(4) { i ->
@@ -452,8 +474,10 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
                 skipItems(1)
                 with(awaitItem()) {
+                    val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                    assertEquals(expected = 1, actual = totalPayments)
                     assertEquals(expected = monthNames[i], actual = monthName)
-                    assertEquals(expected = 1, actual = payments.size)
+
 
                     when(i) {
                         // The user should be able to go back From September to August
@@ -489,7 +513,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // check initial state
             with(awaitItem()) {
-                assertEquals(expected = 0, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 0, actual = totalPayments)
                 assertEquals(expected = "", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -504,7 +529,8 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
             // Final State
             with(awaitItem()) {
-                assertEquals(expected = 3, actual = payments.size)
+                val totalPayments = paymentSection.sumOf { it.paymentUis.size }
+                assertEquals(expected = 3, actual = totalPayments)
                 assertEquals(expected = "Novembro - 2024", actual = monthName)
                 assertEquals(expected = false, actual = loading)
                 assertEquals(expected = null, actual = errorMessage)
@@ -512,6 +538,46 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = true, actual = canGoNext)
             }
 
+
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `Should Group Payments Into Correct Sections By Due Date`() = runTest {
+        val startDays = listOf(5, 12, 12, 25) // Will create sections for days 5, 12, and 25
+        repeat(4) { i ->
+            insertBillWithPayments(
+                bill = stubBills[i].copy(
+                    billingStartDate = DayMonthAndYear(day = startDays[i], month = 11, year = 2024)
+                ),
+                currentDate = DayMonthAndYear(day = 21, month = 11, year = 2024),
+            )
+        }
+
+        // Set Current Day to November 21st
+        (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 21, month = 11, year = 2024)
+
+        viewModel.uiState.test {
+
+            // Skip initial empty and loading states
+            skipItems(2)
+
+            // Final State
+            with(awaitItem().paymentSection) {
+                val totalPayments = this.sumOf { it.paymentUis.size }
+                assertEquals(expected = 4, actual = totalPayments)
+                assertEquals(expected = 3, actual = this.size)
+
+                assertEquals(expected = "5 Novembro", actual = this[0].title)
+                assertEquals(expected = 1, actual = this[0].paymentUis.size)
+
+                assertEquals(expected = "12 Novembro", actual = this[1].title)
+                assertEquals(expected = 2, actual = this[1].paymentUis.size)
+
+                assertEquals(expected = "25 Novembro", actual = this[2].title)
+                assertEquals(expected = 1, actual = this[2].paymentUis.size)
+            }
 
             ensureAllEventsConsumed()
         }

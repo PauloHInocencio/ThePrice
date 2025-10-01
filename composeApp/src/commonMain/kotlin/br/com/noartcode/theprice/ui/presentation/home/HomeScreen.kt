@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
@@ -23,7 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
-import br.com.noartcode.theprice.ui.views.BottomCircularButton
+import br.com.noartcode.theprice.ui.presentation.home.views.PaymentDateHeader
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
 import kotlinx.coroutines.launch
 
@@ -66,20 +66,25 @@ fun HomeScreen(
                 canGoBack = state.canGoBack
             )
             LazyColumn {
-                itemsIndexed(
-                    items = state.payments,
-                    key = { _, payment: PaymentUi -> payment.id }) { _, payment ->
-                    PaymentItemView(
-                        payment = payment,
-                        onStatusClicked = {
-                            onEvent(
-                                HomeEvent.OnPaymentStatusClicked(
-                                    id = payment.id,
-                                    status = payment.status,
-                                )
-                            )},
-                        onPaymentClicked = onNavigateToEditPayment
-                    )
+                state.paymentSection.forEach { sectionUi ->
+                    stickyHeader(key = "header-${sectionUi.dueDay}") {
+                        PaymentDateHeader(title = sectionUi.title)
+                    }
+                    items(
+                        items = sectionUi.paymentUis,
+                        key = { it.id }) { payment ->
+                        PaymentItemView(
+                            payment = payment,
+                            onStatusClicked = {
+                                onEvent(
+                                    HomeEvent.OnPaymentStatusClicked(
+                                        id = payment.id,
+                                        status = payment.status,
+                                    )
+                                )},
+                            onPaymentClicked = onNavigateToEditPayment
+                        )
+                    }
                 }
             }
         }

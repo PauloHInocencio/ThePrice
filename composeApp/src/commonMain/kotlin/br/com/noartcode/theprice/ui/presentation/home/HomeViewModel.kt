@@ -139,12 +139,26 @@ class HomeViewModel(
     val uiState = combine( _state, _homeScreenResults ) { state, (payments, dates) ->
         val (currentDate, firstPaymentDate) = dates
         val rawPayments = (payments as? Resource.Success)?.data ?: listOf()
+
+
+        val paymentSection =
+            rawPayments
+                .sortedBy { it.dueDate.day }
+                .groupBy { it.dueDate.day }
+                .mapNotNull { (day, payments) ->
+                    val paymentUis = payments.mapNotNull { p -> paymentUiMapper.mapFrom(p) }
+                    PaymentSectionUi(
+                        title = "$day ${getMonthName(currentDate.month)}",
+                        dueDay = day,
+                        paymentUis = paymentUis
+                    )
+                }
         HomeUiState(
             monthName = getMonthName(currentDate.month)?.plus(" - ${currentDate.year}") ?: "",
             //TODO: this should be inside a separated function
             canGoBack = firstPaymentDate != null && moveMonth(by = -1, currentDate = currentDate).let { it  > firstPaymentDate || (it.month == firstPaymentDate.month && it.year == firstPaymentDate.year) },
             canGoNext = currentDate < moveMonth(by = 1, initialDate) && rawPayments.isNotEmpty(),
-            payments = rawPayments.mapNotNull { payment -> paymentUiMapper.mapFrom(payment) }.sortedBy { paymentUi -> paymentUi.status },
+            paymentSection = paymentSection,
             errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,
             loading = (payments is Resource.Loading),
         )
