@@ -2,7 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.home
 
 
 data class HomeUiState(
-    val payments: List<PaymentUi> = listOf(),
+    val paymentSection: List<PaymentSectionUi> = listOf(),
     val monthName:String = "",
     val loading:Boolean = false,
     val canGoBack:Boolean = false,

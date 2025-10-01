@@ -8,10 +8,10 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun HomeScreen_Preview() {
     MaterialTheme {
-        HomeScreen(
+/*        HomeScreen(
             state = HomeUiState(
                 monthName = "Sep 2024",
-                payments = listOf(
+                paymentSection = listOf(
                     PaymentUi(
                         id = "",
                         statusDescription = "Paga em 12/08/2024",
@@ -38,7 +38,7 @@ fun HomeScreen_Preview() {
             onEvent = { },
             onNavigateToAddBill = {},
             onNavigateToEditPayment = {},
-        )
+        )*/
     }
 
 }
