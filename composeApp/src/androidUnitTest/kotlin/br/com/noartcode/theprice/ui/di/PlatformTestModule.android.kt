@@ -1,14 +1,16 @@
-
-
 package br.com.noartcode.theprice.ui.di
 
 import android.content.Context
 import android.icu.text.DecimalFormatSymbols
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.WorkManager
 import br.com.noartcode.theprice.ThePriceAppTest
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
+import br.com.noartcode.theprice.data.local.preferences.TEST_FILE_NAME
+import br.com.noartcode.theprice.data.local.preferences.createDataStore
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncUpdatedBillWorker
@@ -46,6 +48,14 @@ actual fun platformTestModule() = module {
             ).build()
         }
     }
+    single<DataStore<Preferences>> {
+        createDataStore(
+            fileName = TEST_FILE_NAME,
+            scope = get(),
+            context = ApplicationProvider.getApplicationContext()
+        )
+    }
+
     single<IGetMonthName>{ GetMonthName(calendar = Calendar.getInstance(), Locale("pt", "BR"))}
     single<ICurrencyFormatter> {
         CurrencyFormatter(

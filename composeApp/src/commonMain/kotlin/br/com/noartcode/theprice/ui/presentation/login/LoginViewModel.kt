@@ -27,14 +27,14 @@ class LoginViewModel(
             initialValue = null,
         )
 
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
+    private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = combine(_uiState, userInfoState) { ui, user ->
-        if (user != null) LoginUiState.LoggedIn
+        if (user != null) LoginUiState(isAuthenticated = true)
         else ui
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(500),
-        initialValue = LoginUiState.Idle
+        initialValue = LoginUiState()
     )
 
     fun onEvent(event: LoginEvent) {
@@ -43,24 +43,42 @@ class LoginViewModel(
                 loginInUser()
                     .onEach { result ->
                         when (result) {
-                            is Resource.Success -> {
-                                _uiState.update { LoginUiState.LoggedIn }
+                            is Resource.Success -> _uiState.update {
+                                LoginUiState(isAuthenticated = true)
                             }
 
                             is Resource.Error -> _uiState.update {
-                                LoginUiState.AuthError(
-                                    errorMessage = result.message
-                                )
+                                LoginUiState(errorMessage = result.message)
                             }
 
-                            is Resource.Loading -> _uiState.update { LoginUiState.Loading }
-
+                            is Resource.Loading -> _uiState.update {
+                                LoginUiState(isAuthenticatingWithGoogle = true)
+                            }
                         }
                     }.launchIn(viewModelScope)
             }
 
             LoginEvent.ErrorMessageDismissed -> {
-                _uiState.update { LoginUiState.Idle }
+                _uiState.update {
+                    it.copy(errorMessage = null)
+                }
+            }
+
+            is LoginEvent.OnEmailChanged -> {
+                _uiState.update {
+                    it.copy(email = event.value)
+                }
+            }
+            is LoginEvent.OnPasswordChanged -> {
+                _uiState.update {
+                    it.copy(password = event.value)
+                }
+            }
+
+            LoginEvent.LoginInWithEmailAndPassword -> {
+                _uiState.update {
+                    it.copy(isAuthenticatingWithPassword = true)
+                }
             }
         }
     }

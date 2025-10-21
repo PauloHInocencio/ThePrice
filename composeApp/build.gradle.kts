@@ -119,6 +119,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.compose.navigation)
             implementation(libs.compose.material.icons)
+            implementation(compose.materialIconsExtended)
 
             // Coil
             implementation(libs.coil.compose)

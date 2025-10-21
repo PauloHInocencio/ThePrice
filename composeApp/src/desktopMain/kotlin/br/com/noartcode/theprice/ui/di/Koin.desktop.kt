@@ -39,7 +39,7 @@ actual fun platformModule() = module {
         )
     }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
-    single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }) }
+    single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }, scope = get()) }
     single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
     factory<IAccountManager> { AccountManager() }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(paymentsRepository = get(), ioDispatcher = get()) }

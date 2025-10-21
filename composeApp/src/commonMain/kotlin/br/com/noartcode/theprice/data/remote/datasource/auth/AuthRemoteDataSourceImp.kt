@@ -1,20 +1,15 @@
 package br.com.noartcode.theprice.data.remote.datasource.auth
 
-import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
 import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
-import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
-import io.ktor.http.HttpHeaders
-import kotlinx.coroutines.flow.first
 
 class AuthRemoteDataSourceImp(
     private val client: HttpClient,
-    private val session: SessionStorage
 ) : AuthRemoteDataSource {
 
     override suspend fun signUpUser(tokenID: String, deviceID:String, rawNonce: String): Resource<UserCredentialsDto> =
@@ -33,16 +28,29 @@ class AuthRemoteDataSourceImp(
 
 
 
-    override suspend fun logoutUser(): Resource<Unit> =
+    override suspend fun logoutUser(refreshToken:String): Resource<Unit> =
         safeCall {
-            val accessToken = session.getAccessToken().first()
-            val refreshToken = session.getRefreshToken().first()
             client.post {
                 url("users/logout")
                 setBody(mapOf("refresh_token" to refreshToken))
-                headers {
-                    append(HttpHeaders.Authorization, "Bearer $accessToken")
-                }
+            }
+        }
+
+    override suspend fun createUser(
+        name: String,
+        email: String,
+        password: String,
+        deviceID: String,
+    ): Resource<UserCredentialsDto> =
+        safeCall {
+            client.post {
+                url("users/create")
+                setBody(mapOf(
+                    "name" to name,
+                    "email" to email,
+                    "password" to password,
+                    "device_id" to deviceID
+                ))
             }
         }
 

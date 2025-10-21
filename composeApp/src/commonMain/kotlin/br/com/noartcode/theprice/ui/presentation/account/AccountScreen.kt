@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import br.com.noartcode.theprice.domain.model.User
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -139,4 +140,15 @@ fun UserProfileCard(user: User, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = user.email, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Preview
+@Composable
+internal fun AccountScreen_Preview() {
+    AccountScreen(
+        state = AccountUiState(),
+        onEvent = {},
+        onNavigateToHome = {},
+        onNavigateToLogin = {}
+    )
 }

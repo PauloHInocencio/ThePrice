@@ -1,7 +1,8 @@
 package br.com.noartcode.theprice.ui.di
 
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
-import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSourceImp
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
@@ -15,8 +16,9 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 
 import org.koin.dsl.module
 
@@ -39,14 +41,14 @@ fun commonTestModule() = module {
         }
     }
 
-    single<SessionStorage> {
-        mock<SessionStorage>().apply {
-            every { this@apply.getAccessToken() } returns flowOf("access_token")
-        }
+    single<AuthLocalDataSource> {
+        AuthLocalDataSourceImp(dataStore = get(), ioDispatcher = get())
     }
+
     single<IGetTodayDate> { GetTodayDateStub() }
 }
 
 fun dispatcherTestModule() = module {
     single<CoroutineDispatcher> { StandardTestDispatcher() }
+    single<CoroutineScope> { TestScope(get<CoroutineDispatcher>()) }
 }

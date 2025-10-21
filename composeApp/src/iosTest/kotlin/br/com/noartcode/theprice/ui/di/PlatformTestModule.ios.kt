@@ -1,8 +1,12 @@
 package br.com.noartcode.theprice.ui.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
+import br.com.noartcode.theprice.data.local.preferences.TEST_FILE_NAME
+import br.com.noartcode.theprice.data.local.preferences.createDataStore
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
@@ -26,10 +30,16 @@ actual fun platformTestModule() = module{
         })
     }
 
+    single<DataStore<Preferences>>{
+        createDataStore(
+            scope = get(),
+            fileName = TEST_FILE_NAME,
+        )
+    }
+
     single<ThePriceDatabase> {
         Room.inMemoryDatabaseBuilder<ThePriceDatabase>()
             .setDriver(BundledSQLiteDriver())
-            //.setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
 }

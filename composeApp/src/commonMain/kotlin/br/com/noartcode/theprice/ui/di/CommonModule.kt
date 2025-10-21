@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.ui.di
 
-import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
-import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorageImp
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
@@ -18,9 +18,11 @@ import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDat
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSourceImp
 import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncEventsWorker
+import br.com.noartcode.theprice.data.repository.AuthRepositoryImp
 import br.com.noartcode.theprice.data.repository.BillsRepositoryImp
 import br.com.noartcode.theprice.data.repository.PaymentsRepositoryImp
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.repository.AuthRepository
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
 import br.com.noartcode.theprice.domain.usecases.EpochMillisecondsFormatter
@@ -66,6 +68,8 @@ import br.com.noartcode.theprice.domain.usecases.user.LoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.UpdateBill
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.user.RegisterUser
+import br.com.noartcode.theprice.domain.usecases.user.IRegisterUser
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.mapper.PaymentDomainToUiMapper
 import br.com.noartcode.theprice.ui.presentation.home.HomeViewModel
@@ -74,10 +78,13 @@ import br.com.noartcode.theprice.ui.presentation.bill.add.AddBillViewModel
 import br.com.noartcode.theprice.ui.presentation.bill.edit.EditBillViewModel
 import br.com.noartcode.theprice.ui.presentation.payment.edit.EditPaymentViewModel
 import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
+import br.com.noartcode.theprice.ui.presentation.account.add.NewAccountViewModel
 import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -99,12 +106,12 @@ fun commonModule() = module {
     single<IMoveMonth> { MoveMonth() }
     single<IEpochMillisecondsFormatter> { EpochMillisecondsFormatter() }
     single<BillLocalDataSource> { BillLocalDataSourceImp(database = get()) }
-    single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get(), session = get())}
+    single<BillRemoteDataSource> { BillRemoteDataSourceImp(client = get())}
     single<PaymentLocalDataSource> { PaymentLocalDataSourceImp(database = get())}
     single<PaymentRemoteDataSource> { PaymentRemoteDataSourceImp(client = get(), session = get())}
     single<EventRemoteDataSource> { EventRemoteDataSourceImp(client = get(), session = get()) }
-    single<SessionStorage> { SessionStorageImp(dataStore = get(), ioDispatcher = get()) }
-    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get(), session = get()) }
+    single<AuthLocalDataSource> { AuthLocalDataSourceImp(dataStore = get(), ioDispatcher = get()) }
+    single<AuthRemoteDataSource> { AuthRemoteDataSourceImp(client = get()) }
     single<EventSyncQueue> { EventSyncQueueImp(database = get(), ioDispatcher = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
@@ -120,7 +127,8 @@ fun commonModule() = module {
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
-    single<IGetUserAccountInfo> { IGetUserAccountInfo(get<SessionStorage>()::getUser) }
+    single<AuthRepository> { AuthRepositoryImp(local = get(), remote = get()) }
+    single<IGetUserAccountInfo> { IGetUserAccountInfo(get<AuthLocalDataSource>()::getUser) }
     single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
     single<ISyncEventsWorker> {
@@ -134,23 +142,29 @@ fun commonModule() = module {
     single<ILoginUser> {
         LoginUser(
             accountManager = get(),
-            localDataSource = get(),
-            remoteDataSource = get(),
-            getUserDate = get(),
+            authRepository = get(),
             dispatcher = get(),
         )
     }
     single<ILogoutUser> {
         LogoutUser(
-            localDataSource = get(),
-            remoteDataSource = get(),
+            authRepository = get(),
             dispatcher = get(),
+        )
+    }
+    single<IRegisterUser> {
+        RegisterUser(
+            authRepository = get(),
+            dispatcher = get()
         )
     }
 }
 
 fun dispatcherModule() = module {
     single<CoroutineDispatcher> { Dispatchers.IO }
+    single<CoroutineScope> {
+        CoroutineScope(context = get<CoroutineDispatcher>() + SupervisorJob())
+    }
 }
 
 fun viewModelsModule() = module {
@@ -215,6 +229,10 @@ fun viewModelsModule() = module {
             getAccountInfo = get(),
             logOutUser = get(),
         )
+    }
+
+    viewModel {
+        NewAccountViewModel()
     }
 
     viewModel {

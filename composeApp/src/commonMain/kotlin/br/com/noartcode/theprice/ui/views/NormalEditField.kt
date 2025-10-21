@@ -29,7 +29,7 @@ fun NormalEditField(
     onValueChanged:(String) -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.None,
-        autoCorrect = false,
+        autoCorrectEnabled = false,
         keyboardType = KeyboardType.Text,
         imeAction = ImeAction.None
     ),
