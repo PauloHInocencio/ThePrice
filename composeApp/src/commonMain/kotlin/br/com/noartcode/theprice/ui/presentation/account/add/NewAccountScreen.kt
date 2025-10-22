@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,14 +25,19 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,8 +47,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.noartcode.theprice.ui.presentation.account.add.NewAccountEvent.*
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
@@ -51,6 +62,7 @@ fun NewAccountScreen(
     uiState: NewAccountUiState,
     onEvent: (NewAccountEvent) -> Unit,
     onNavigateToLogin: () -> Unit,
+    onNavigateToHome: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -68,7 +80,7 @@ fun NewAccountScreen(
                             TextButton(
                                 onClick = {
                                     data.dismiss()
-                                    //onEvent(NewAccountUiState.ErrorMessageDismissed)
+                                    onEvent(ErrorMessageDismissed)
                                 }
                             ) {
                                 Text("Ok")
@@ -89,7 +101,7 @@ fun NewAccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LaunchedEffect(uiState) {
-                /*if (uiState is NewAccountUiState.CreationError) {
+                if (uiState.errorMessage != null) {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
                             message = uiState.errorMessage,
@@ -98,9 +110,9 @@ fun NewAccountScreen(
                         )
                     }
                 }
-                if (uiState is NewAccountUiState.Created) {
+                if (uiState.isCreated) {
                     onNavigateToHome()
-                }*/
+                }
             }
 
             NewAccountIconContainer(uiState, onEvent)
@@ -155,12 +167,14 @@ private fun NewAccountFormFieldsContainer(
     uiState : NewAccountUiState,
     onEvent: (NewAccountEvent) -> Unit
 ) {
+    var isPasswordVisible by rememberSaveable{ mutableStateOf(false) }
     Column {
         OutlinedTextField(
             isError = false,
             modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = uiState.name,
+            enabled = uiState.shouldEnableActions,
+            onValueChange = { onEvent(OnNameChanged(it)) },
             placeholder = {
                 Text(
                     text = "Name",
@@ -180,8 +194,9 @@ private fun NewAccountFormFieldsContainer(
         OutlinedTextField(
             isError = false,
             modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = uiState.email,
+            enabled = uiState.shouldEnableActions,
+            onValueChange = { onEvent(OnEmailChanged(it)) },
             placeholder = {
                 Text(
                     text = "Email",
@@ -199,7 +214,7 @@ private fun NewAccountFormFieldsContainer(
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrectEnabled = false,
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             )
         )
@@ -207,14 +222,17 @@ private fun NewAccountFormFieldsContainer(
         OutlinedTextField(
             isError = false,
             modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
+            value = uiState.password,
+            onValueChange = { onEvent(OnPasswordChanged(it)) },
+            enabled = uiState.shouldEnableActions,
             trailingIcon = {
-                IconButton(onClick = {}) {
+                IconButton(onClick = {isPasswordVisible = !isPasswordVisible }) {
                     Icon(
-                        imageVector = Icons.Filled.Visibility,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        imageVector = if (isPasswordVisible)
+                            Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = if (isPasswordVisible)
+                            "Hide password" else "Show password",
+                        tint = LocalContentColor.current
                     )
                 }
             },
@@ -228,13 +246,13 @@ private fun NewAccountFormFieldsContainer(
                 )
             },
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (isPasswordVisible)
+                VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             )
         )
-
     }
 }
 
@@ -249,6 +267,7 @@ private fun NewAccountCreateAccountTextButtonContainer(
     ) {
         TextButton(
             onClick = onNavigateToLogin,
+            enabled = uiState.shouldEnableActions,
             content = {
                 Text("Log In")
             }
@@ -266,12 +285,21 @@ private fun NewAccountButtonContainer(
             .fillMaxWidth()
             .heightIn(min = 52.dp),
         shape = RoundedCornerShape(12.dp),
-        enabled = uiState.canSave,
-        onClick = { }) {
-        Text(
-            text = "Sign Up",
-            fontWeight = FontWeight.SemiBold
-        )
+        enabled = uiState.canCreate && uiState.shouldEnableActions,
+        onClick = { onEvent(OnCreateNewAccount)}) {
+        if (uiState.isCreating) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = LocalContentColor.current
+            )
+        } else {
+            Text(
+                text = "Create",
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
     }
 }
 
@@ -281,6 +309,7 @@ private fun NewAccountScreen_Preview(){
     NewAccountScreen(
         uiState = NewAccountUiState(),
         onEvent = {},
-        onNavigateToLogin = {}
+        onNavigateToLogin = {},
+        onNavigateToHome = {}
     )
 }

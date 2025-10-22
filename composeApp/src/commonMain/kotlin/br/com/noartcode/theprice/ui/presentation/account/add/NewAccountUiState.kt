@@ -8,10 +8,12 @@ data class NewAccountUiState (
     val emailHasError: Boolean = false,
     val passwordHasError: Boolean = false,
     val errorMessage: String? = null,
-    val isLoading: Boolean = false,
+    val isCreating: Boolean = false,
     val isCreated: Boolean = false,
 ) {
-    val canSave: Boolean
+    val canCreate: Boolean
         get() = name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
 
+    val shouldEnableActions: Boolean
+        get() = errorMessage == null && isCreating.not()
 }

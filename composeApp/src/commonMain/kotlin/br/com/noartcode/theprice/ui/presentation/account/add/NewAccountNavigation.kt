@@ -15,6 +15,7 @@ data object NewAccountDestination
 
 fun NavGraphBuilder.composeNewAccountScreen(
     onNavigateToLogin:() -> Unit,
+    onNavigateToHome:() -> Unit,
 ) {
     composable<NewAccountDestination>(
         enterTransition = { fadeIn() + slideIntoContainer(SlideDirection.Left) },
@@ -26,7 +27,8 @@ fun NavGraphBuilder.composeNewAccountScreen(
         NewAccountScreen(
             uiState = viewModel.uiState.collectAsState().value,
             onEvent = viewModel::onEvent,
-            onNavigateToLogin = onNavigateToLogin
+            onNavigateToLogin = onNavigateToLogin,
+            onNavigateToHome = onNavigateToHome
         )
     }
 }

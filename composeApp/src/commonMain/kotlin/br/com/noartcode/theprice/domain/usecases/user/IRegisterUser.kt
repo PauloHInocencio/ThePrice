@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 interface IRegisterUser {
-    suspend operator fun invoke(name:String, email:String, password: String) : Flow<Resource<User>>
+    operator fun invoke(name:String, email:String, password: String) : Flow<Resource<User>>
 }
 
 
@@ -17,7 +17,7 @@ class RegisterUser (
     private val authRepository: AuthRepository,
     private val dispatcher: CoroutineDispatcher,
 ) : IRegisterUser {
-    override suspend operator fun invoke(
+    override operator fun invoke(
         name: String,
         email: String,
         password: String

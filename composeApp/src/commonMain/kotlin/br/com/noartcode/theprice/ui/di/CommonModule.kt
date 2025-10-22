@@ -232,7 +232,7 @@ fun viewModelsModule() = module {
     }
 
     viewModel {
-        NewAccountViewModel()
+        NewAccountViewModel(registerUser = get() )
     }
 
     viewModel {
