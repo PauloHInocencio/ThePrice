@@ -6,6 +6,7 @@ import br.com.noartcode.theprice.domain.usecases.user.IRegisterUser
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.util.Resource
@@ -49,9 +50,9 @@ class RegisterUserTest : KoinTest, RobolectricTests() {
 
     @AfterTest
     fun after() {
-        cleanupDataStoreFile()
-        stopKoin()
         Dispatchers.resetMain()
+        stopKoin()
+        currentTestFileName?.let { cleanupDataStoreFile(it) }
     }
 
     @Test

@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.domain.repository
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.ui.di.RobolectricTests
+import br.com.noartcode.theprice.ui.di.authLocalDataSourceMockModule
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
@@ -41,6 +42,7 @@ class PaymentsRepositoryTest : KoinTest, RobolectricTests() {
                 commonModule(),
                 dispatcherTestModule(),
                 commonTestModule(),
+                authLocalDataSourceMockModule(),
             )
         }
         Dispatchers.setMain(testDispatcher)

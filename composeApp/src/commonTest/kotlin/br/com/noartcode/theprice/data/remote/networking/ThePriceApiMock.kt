@@ -21,23 +21,22 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 object ThePriceApiMock {
-    const val DEVICE_ID = "mock_device_id"
     const val BILL_FAILED_ID = "bill_failed_id"
     const val PAYMENT_FAILED_ID = "payment_failed_id"
-    const val ACCESS_TOKEN = "mock_access_token"
-    const val REFRESH_TOKEN = "mock_refresh_token"
 
     val engine = MockEngine { request ->
         mockResponse(request)
     }
 
+    private interface AuthorizedRoute
+
     private sealed interface ApiRoute {
-        data object GetBills : ApiRoute
-        data object PostBill : ApiRoute
-        data object PutBill : ApiRoute
-        data object GetPayments : ApiRoute
-        data object PostPayments : ApiRoute
-        data object PutPayment : ApiRoute
+        data object GetBills : ApiRoute, AuthorizedRoute
+        data object PostBill : ApiRoute, AuthorizedRoute
+        data object PutBill : ApiRoute, AuthorizedRoute
+        data object GetPayments : ApiRoute, AuthorizedRoute
+        data object PostPayments : ApiRoute, AuthorizedRoute
+        data object PutPayment : ApiRoute, AuthorizedRoute
         data object PostUser: ApiRoute
         data object Unknown : ApiRoute
     }
@@ -60,12 +59,13 @@ object ThePriceApiMock {
         val method = request.method
         val requestBody = extractRequestBody(request.body)
         val token = request.headers[HttpHeaders.Authorization]?.removePrefix("Bearer")?.trim()
-
-        return when (matchRoute(path, method)) {
+        val route = matchRoute(path, method)
+        if (route is AuthorizedRoute && token.isNullOrBlank()) {
+            return errorResponse("Unauthorized Request")
+        }
+        return when (route) {
             // Bills endpoints
             ApiRoute.GetBills -> {
-                if (token != ACCESS_TOKEN) return errorResponse()
-
                 respond(
                     content = MockedApiResponses.GET_BILLS_MOCK_RESPONSE,
                     status = HttpStatusCode.OK,
@@ -75,7 +75,7 @@ object ThePriceApiMock {
 
             ApiRoute.PostBill -> {
                 val bill = requestBody?.let { Json.decodeFromString<BillDto>(it) }
-                if (bill == null || bill.id == BILL_FAILED_ID || token != ACCESS_TOKEN) {
+                if (bill == null || bill.id == BILL_FAILED_ID) {
                     return errorResponse()
                 }
 
@@ -88,7 +88,7 @@ object ThePriceApiMock {
 
             ApiRoute.PutBill -> {
                 val bill = requestBody?.let { Json.decodeFromString<BillDto>(it) }
-                if (bill == null || bill.id == BILL_FAILED_ID || token != ACCESS_TOKEN) {
+                if (bill == null || bill.id == BILL_FAILED_ID) {
                     return errorResponse()
                 }
 
@@ -101,7 +101,7 @@ object ThePriceApiMock {
 
             // Payments endpoints
             ApiRoute.GetPayments -> {
-                if (token != ACCESS_TOKEN) return errorResponse()
+                if (token?.isBlank() == true) return errorResponse()
 
                 respond(
                     content = MockedApiResponses.GET_PAYMENTS_MOCK_RESPONSE,
@@ -112,7 +112,7 @@ object ThePriceApiMock {
 
             ApiRoute.PostPayments -> {
                 val payments = requestBody?.let { Json.decodeFromString<List<PaymentDto>>(it) }
-                if (payments == null || payments.first().billID == BILL_FAILED_ID || token != ACCESS_TOKEN) {
+                if (payments == null || payments.first().billID == BILL_FAILED_ID) {
                     return errorResponse()
                 }
 
@@ -125,7 +125,7 @@ object ThePriceApiMock {
 
             ApiRoute.PutPayment -> {
                 val payment = requestBody?.let { Json.decodeFromString<PaymentDto>(it) }
-                if (payment == null || payment.id == PAYMENT_FAILED_ID || token != ACCESS_TOKEN) {
+                if (payment == null || payment.id == PAYMENT_FAILED_ID) {
                     return errorResponse()
                 }
 

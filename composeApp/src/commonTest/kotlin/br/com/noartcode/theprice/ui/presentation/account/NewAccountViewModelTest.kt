@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
@@ -52,9 +53,9 @@ class NewAccountViewModelTest : KoinTest, RobolectricTests() {
 
     @AfterTest
     fun after() {
-        cleanupDataStoreFile()
-        stopKoin()
         Dispatchers.resetMain()
+        stopKoin()
+        currentTestFileName?.let { cleanupDataStoreFile(it) }
     }
 
 

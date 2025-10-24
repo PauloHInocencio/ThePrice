@@ -11,10 +11,13 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import java.text.DecimalFormatSymbols
 import java.util.Calendar
 import java.util.Locale
+
+actual var currentTestFileName: String? = null
 
 actual fun platformTestModule() = module {
     single<IGetMonthName>{
@@ -28,9 +31,13 @@ actual fun platformTestModule() = module {
     }
 
     single<DataStore<Preferences>> {
+        // Create a unique file for each Koin context
+        val timestamp = Clock.System.now().toEpochMilliseconds()
+        val uniqueFileName = "${timestamp}_$TEST_FILE_NAME"
+        currentTestFileName = uniqueFileName
         createDataStore(
             scope = get(),
-            producePath = { TEST_FILE_NAME }
+            producePath = { uniqueFileName }
         )
     }
 

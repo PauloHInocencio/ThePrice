@@ -37,6 +37,8 @@ import org.robolectric.annotation.Config
 import java.util.Calendar
 import java.util.Locale
 
+// Android doesn't need this - Robolectric automatically cleans up the application context
+actual var currentTestFileName: String? = null
 
 actual fun platformTestModule() = module {
     single<ThePriceDatabase> {

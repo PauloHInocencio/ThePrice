@@ -6,6 +6,7 @@ import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import kotlinx.coroutines.CoroutineDispatcher
@@ -58,7 +59,8 @@ class AuthLocalDataSourceTest: KoinTest, RobolectricTests() {
     fun after() {
         Dispatchers.resetMain()
         stopKoin()
-        cleanupDataStoreFile()
+        // Clean up the actual file that was created
+        currentTestFileName?.let { cleanupDataStoreFile(it) }
     }
 
     @Test
