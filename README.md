@@ -1,14 +1,89 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
-
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
-
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+# ThePrice
+ThePrice is a budget app that I'm building to help keep track of my monthly payments and also learn more about Compose Multiplatform
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+### Download
+
+[![Get it on Google Play (Internal Testing)](https://img.shields.io/badge/Google%20Play-Internal%20Testing-yellow?logo=google-play&logoColor=white&style=for-the-badge)](https://play.google.com/apps/internaltest/4700519985762408655)
+
+![Download on the App Store (coming soon)](https://img.shields.io/badge/App%20Store-Coming%20Soon-lightgrey?logo=apple&logoColor=white&style=for-the-badge)
+
+### Features
+
+
+#### User Account & Authentication
+
+_Demo videos coming soon_
+
+<br/>
+
+- :white_check_mark: Email and password registration (I'm not sure if I'll keep it in the app)
+- :white_large_square: Email and password login (I'm not sure if I'll keep it in the app)
+- :white_check_mark: Google Sign-In integration
+- :white_large_square: iCloud Sign-In integration
+- :white_large_square: User profile management
+- :white_check_mark: Secure session management
+- :white_large_square: Logout functionality
+
+
+#### Payment Tracking
+
+_Demo videos coming soon_
+
+<br/>
+
+- :white_check_mark: View payments organized by due date
+- :white_check_mark: Month-by-month calendar navigation
+- :white_check_mark: Mark payments as paid/unpaid with a single tap
+- :white_check_mark: Edit individual payment amounts and dates
+- :white_check_mark: Option to update future recurring payments
+- :white_check_mark: Jump back to current month quickly
+- :white_large_square: View historical payments for any month
+
+
+#### Synchronization
+
+_Demo videos coming soon_
+
+<br/>
+
+- :white_check_mark: **Offline-first**: All operations work without internet connection
+- :white_check_mark: **Automatic sync**: Changes sync automatically when online
+- :construction: **Real-time updates**: Receive updates from other devices instantly via SSE
+- :construction: **Conflict handling**: Smart conflict resolution for concurrent edits
+
+<br/>
+
+
+### Technologies
+
+*   **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)** for sharing code across Android, iOS, and Desktop
+*   User Interface built with **[Jetpack Compose](https://developer.android.com/jetpack/compose)** and **[Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)**
+*   **Clean Architecture** with separation of Domain, Data, and UI layers
+*   **MVI (Model-View-Intent)** pattern with **ViewModel** per screen
+*   Local persistence with **[Room Database](https://developer.android.com/training/data-storage/room)**
+*   Networking with **[Ktor Client](https://ktor.io/docs/client.html)** for HTTP requests and SSE
+*   Type-safe navigation with **[Navigation Compose](https://developer.android.com/jetpack/compose/navigation)**
+*   Image loading with **[Coil](https://coil-kt.github.io/coil/)** for user profile pictures
+*   Session management with **[DataStore](https://developer.android.com/topic/libraries/architecture/datastore)**
+*   Background sync with **[WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager)** (Android)
+*   Date/time handling with **[Kotlinx DateTime](https://github.com/Kotlin/kotlinx-datetime)**
+*   JSON serialization with **[Kotlinx Serialization](https://kotlinlang.org/docs/serialization.html)**
+*   **Event-driven synchronization** with real-time updates via Server-Sent Events (SSE)
+*   **Offline-first architecture** with automatic sync when connectivity returns
+*   Reactive UIs using **[StateFlow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/)** and **[Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)** for asynchronous operations
+*   Dependency injection using **[Koin](https://insert-koin.io/)**
+*   **[Google Sign-In](https://developers.google.com/identity)** integration for authentication
+*   **[Material 3](https://m3.material.io/)** design components and icons
+
+#### Testing
+*   **[JUnit 4](https://junit.org/junit4/)** for unit testing framework
+*   **[Mokkery](https://mokkery.dev/)** for mocking in Kotlin Multiplatform tests
+*   **[Turbine](https://github.com/cashapp/turbine)** for testing Kotlin Flows
+*   **[Kotlinx Coroutines Test](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/)** for testing coroutines
+*   **[Compose UI Test](https://developer.android.com/jetpack/compose/testing)** for UI testing
+*   **[Robolectric](http://robolectric.org/)** for Android unit tests
+*   **[WorkManager Test](https://developer.android.com/topic/libraries/architecture/workmanager/how-to/integration-testing)** for testing background workers
+
+<br/>
+
