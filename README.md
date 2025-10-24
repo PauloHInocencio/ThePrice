@@ -13,7 +13,10 @@ ThePrice is a budget app that I'm building to help keep track of my monthly paym
 
 #### User Account & Authentication
 
-_Demo videos coming soon_
+
+https://github.com/user-attachments/assets/80e726e2-3ee0-4ec0-9fc2-0475807f080f
+
+
 
 <br/>
 
@@ -43,7 +46,11 @@ _Demo videos coming soon_
 
 #### Synchronization
 
-_Demo videos coming soon_
+
+https://github.com/user-attachments/assets/36599d78-a878-464d-803a-1ad8a87cea3e
+
+
+
 
 <br/>
 
