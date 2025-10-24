@@ -1,5 +1,5 @@
 # ThePrice
-ThePrice is a budget app that I'm building to help keep track of my monthly payments and also learn more about Compose Multiplatform
+ThePrice is a budget app I'm building to help me track my monthly payments while learning more about Compose Multiplatform
 
 
 ### Download
