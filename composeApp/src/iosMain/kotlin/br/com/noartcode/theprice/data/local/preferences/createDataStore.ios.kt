@@ -3,13 +3,18 @@ package br.com.noartcode.theprice.data.local.preferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineScope
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
 @OptIn(ExperimentalForeignApi::class)
-fun createDataStore() : DataStore<Preferences> = createDataStore(
+fun createDataStore(
+    scope: CoroutineScope,
+    fileName:String = DATA_STORE_FILE_NAME,
+) : DataStore<Preferences> = createDataStore(
+    scope = scope,
     producePath = {
         val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
             directory = NSDocumentDirectory,
@@ -18,6 +23,6 @@ fun createDataStore() : DataStore<Preferences> = createDataStore(
             create = false,
             error = null,
         )
-        requireNotNull(documentDirectory).path + "/$DATA_STORE_FILE_NAME"
+        requireNotNull(documentDirectory).path + "/$fileName"
     }
 )

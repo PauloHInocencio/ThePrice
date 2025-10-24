@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
-class SessionStorageImp(
+class AuthLocalDataSourceImp(
     private val dataStore: DataStore<Preferences>,
     private val ioDispatcher: CoroutineDispatcher,
-) : SessionStorage {
+) : AuthLocalDataSource {
     override suspend fun saveCredentials(credentials: UserCredentialsDto) {
         dataStore.edit {
             it[USER_EMAIL] = credentials.email
@@ -51,18 +51,18 @@ class SessionStorageImp(
 
     override fun getUser(): Flow<User?> =
         dataStore.data.map {
-            val email = it[USER_EMAIL]
-            val name = it[USER_NAME]
-            val picture = it[USER_PICTURE]
-            if (email != null && name != null && picture != null) {
-                User(
-                    email = email,
-                    name = name,
-                    picture = picture
-                )
-            } else {
-                null
-            }
+            val email = it[USER_EMAIL] ?: return@map null
+            val name = it[USER_NAME] ?: return@map null
+            val picture = it[USER_PICTURE]?: ""
+            val access = it[ACCESS_TOKEN] ?: return@map null
+            val refresh = it[REFRESH_TOKEN] ?: return@map null
+            User(
+                email = email,
+                name = name,
+                picture = picture,
+                accessToken = access,
+                refreshToken = refresh,
+            )
         }.flowOn(ioDispatcher)
 
 

@@ -27,7 +27,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PaymentDataSourceTest : KoinTest, RobolectricTests() {
+class PaymentLocalDataSourceTest : KoinTest, RobolectricTests() {
 
     private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()

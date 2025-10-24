@@ -44,7 +44,7 @@ actual fun platformModule() = module {
         })
     }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
-    single<DataStore<Preferences>> { createDataStore() }
+    single<DataStore<Preferences>> { createDataStore(scope = get()) }
     single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
     factory<IAccountManager> { AccountManager(signInProvider = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker() }

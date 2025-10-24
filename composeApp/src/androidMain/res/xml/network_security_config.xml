@@ -3,7 +3,7 @@
     <!-- Allow cleartext traffic for development -->
     <domain-config cleartextTrafficPermitted="true">
         <!-- Local development domains -->
-        <domain includeSubdomains="true">192.168.1.3</domain>
+        <domain includeSubdomains="true">192.168.1.23</domain>
         <!-- Add your local IP here for testing: 192.168.x.x -->
     </domain-config>
 </network-security-config>

@@ -13,6 +13,7 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.remote.workers.helpers.workManagerTestFactory
 import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.ui.di.authLocalDataSourceMockModule
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
@@ -63,6 +64,7 @@ class AndroidSyncBillWorkerTest : KoinTest{
                 commonModule(),
                 commonTestModule(),
                 platformTestModule(),
+                authLocalDataSourceMockModule()
             )
         }
         testDriver = WorkManagerTestInitHelper.getTestDriver(context)

@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.data.remote.networking
 
 import br.com.noartcode.theprice.BuildKonfig
-import br.com.noartcode.theprice.data.local.datasource.auth.SessionStorage
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.remote.dtos.AccessTokenRequest
 import br.com.noartcode.theprice.data.remote.dtos.AccessTokenResponse
 import br.com.noartcode.theprice.util.Resource
@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
 
-fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) : HttpClient {
+fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSource) : HttpClient {
     return HttpClient(engine) {
         install(ContentNegotiation){
             json(
@@ -45,6 +45,20 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
 
         install(Auth) {
             bearer {
+                loadTokens {
+                    val accessToken = localDataSource.getAccessToken().first()
+                    val refreshToken = localDataSource.getRefreshToken().first()
+
+                    if (accessToken != null && refreshToken != null) {
+                        BearerTokens(
+                            accessToken = accessToken,
+                            refreshToken = refreshToken
+                        )
+                    } else {
+                        null
+                    }
+                }
+
                 refreshTokens {
                     val refreshToken = localDataSource
                         .getRefreshToken()
@@ -71,7 +85,7 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: SessionStorage) 
                             localDataSource.saveAccessToken(result.data.accessToken)
                             BearerTokens(
                                 accessToken = result.data.accessToken,
-                                refreshToken = localDataSource.getAccessToken().first()
+                                refreshToken = refreshToken
                             )
                         }
                         is Resource.Error -> {

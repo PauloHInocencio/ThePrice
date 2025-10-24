@@ -46,7 +46,7 @@ actual fun platformModule() = module {
     single<ICurrencyFormatter> { CurrencyFormatter(symbols = DecimalFormat().decimalFormatSymbols)}
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     factory<IAccountManager> { AccountManager(context = androidContext()) }
-    single<DataStore<Preferences>> { createDataStore(context = get()) }
+    single<DataStore<Preferences>> { createDataStore(context = get(), scope = get()) }
     single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(manager = WorkManager.getInstance(androidContext())) }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker(manager = WorkManager.getInstance(androidContext()))}

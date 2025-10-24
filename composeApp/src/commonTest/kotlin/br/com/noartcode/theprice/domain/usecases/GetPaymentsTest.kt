@@ -41,7 +41,6 @@ class GetPaymentsTest : KoinTest, RobolectricTests() {
     private val testDispatcher: CoroutineDispatcher by inject()
     private val database: ThePriceDatabase by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
-    private val insertBill: IInsertBill by inject()
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
 
     // The Unit Under Test

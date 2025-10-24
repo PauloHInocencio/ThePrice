@@ -124,5 +124,16 @@ object MockedApiResponses {
           }
     ]
     """
+
+
+    fun userCreationMockResponse(name: String, email: String) = """
+    {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTdmNjM1LWZkMjQtNDU3Mi04YjI1LTNhZTNhZGUzZDI0OCIsImRldmljZV9pZCI6IjFjMTU1MGY3LTQzZDMtNDg4OS04MGMyLTQ2YzNlZTliNTI2NSIsImV4cCI6MTc1OTc1MzUyNywiaWF0IjoxNzU5NzUyNjI3LCJqdGkiOiJlNWVhZTIwMC0xZjYyLTQwNjEtYmIxOC1iNTMxNWEyNTAyNzUifQ.uLTFtgEkZ7kw68uHk2Pl4vLm_HYBodzsoUsf_skikwE",
+        "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MTdmNjM1LWZkMjQtNDU3Mi04YjI1LTNhZTNhZGUzZDI0OCIsImRldmljZV9pZCI6IjFjMTU1MGY3LTQzZDMtNDg4OS04MGMyLTQ2YzNlZTliNTI2NSIsImV4cCI6MTc2NzUyODYyNywiaWF0IjoxNzU5NzUyNjI3LCJqdGkiOiJiN2MxNzdiNS04YTI5LTQxNDAtYWNmNi02MjRlNGQwMTY3NDUifQ.E2JmSLUFHLdmsRjn8zIp_W-92YXiBALVFy0a1O8fMXM",
+        "name": "$name",
+        "email": "$email",
+        "picture": ""
+    }    
+    """
 }
 

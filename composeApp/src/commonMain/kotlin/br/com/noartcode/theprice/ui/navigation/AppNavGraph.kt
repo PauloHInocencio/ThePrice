@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import br.com.noartcode.theprice.ui.presentation.account.add.composeNewAccountScreen
+import br.com.noartcode.theprice.ui.presentation.account.add.navigateToNewAccount
 import br.com.noartcode.theprice.ui.presentation.account.composeAccountScreen
 import br.com.noartcode.theprice.ui.presentation.bill.add.composeAddBillScreen
 import br.com.noartcode.theprice.ui.presentation.bill.add.navigateToAddBill
@@ -54,6 +56,12 @@ fun AppNavGraph(
         )
 
         composeLoginScreen(
+            onNavigateToHome = { navController.navigateToHome() },
+            onNavigateToNewAccount = { navController.navigateToNewAccount() }
+        )
+
+        composeNewAccountScreen(
+            onNavigateToLogin = { navController.navigateToLogin() },
             onNavigateToHome = { navController.navigateToHome() }
         )
     }
