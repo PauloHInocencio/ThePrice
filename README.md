@@ -11,11 +11,26 @@ ThePrice is a budget app I'm building to help me track my monthly payments while
 ### Features
 
 
+
+#### Payment Tracking
+
+<img width="1920" height="1052" alt="current_ThePrice" src="https://github.com/user-attachments/assets/f78dfbd9-6abb-4187-9602-5eedf4d1296e" />
+
+<br/>
+
+- :white_check_mark: View payments organized by due date
+- :white_check_mark: Month-by-month calendar navigation
+- :white_check_mark: Mark payments as paid/unpaid with a single tap
+- :white_check_mark: Edit individual payment amounts and dates
+- :white_check_mark: Option to update future recurring payments
+- :white_check_mark: Jump back to current month quickly
+- :white_large_square: View historical payments for any month
+
+
 #### User Account & Authentication
 
 
 https://github.com/user-attachments/assets/80e726e2-3ee0-4ec0-9fc2-0475807f080f
-
 
 
 <br/>
@@ -29,27 +44,13 @@ https://github.com/user-attachments/assets/80e726e2-3ee0-4ec0-9fc2-0475807f080f
 - :white_large_square: Logout functionality
 
 
-#### Payment Tracking
 
-_Demo videos coming soon_
-
-<br/>
-
-- :white_check_mark: View payments organized by due date
-- :white_check_mark: Month-by-month calendar navigation
-- :white_check_mark: Mark payments as paid/unpaid with a single tap
-- :white_check_mark: Edit individual payment amounts and dates
-- :white_check_mark: Option to update future recurring payments
-- :white_check_mark: Jump back to current month quickly
-- :white_large_square: View historical payments for any month
 
 
 #### Synchronization
 
 
 https://github.com/user-attachments/assets/36599d78-a878-464d-803a-1ad8a87cea3e
-
-
 
 
 <br/>
