@@ -25,6 +25,7 @@ ThePrice is a budget app I'm building to help me track my monthly payments while
 - :white_check_mark: Option to update future recurring payments
 - :white_check_mark: Jump back to current month quickly
 - :white_large_square: View historical payments for any month
+- :white_large_square: Ability to change a payment and update all subsequent ones
 
 
 #### User Account & Authentication
@@ -83,6 +84,7 @@ https://github.com/user-attachments/assets/36599d78-a878-464d-803a-1ad8a87cea3e
 *   Dependency injection using **[Koin](https://insert-koin.io/)**
 *   **[Google Sign-In](https://developers.google.com/identity)** integration for authentication
 *   **[Material 3](https://m3.material.io/)** design components and icons
+*   **[BuildKonfig](https://github.com/yshrsmz/BuildKonfig)** to read and add local properties for different targets
 
 #### Testing
 *   **[JUnit 4](https://junit.org/junit4/)** for unit testing framework
