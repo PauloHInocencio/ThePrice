@@ -58,8 +58,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
-import theprice.composeapp.generated.resources.app_logo
 import theprice.composeapp.generated.resources.ic_google_logo
+import theprice.composeapp.generated.resources.pric_logo
 
 @Composable
 fun LoginScreen(
@@ -136,24 +136,22 @@ private fun LoginIconContainer(){
         modifier = Modifier.padding(80.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            modifier = Modifier.size(42.dp),
-            painter = painterResource(Res.drawable.app_logo),
+        Image(
+            modifier = Modifier.size(100.dp),
+            painter = painterResource(Res.drawable.pric_logo),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(10.dp))
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "The Price",
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = Color(red =69,	green = 154, blue = 229),
                 fontWeight = FontWeight.SemiBold
             )
             Text(
                 text = "Of your freedom",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = Color(red =69,	green = 154, blue = 229),
                 fontWeight = FontWeight.Light
             )
         }
