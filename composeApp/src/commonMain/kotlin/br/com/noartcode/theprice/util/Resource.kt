@@ -8,6 +8,12 @@ sealed class Resource<out T> {
         val exception: Throwable? = null
     ) : Resource<Nothing>()
     data object Loading: Resource<Nothing>()
+
+    override fun toString(): String = when(this) {
+        is Success -> "Success(data=$data)"
+        is Error -> "Error(message=$message)"
+        is Loading -> "Loading"
+    }
 }
 
 inline fun <reified A> Resource<A>.doIfSuccess(callback: (value: A) -> Unit): Resource<A> {

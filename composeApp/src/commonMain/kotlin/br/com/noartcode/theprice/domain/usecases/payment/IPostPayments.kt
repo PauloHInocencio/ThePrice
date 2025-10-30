@@ -24,7 +24,7 @@ class PostPayments(
                 result.exception?.printStackTrace()
                 result
             }
-            Resource.Loading -> {
+            is Resource.Loading -> {
                 Resource.Error(message = "Invalid result while posting payments")
             }
         }

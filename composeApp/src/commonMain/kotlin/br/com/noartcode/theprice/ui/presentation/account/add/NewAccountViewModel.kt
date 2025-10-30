@@ -48,7 +48,7 @@ class NewAccountViewModel(
                         is Resource.Error -> {
                             _uiState.update { it.copy(errorMessage = result.message, isCreating = false) }
                         }
-                        Resource.Loading -> {
+                        is Resource.Loading -> {
                             _uiState.update { it.copy(isCreating = true) }
                         }
                         is Resource.Success -> {

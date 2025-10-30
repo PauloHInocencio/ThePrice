@@ -29,7 +29,7 @@ class PostBill(
                result.exception?.printStackTrace()
                result
            }
-           Resource.Loading -> {
+           is Resource.Loading -> {
                Resource.Error(message = "Invalid response while posting bill")
            }
        }

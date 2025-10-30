@@ -23,6 +23,8 @@ import kotlinx.serialization.json.Json
 object ThePriceApiMock {
     const val BILL_FAILED_ID = "bill_failed_id"
     const val PAYMENT_FAILED_ID = "payment_failed_id"
+    const val MOCK_EMAIL = "mock_test@email"
+    const val MOCK_NAME = "Test Silva"
 
     val engine = MockEngine { request ->
         mockResponse(request)
@@ -38,6 +40,7 @@ object ThePriceApiMock {
         data object PostPayments : ApiRoute, AuthorizedRoute
         data object PutPayment : ApiRoute, AuthorizedRoute
         data object PostUser: ApiRoute
+        data object LoginUser: ApiRoute
         data object Unknown : ApiRoute
     }
 
@@ -48,7 +51,8 @@ object ThePriceApiMock {
         path.contains("api/v1/payments") && method == HttpMethod.Get -> ApiRoute.GetPayments
         path.contains("api/v1/payments") && method == HttpMethod.Post -> ApiRoute.PostPayments
         path.contains("api/v1/payments") && method == HttpMethod.Put -> ApiRoute.PutPayment
-        path.contains("api/v1/users") && method == HttpMethod.Post -> ApiRoute.PostUser
+        path.contains("api/v1/users/create") && method == HttpMethod.Post -> ApiRoute.PostUser
+        path.contains("api/v1/users/login") && method == HttpMethod.Post -> ApiRoute.LoginUser
         else -> ApiRoute.Unknown
     }
 
@@ -146,7 +150,18 @@ object ThePriceApiMock {
                 )
             }
 
+            ApiRoute.LoginUser -> {
+                val payload = requestBody?.let { Json.decodeFromString<LoginUserPayLoadDto>( it) }
+                if (payload == null) return errorResponse("Invalid request body")
+                respond(
+                    content = userCreationMockResponse(name = MOCK_NAME, email = MOCK_EMAIL),
+                    status = HttpStatusCode.Created,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
+            }
+
             ApiRoute.Unknown -> errorResponse()
+
         }
     }
 
@@ -181,4 +196,14 @@ private data class CreateUserPayloadDto(
     val password: String,
     @SerialName("device_id")
     val deviceID:String
+)
+
+@Serializable
+private data class LoginUserPayLoadDto(
+    @SerialName("token_id")
+    val tokenID: String,
+    @SerialName("raw_nonce")
+    val rawNonce: String,
+    @SerialName("device_id")
+    val deviceID: String
 )

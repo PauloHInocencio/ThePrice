@@ -24,7 +24,7 @@ class PutPayment(
                 result.exception?.printStackTrace()
                 result
             }
-            Resource.Loading -> Resource.Error(message = "Invalid result while putting payment")
+            is Resource.Loading -> Resource.Error(message = "Invalid result while putting payment")
         }
     }
 }

@@ -143,6 +143,8 @@ fun commonModule() = module {
         LoginUser(
             accountManager = get(),
             authRepository = get(),
+            billsRepository = get(),
+            paymentsRepository = get(),
             dispatcher = get(),
         )
     }

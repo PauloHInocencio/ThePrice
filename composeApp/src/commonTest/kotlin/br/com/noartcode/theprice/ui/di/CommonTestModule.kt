@@ -9,9 +9,12 @@ import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
+import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
+import br.com.noartcode.theprice.util.Resource
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
@@ -39,6 +42,14 @@ fun commonTestModule() = module {
     single<ISyncUpdatedPaymentWorker> {
         mock<ISyncUpdatedPaymentWorker>().apply {
             every { this@apply.sync(paymentID = any()) } returns Unit
+        }
+    }
+
+    single<IAccountManager> {
+        mock<IAccountManager>().apply {
+            everySuspend {
+                this@apply.signInWithGoogle()
+            } returns Resource.Success(data = "mockTokenId" to "mockRawNonce")
         }
     }
 

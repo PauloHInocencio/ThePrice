@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.domain.model.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -15,13 +14,13 @@ class AuthLocalDataSourceImp(
     private val dataStore: DataStore<Preferences>,
     private val ioDispatcher: CoroutineDispatcher,
 ) : AuthLocalDataSource {
-    override suspend fun saveCredentials(credentials: UserCredentialsDto) {
+    override suspend fun saveCredentials(user: User) {
         dataStore.edit {
-            it[USER_EMAIL] = credentials.email
-            it[USER_NAME] = credentials.name
-            it[USER_PICTURE] = credentials.picture
-            it[ACCESS_TOKEN] = credentials.accessToken
-            it[REFRESH_TOKEN] = credentials.refreshToken
+            it[USER_EMAIL] = user.email
+            it[USER_NAME] = user.name
+            it[USER_PICTURE] = user.picture
+            it[ACCESS_TOKEN] = user.accessToken
+            it[REFRESH_TOKEN] = user.refreshToken
         }
     }
 

@@ -18,13 +18,12 @@ class AuthRepositoryImp(
     private val local: AuthLocalDataSource,
 ) : AuthRepository {
 
-    override suspend fun singUpUser(tokenID: String, rawNonce: String): Resource<User> {
+    override suspend fun signUpUser(tokenID: String, rawNonce: String): Resource<User> {
         val deviceID = getDeviceID()
         return remote.signUpUser(tokenID, deviceID, rawNonce).doIfSuccess { data ->
-            local.saveCredentials(data)
+            local.saveCredentials(data.toDomain())
         }.map{ credentials: UserCredentialsDto -> credentials.toDomain() }
     }
-
 
     @OptIn(ExperimentalUuidApi::class)
     private suspend fun getDeviceID(): String {
@@ -46,8 +45,9 @@ class AuthRepositoryImp(
         val deviceID = getDeviceID()
         return when(val result = remote.createUser(name, email, password, deviceID)) {
             is Resource.Success -> {
-                local.saveCredentials(result.data)
-                Resource.Success(result.data.toDomain())
+                val user = result.data.toDomain()
+                local.saveCredentials(user)
+                Resource.Success(user)
             }
             is Resource.Error,
             is Resource.Loading -> result

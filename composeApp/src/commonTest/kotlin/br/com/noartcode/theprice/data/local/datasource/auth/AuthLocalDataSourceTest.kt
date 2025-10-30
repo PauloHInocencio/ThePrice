@@ -2,7 +2,7 @@ package br.com.noartcode.theprice.data.local.datasource.auth
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
-import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
+import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -34,7 +34,7 @@ class AuthLocalDataSourceTest: KoinTest, RobolectricTests() {
 
     private val dataSource: AuthLocalDataSource by inject()
 
-    private val credentials = UserCredentialsDto(
+    private val user = User(
         accessToken = "test_access_token",
         refreshToken = "test_refresh_token",
         name = "Test Name",
@@ -66,7 +66,7 @@ class AuthLocalDataSourceTest: KoinTest, RobolectricTests() {
     @Test
     fun `Should successfully save user credentials into preferences`() = runTest {
 
-        dataSource.saveCredentials(credentials = credentials)
+        dataSource.saveCredentials(user = user)
 
         dataSource.getUser().test {
 
@@ -86,7 +86,7 @@ class AuthLocalDataSourceTest: KoinTest, RobolectricTests() {
     @Test
     fun `Should successfully cleanup user credentials from preferences`() = runTest {
 
-        dataSource.saveCredentials(credentials = credentials)
+        dataSource.saveCredentials(user = user)
 
         dataSource.getUser().test {
 

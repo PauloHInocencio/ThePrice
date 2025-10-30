@@ -55,7 +55,7 @@ class AccountViewModel(
                                 _uiState.update { it.copy(singInStatus = "User Login succeed", loading = false) }
                             }
                             is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
-                            Resource.Loading ->  {
+                            is Resource.Loading ->  {
                                 _uiState.update { it.copy(loading = true) }
                             }
                        }
@@ -70,7 +70,7 @@ class AccountViewModel(
                                 _uiState.update { AccountUiState() }
                             }
                             is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
-                            Resource.Loading -> _uiState.update { it.copy(loading = true) }
+                            is Resource.Loading -> _uiState.update { it.copy(loading = true) }
                         }
                     }.launchIn(viewModelScope)
             }
