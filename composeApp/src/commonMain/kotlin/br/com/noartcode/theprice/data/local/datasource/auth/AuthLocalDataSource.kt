@@ -5,7 +5,7 @@ import br.com.noartcode.theprice.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface AuthLocalDataSource {
-    suspend fun saveCredentials(credentials: UserCredentialsDto)
+    suspend fun saveCredentials(user: User)
     suspend fun saveAccessToken(accessToken:String)
     suspend fun saveRefreshToken(refreshToken:String)
     suspend fun saveDeviceID(deviceID:String)

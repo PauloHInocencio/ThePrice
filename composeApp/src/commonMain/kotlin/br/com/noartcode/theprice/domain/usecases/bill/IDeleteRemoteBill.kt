@@ -17,7 +17,7 @@ class DeleteRemoteBill(
     override suspend fun invoke(bill: Bill): Resource<Unit> = withContext(ioDispatcher) {
       return@withContext when(val result = repository.deleteRemote(bill)) {
           is Resource.Success-> result
-          Resource.Loading -> Resource.Error("Invalid response while deleting bill")
+          is Resource.Loading -> Resource.Error("Invalid response while deleting bill")
           is Resource.Error -> {
               result.exception?.printStackTrace()
               result

@@ -30,7 +30,7 @@ class PutBill(
                 result.exception?.printStackTrace()
                 result
             }
-            Resource.Loading -> {
+            is Resource.Loading -> {
                 Resource.Error(message = "Invalid response while putting bill")
             }
         }

@@ -84,7 +84,7 @@ class SyncEventsWorker(
                             result.exception?.printStackTrace()
                             delay(5_000) // TODO("Find a better way to retry, maybe based on exponential attempts")
                         }
-                        Resource.Loading -> println("invalid result while sending event: $event")
+                        is Resource.Loading -> println("invalid result while sending event: $event")
                     }
                 }
             }

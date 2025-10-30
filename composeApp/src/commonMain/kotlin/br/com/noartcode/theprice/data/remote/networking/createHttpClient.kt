@@ -92,7 +92,7 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
                             println("Error while authenticating: ${result.message}")
                             null
                         }
-                        Resource.Loading -> {
+                        is Resource.Loading -> {
                             println("Invalid response")
                             null
                         }

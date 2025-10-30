@@ -45,7 +45,7 @@ actual class SyncBillWorker(
                         performSync(billID, retriesLeft - 1)
                     }
                 }
-                Resource.Loading -> {
+                is Resource.Loading -> {
                     println("Received invalid loading state during sync")
                 }
             }
