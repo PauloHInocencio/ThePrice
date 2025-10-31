@@ -26,6 +26,7 @@ import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentDateHeader
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen(
@@ -111,4 +112,89 @@ fun HomeScreen(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun HomeScreen_Preview() {
+    HomeScreen(
+        state = HomeUiState(
+            monthName = "October - 2025",
+            canGoBack = true,
+            canGoNext = true,
+            paymentSection = listOf(
+                PaymentSectionUi(
+                    title = "Due on 5th",
+                    dueDay = 5,
+                    paymentUis = listOf(
+                        PaymentUi(
+                            id = "1",
+                            statusDescription = "Paid",
+                            billName = "Netflix Subscription",
+                            price = "$15.99",
+                            status = PaymentUi.Status.PAYED
+                        ),
+                        PaymentUi(
+                            id = "2",
+                            statusDescription = "Pending",
+                            billName = "Spotify Premium",
+                            price = "$9.99",
+                            status = PaymentUi.Status.PENDING
+                        )
+                    )
+                ),
+                PaymentSectionUi(
+                    title = "Due on 15th",
+                    dueDay = 15,
+                    paymentUis = listOf(
+                        PaymentUi(
+                            id = "3",
+                            statusDescription = "Overdue",
+                            billName = "Internet Bill",
+                            price = "$79.99",
+                            status = PaymentUi.Status.OVERDUE
+                        ),
+                        PaymentUi(
+                            id = "4",
+                            statusDescription = "Paid",
+                            billName = "Electricity",
+                            price = "$120.50",
+                            status = PaymentUi.Status.PAYED
+                        )
+                    )
+                ),
+                PaymentSectionUi(
+                    title = "Due on 25th",
+                    dueDay = 25,
+                    paymentUis = listOf(
+                        PaymentUi(
+                            id = "5",
+                            statusDescription = "Pending",
+                            billName = "Rent",
+                            price = "$1,200.00",
+                            status = PaymentUi.Status.PENDING
+                        ),
+                        PaymentUi(
+                            id = "6",
+                            statusDescription = "Pending",
+                            billName = "Water Bill",
+                            price = "$35.00",
+                            status = PaymentUi.Status.PENDING
+                        ),
+                        PaymentUi(
+                            id = "7",
+                            statusDescription = "Paid",
+                            billName = "Phone Bill",
+                            price = "$45.00",
+                            status = PaymentUi.Status.PAYED
+                        )
+                    )
+                )
+            )
+        ),
+        onEvent = {},
+        onNavigateToAddBill = {},
+        onNavigateToEditPayment = {},
+    )
 }
