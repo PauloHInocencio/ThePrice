@@ -39,6 +39,7 @@ object ThePriceApiMock {
         data object GetPayments : ApiRoute, AuthorizedRoute
         data object PostPayments : ApiRoute, AuthorizedRoute
         data object PutPayment : ApiRoute, AuthorizedRoute
+        data object LogoutUser : ApiRoute, AuthorizedRoute
         data object PostUser: ApiRoute
         data object LoginUser: ApiRoute
         data object Unknown : ApiRoute
@@ -53,6 +54,7 @@ object ThePriceApiMock {
         path.contains("api/v1/payments") && method == HttpMethod.Put -> ApiRoute.PutPayment
         path.contains("api/v1/users/create") && method == HttpMethod.Post -> ApiRoute.PostUser
         path.contains("api/v1/users/login") && method == HttpMethod.Post -> ApiRoute.LoginUser
+        path.contains("api/v1/users/logout") && method == HttpMethod.Post -> ApiRoute.LogoutUser
         else -> ApiRoute.Unknown
     }
 
@@ -158,6 +160,10 @@ object ThePriceApiMock {
                     status = HttpStatusCode.Created,
                     headers = headersOf(HttpHeaders.ContentType, "application/json")
                 )
+            }
+
+            ApiRoute.LogoutUser -> {
+                errorResponse()
             }
 
             ApiRoute.Unknown -> errorResponse()
