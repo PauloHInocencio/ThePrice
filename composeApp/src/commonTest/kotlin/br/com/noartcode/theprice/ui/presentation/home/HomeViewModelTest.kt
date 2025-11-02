@@ -3,9 +3,12 @@ package br.com.noartcode.theprice.ui.presentation.home
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
+import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
@@ -13,6 +16,7 @@ import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
+import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
@@ -33,8 +37,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class HomeViewModelTest : KoinTest, RobolectricTests() {
 
     private val testDispatcher: CoroutineDispatcher by inject()
@@ -43,6 +49,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     private val getTodayDate: IGetTodayDate by inject()
     private val insertBill: IInsertBill by inject()
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
+    private val authLocalDataSource: AuthLocalDataSource by inject()
 
 
     // Unit Under Test
@@ -67,6 +74,9 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         database.close()
         Dispatchers.resetMain()
         stopKoin()
+
+        // Clean up file that was created for shared preferences
+        currentTestFileName?.let { cleanupDataStoreFile(it) }
     }
 
 
@@ -171,7 +181,6 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             }
         }
     }
-
 
     @Test
     fun `When No Payments Found Navigation Should Not Be Allowed`() = runTest {
@@ -577,6 +586,45 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
                 assertEquals(expected = "25 Novembro", actual = this[2].title)
                 assertEquals(expected = 1, actual = this[2].paymentUis.size)
+            }
+
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `Should emit correct sequence of states when User Logs Out`() = runTest {
+
+        // GIVEN
+        authLocalDataSource.saveCredentials(User(
+            name = "Test Silva",
+            email = "test@email.com",
+            picture = "",
+            accessToken = "fake_access_token",
+            refreshToken = "fake_refresh_token"
+        ))
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+        (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 2, month = 11, year = 2025)
+
+        viewModel.uiState.test {
+
+            skipItems(3)
+            ensureAllEventsConsumed()
+
+            // WHEN
+            viewModel.onEvent(HomeEvent.OnLogoutUser)
+
+            // THEN
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loading)
+                assertEquals(expected = false, actual = loggedOut)
+            }
+
+            // Verify final state after successful logout
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loggedOut)
+                assertEquals(expected = false, actual = loading)
+                assertEquals(expected = null, actual = errorMessage)
             }
 
             ensureAllEventsConsumed()

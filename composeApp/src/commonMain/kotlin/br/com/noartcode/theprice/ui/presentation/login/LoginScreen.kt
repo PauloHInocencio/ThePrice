@@ -143,7 +143,7 @@ private fun LoginIconContainer(){
         )
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "The Price",
+                text = "ThePrice",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color(red =69,	green = 154, blue = 229),
                 fontWeight = FontWeight.SemiBold

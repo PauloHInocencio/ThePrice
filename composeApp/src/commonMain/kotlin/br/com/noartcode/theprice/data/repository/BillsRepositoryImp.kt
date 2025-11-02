@@ -63,4 +63,8 @@ class BillsRepositoryImp(
     override suspend fun deleteLocal(bill: Bill) {
         return local.delete(bill.id)
     }
+
+    override suspend fun clean() {
+        local.deleteAllBills()
+    }
 }

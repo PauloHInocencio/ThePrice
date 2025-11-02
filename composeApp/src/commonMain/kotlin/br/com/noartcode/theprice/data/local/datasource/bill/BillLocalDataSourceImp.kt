@@ -5,7 +5,6 @@ import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.data.local.mapper.toEntity
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.Payment
-import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -77,5 +76,9 @@ class BillLocalDataSourceImp(
 
     override suspend fun delete(id: String) {
         dao.deleteBill(id)
+    }
+
+    override suspend fun deleteAllBills() {
+        dao.deleteAllBills()
     }
 }

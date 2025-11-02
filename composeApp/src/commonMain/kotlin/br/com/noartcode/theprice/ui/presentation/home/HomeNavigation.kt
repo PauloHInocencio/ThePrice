@@ -13,6 +13,8 @@ data object HomeDestination
 fun NavGraphBuilder.composeHomeScreen(
     onNavigateToAddBill:() -> Unit,
     onNavigateToEditPayment: (paymentId:String) -> Unit,
+    onNavigateToAccount: () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
     composable<HomeDestination> {
         val viewModel = koinViewModel<HomeViewModel>()
@@ -21,6 +23,8 @@ fun NavGraphBuilder.composeHomeScreen(
             onEvent = viewModel::onEvent,
             onNavigateToAddBill = onNavigateToAddBill,
             onNavigateToEditPayment = onNavigateToEditPayment,
+            onNavigateToAccount = onNavigateToAccount,
+            onNavigateToLogin = onNavigateToLogin,
         )
     }
 }

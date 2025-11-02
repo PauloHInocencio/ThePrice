@@ -18,4 +18,5 @@ interface PaymentsRepository {
    suspend fun update(payments: List<Payment>)
    suspend fun update(payment: Payment)
    suspend fun delete(id:String)
+   suspend fun clean()
 }

@@ -163,7 +163,13 @@ object ThePriceApiMock {
             }
 
             ApiRoute.LogoutUser -> {
-                errorResponse()
+                val payload = requestBody?.let {  Json.decodeFromString<LogoutUserPayloadDto>(it) }
+                if (payload == null ) return errorResponse("Invalid request body")
+                respond(
+                    content = "",
+                    status = HttpStatusCode.NoContent,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json")
+                )
             }
 
             ApiRoute.Unknown -> errorResponse()
@@ -210,6 +216,14 @@ private data class LoginUserPayLoadDto(
     val tokenID: String,
     @SerialName("raw_nonce")
     val rawNonce: String,
+    @SerialName("device_id")
+    val deviceID: String
+)
+
+@Serializable
+private data class LogoutUserPayloadDto(
+    @SerialName("refresh_token")
+    val refreshToken:String,
     @SerialName("device_id")
     val deviceID: String
 )

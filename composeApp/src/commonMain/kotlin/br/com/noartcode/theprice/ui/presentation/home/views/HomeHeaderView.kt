@@ -31,7 +31,7 @@ fun HomeHeaderView(
 ) {
     Row(
         modifier = modifier
-            .padding(vertical = 16.dp)
+            //.padding(vertical = 16.dp)
             .semantics {
                 if (title.isNotEmpty()) {
                     val (month, year) = title.split("-").map { it.trim() }

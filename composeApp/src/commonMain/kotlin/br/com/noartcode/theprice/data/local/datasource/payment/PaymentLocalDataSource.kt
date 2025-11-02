@@ -15,4 +15,5 @@ interface PaymentLocalDataSource {
     suspend fun insert(payment: Payment) : String
     suspend fun insert(payments:List<Payment>) : List<Payment>
     suspend fun delete(id:String)
+    suspend fun deleteAllPayments()
 }

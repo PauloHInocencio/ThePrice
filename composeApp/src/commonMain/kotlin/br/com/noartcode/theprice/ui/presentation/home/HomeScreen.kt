@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -23,11 +24,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
+import br.com.noartcode.theprice.ui.presentation.home.views.HomeToolbar
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentDateHeader
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -35,6 +38,8 @@ fun HomeScreen(
     onEvent: (HomeEvent) -> Unit,
     onNavigateToAddBill: () -> Unit,
     onNavigateToEditPayment: (paymentId:String) -> Unit,
+    onNavigateToAccount : () -> Unit,
+    onNavigateToLogin: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -42,6 +47,10 @@ fun HomeScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        topBar = { HomeToolbar(onMenuItemClick = { index ->
+            if (index == 0) { onNavigateToAccount() }
+            if (index == 1) { onEvent(HomeEvent.OnLogoutUser) }
+        }) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick= onNavigateToAddBill
@@ -90,14 +99,12 @@ fun HomeScreen(
             }
         }
     }
-
-    LaunchedEffect(state.errorMessage) {
-        val message = state.errorMessage
-        if(message != null) {
+    LaunchedEffect(state) {
+        if (state.errorMessage != null) {
             scope.launch {
                 val result = snackbarHostState
                     .showSnackbar(
-                        message = message,
+                        message = state.errorMessage,
                         actionLabel = "OK",
                         duration = SnackbarDuration.Indefinite
                     )
@@ -111,6 +118,8 @@ fun HomeScreen(
                 }
             }
         }
+
+        if (state.loggedOut) onNavigateToLogin()
     }
 }
 
@@ -196,5 +205,7 @@ fun HomeScreen_Preview() {
         onEvent = {},
         onNavigateToAddBill = {},
         onNavigateToEditPayment = {},
+        onNavigateToAccount = {},
+        onNavigateToLogin = {},
     )
 }

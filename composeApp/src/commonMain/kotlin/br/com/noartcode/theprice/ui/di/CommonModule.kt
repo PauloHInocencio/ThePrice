@@ -151,6 +151,8 @@ fun commonModule() = module {
     single<ILogoutUser> {
         LogoutUser(
             authRepository = get(),
+            billsRepository = get(),
+            paymentsRepository = get(),
             dispatcher = get(),
         )
     }
@@ -187,6 +189,7 @@ fun viewModelsModule() = module {
             insertPayments = get(),
             deleteBill = get(),
             eventSyncQueue = get(),
+            logoutUser = get(),
         )
     }
     viewModel {

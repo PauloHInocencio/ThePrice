@@ -10,12 +10,15 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.authProviders
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.pluginOrNull
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -55,7 +58,7 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
                             refreshToken = refreshToken
                         )
                     } else {
-                        null
+                        return@loadTokens null
                     }
                 }
 
@@ -79,7 +82,6 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
                         }
                     }
 
-
                     when(result){
                         is Resource.Success -> {
                             localDataSource.saveAccessToken(result.data.accessToken)
@@ -90,11 +92,11 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
                         }
                         is Resource.Error -> {
                             println("Error while authenticating: ${result.message}")
-                            null
+                            return@refreshTokens null
                         }
                         is Resource.Loading -> {
                             println("Invalid response")
-                            null
+                            return@refreshTokens null
                         }
                     }
                 }
@@ -118,5 +120,11 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
             contentType(ContentType.Application.Json)
             header("x-api-key", BuildKonfig.apiKey) //TODO("Configure API Key on Webserver")
         }
+    }
+}
+
+fun HttpClient.cleanBearerTokens() {
+    this.pluginOrNull(Auth)?.apply {
+        authProviders.filterIsInstance<BearerAuthProvider>().first().clearToken()
     }
 }

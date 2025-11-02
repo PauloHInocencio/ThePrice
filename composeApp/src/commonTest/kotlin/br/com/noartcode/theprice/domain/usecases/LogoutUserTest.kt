@@ -1,9 +1,16 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import app.cash.turbine.test
+import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.domain.repository.BillsRepository
+import br.com.noartcode.theprice.domain.repository.PaymentsRepository
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -29,14 +36,26 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class LogoutUserTest: KoinTest, RobolectricTests() {
 
     private val testDispatcher: CoroutineDispatcher by inject()
-
     private val database: ThePriceDatabase by inject()
     private val authLocalDataSource: AuthLocalDataSource by inject()
+    private val user = User(
+        name = "Test Silva",
+        email = "test@email.com",
+        picture = "",
+        accessToken = "fake_access_token",
+        refreshToken = "fake_refresh_token"
+    )
+    private val billsRepository:BillsRepository by inject()
+
+    // Unit Under Test
+    private val paymentsRepository:PaymentsRepository by inject()
 
     // Unit Under Test
     private val logoutUser: ILogoutUser by inject()
@@ -67,16 +86,51 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
 
 
     @Test
-    fun `Should logout user successfully`() = runTest {
+    fun `After logout users credentials should be null`() = runTest {
 
+        // GIVEN
+        authLocalDataSource.saveCredentials(user)
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+
+        // WHEN
         logoutUser().test {
+
+            // THEN
             assertTrue(awaitItem() is Resource.Loading)
             assertTrue(awaitItem() is Resource.Success)
             awaitComplete()
 
-            val credentials = authLocalDataSource.getUser().first()
-            assertTrue( credentials == null)
+            assertTrue(authLocalDataSource.getUser().first() == null)
+            assertTrue(authLocalDataSource.getDeviceID().first() == null )
+
+            ensureAllEventsConsumed()
         }
+    }
+
+    @Test
+    fun `After logout user data should be null`() = runTest{
+        // GIVEN
+        authLocalDataSource.saveCredentials(user)
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+        billsRepository.fetchAllBills()
+        paymentsRepository.fetchAllPayments()
+        assertTrue(billsRepository.getAllBills().first().size == 3)
+        assertTrue(paymentsRepository.getAllPayments().first().size == 9)
+
+        // WHEN
+        logoutUser().test {
+
+            // THEN
+            assertTrue(awaitItem() is Resource.Loading)
+            assertTrue(awaitItem() is Resource.Success)
+            awaitComplete()
+
+            assertTrue(billsRepository.getAllBills().first().isEmpty())
+            assertTrue(paymentsRepository.getAllPayments().first().isEmpty())
+
+        }
+
+
 
     }
 

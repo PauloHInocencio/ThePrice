@@ -24,7 +24,10 @@ import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
+import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
 import br.com.noartcode.theprice.ui.mapper.UiMapper
+import br.com.noartcode.theprice.ui.presentation.account.AccountUiState
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError
@@ -63,6 +66,7 @@ class HomeViewModel(
     private val insertMissingPayments: IInsertMissingPayments,
     private val insertPayments: IInsertPayments,
     private val eventSyncQueue: EventSyncQueue,
+    private val logoutUser: ILogoutUser,
 ): ViewModel() {
 
 
@@ -160,7 +164,8 @@ class HomeViewModel(
             canGoNext = currentDate < moveMonth(by = 1, initialDate) && rawPayments.isNotEmpty(),
             paymentSection = paymentSection,
             errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,
-            loading = (payments is Resource.Loading),
+            loading = (payments is Resource.Loading) || state.loading,
+            loggedOut = state.loggedOut
         )
     }.stateIn(
         scope = viewModelScope,
@@ -197,6 +202,19 @@ class HomeViewModel(
                 }.doIfError { error ->
                     _state.update { it.copy(errorMessage = error.message) }
                 }
+            }
+
+            HomeEvent.OnLogoutUser -> {
+                logoutUser()
+                    .onEach { result ->
+                        when(result) {
+                            is Resource.Success -> {
+                                _state.update { it.copy(loggedOut = true, loading = false) }
+                            }
+                            is Resource.Error -> _state.update { it.copy(errorMessage = result.message, loading = false) }
+                            is Resource.Loading -> _state.update { it.copy(loading = true) }
+                        }
+                    }.launchIn(viewModelScope)
             }
         }
     }

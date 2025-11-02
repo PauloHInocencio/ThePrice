@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.remote.datasource.auth
 
 import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
+import br.com.noartcode.theprice.data.remote.networking.cleanBearerTokens
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
@@ -28,11 +29,13 @@ class AuthRemoteDataSourceImp(
 
 
 
-    override suspend fun logoutUser(refreshToken:String): Resource<Unit> =
+    override suspend fun logoutUser(refreshToken:String, deviceID: String): Resource<Unit> =
         safeCall {
             client.post {
                 url("users/logout")
-                setBody(mapOf("refresh_token" to refreshToken))
+                setBody(
+                    mapOf("refresh_token" to refreshToken, "device_id" to deviceID)
+                )
             }
         }
 
@@ -54,4 +57,7 @@ class AuthRemoteDataSourceImp(
             }
         }
 
+    override fun clean() {
+        client.cleanBearerTokens()
+    }
 }
