@@ -8,4 +8,5 @@ data class HomeUiState(
     val canGoBack:Boolean = false,
     val canGoNext:Boolean = false,
     val errorMessage:String? = null,
+    val loggedOut: Boolean = false,
 )

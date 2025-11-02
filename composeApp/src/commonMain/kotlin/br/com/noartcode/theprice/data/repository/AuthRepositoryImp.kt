@@ -56,9 +56,11 @@ class AuthRepositoryImp(
 
     override suspend fun logoutUser(): Resource<Unit> {
         val rt = local.getRefreshToken().first() ?: ""
-        return when(val result = remote.logoutUser(refreshToken = rt)) {
+        val deviceID = local.getDeviceID().first() ?: ""
+        return when(val result = remote.logoutUser(refreshToken = rt, deviceID= deviceID)) {
             is Resource.Success -> {
                 local.clean()
+                remote.clean()
                 Resource.Success(Unit)
             }
             else -> result

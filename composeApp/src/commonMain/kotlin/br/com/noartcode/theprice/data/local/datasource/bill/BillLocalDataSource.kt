@@ -17,4 +17,5 @@ interface BillLocalDataSource {
     ) : Pair<Bill, List<Payment>>
     suspend fun getBill(id:String) : Bill?
     suspend fun delete(id:String)
+    suspend fun deleteAllBills()
 }

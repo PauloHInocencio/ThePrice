@@ -16,4 +16,6 @@ interface BillsRepository {
     suspend fun update(bill:Bill)
     suspend fun deleteRemote(bill: Bill) : Resource<Unit>
     suspend fun deleteLocal(bill: Bill)
+
+    suspend fun clean()
 }

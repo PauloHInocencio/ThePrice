@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.noartcode.theprice.ui.presentation.account.add.composeNewAccountScreen
 import br.com.noartcode.theprice.ui.presentation.account.add.navigateToNewAccount
 import br.com.noartcode.theprice.ui.presentation.account.composeAccountScreen
+import br.com.noartcode.theprice.ui.presentation.account.navigateToAccount
 import br.com.noartcode.theprice.ui.presentation.bill.add.composeAddBillScreen
 import br.com.noartcode.theprice.ui.presentation.bill.add.navigateToAddBill
 import br.com.noartcode.theprice.ui.presentation.bill.edit.composeEditBillScreen
@@ -34,7 +35,9 @@ fun AppNavGraph(
 
         composeHomeScreen(
             onNavigateToEditPayment = { id -> navController.navigateToEditPaymentScreen(id) },
-            onNavigateToAddBill = { navController.navigateToAddBill() }
+            onNavigateToAddBill = { navController.navigateToAddBill() },
+            onNavigateToAccount = { navController.navigateToAccount() },
+            onNavigateToLogin = { navController.navigateToLogin() }
         )
 
         composeAddBillScreen(

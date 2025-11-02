@@ -71,5 +71,9 @@ class PaymentsRepositoryImp(
         TODO("Not yet implemented")
     }
 
+    override suspend fun clean() {
+        local.deleteAllPayments()
+    }
+
 
 }

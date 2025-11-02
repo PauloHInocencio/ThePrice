@@ -35,6 +35,9 @@ interface BillDao {
     @Query("DELETE FROM bills WHERE id == :id")
     suspend fun deleteBill(id:String)
 
+    @Query("DELETE FROM bills")
+    suspend fun deleteAllBills()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayments(payments:List<PaymentEntity>)
 

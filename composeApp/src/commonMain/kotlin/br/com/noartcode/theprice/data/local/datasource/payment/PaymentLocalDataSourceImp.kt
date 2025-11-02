@@ -74,4 +74,8 @@ class PaymentLocalDataSourceImp (
     override suspend fun delete(id: String) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun deleteAllPayments() {
+        dao.deleteAllPayments()
+    }
 }
