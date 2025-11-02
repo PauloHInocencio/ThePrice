@@ -26,6 +26,7 @@ ThePrice is a budget app I'm building to help me track my monthly payments while
 - :white_check_mark: Jump back to current month quickly
 - :white_large_square: View historical payments for any month
 - :white_large_square: Ability to change a payment and update all subsequent ones
+- :white_large_square: Due date notifications
 
 
 #### User Account & Authentication
@@ -42,7 +43,7 @@ https://github.com/user-attachments/assets/80e726e2-3ee0-4ec0-9fc2-0475807f080f
 - :white_large_square: iCloud Sign-In integration
 - :white_large_square: User profile management
 - :white_check_mark: Secure session management
-- :white_large_square: Logout functionality
+- :white_check_mark: Logout functionality
 
 
 
