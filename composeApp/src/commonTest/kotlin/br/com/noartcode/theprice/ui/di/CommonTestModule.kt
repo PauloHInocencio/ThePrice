@@ -2,7 +2,6 @@ package br.com.noartcode.theprice.ui.di
 
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSourceImp
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker

@@ -244,6 +244,7 @@ fun viewModelsModule() = module {
         LoginViewModel(
             loginInUser = get(),
             getAccountInfo = get(),
+            overdueReminderWorker = get()
         )
     }
 }
