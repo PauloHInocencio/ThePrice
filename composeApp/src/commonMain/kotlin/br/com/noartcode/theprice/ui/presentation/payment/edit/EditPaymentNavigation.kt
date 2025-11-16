@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import br.com.noartcode.theprice.ui.extensions.enterAnimation
 import br.com.noartcode.theprice.ui.extensions.exitAnimation
@@ -25,6 +26,7 @@ fun NavGraphBuilder.composeEditPaymentScreen(
     composable<EditPaymentDestination>(
         enterTransition = { enterAnimation() },
         popExitTransition = { exitAnimation() },
+        deepLinks = listOf(navDeepLink { uriPattern = "theprice://payment/{paymentId}"})
     ) { entry ->
         val viewModel = koinViewModel<EditPaymentViewModel>()
         EditPaymentScreen(

@@ -8,6 +8,9 @@ import androidx.work.WorkManager
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.local.workers.AndroidOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncDeletedBillWorker
@@ -28,6 +31,8 @@ import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
+import br.com.noartcode.theprice.platform.notification.AndroidNotifier
+import br.com.noartcode.theprice.platform.notification.INotifier
 import br.com.noartcode.theprice.ui.presentation.account.AccountManager
 import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
@@ -53,6 +58,8 @@ actual fun platformModule() = module {
     single<ISyncBillWorker> { SyncBillWorker(manager = WorkManager.getInstance(androidContext())) }
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker(manager = WorkManager.getInstance(androidContext()))}
     single<ISyncDeletedBillWorker> { SyncDeletedBillWorker(manager = WorkManager.getInstance(androidContext()))}
+    single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker(manager = WorkManager.getInstance(androidContext())) }
+    single<INotifier> { AndroidNotifier(context = get()) }
     worker {
         AndroidSyncPaymentsWorker(
             appContext = androidContext(),
@@ -90,6 +97,18 @@ actual fun platformModule() = module {
             appContext = androidContext(),
             params = get(),
             remoteDataSource = get(),
+            ioDispatcher = get()
+        )
+    }
+    worker {
+        AndroidOverduePaymentReminderWorker(
+            appContext = androidContext(),
+            params = get(),
+            billsRepository = get(),
+            paymentsRepository = get(),
+            notifier = get(),
+            getTodayDate = get(),
+            getDaysUntil = get(),
             ioDispatcher = get()
         )
     }

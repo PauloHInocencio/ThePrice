@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.domain.repository
 
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.Flow

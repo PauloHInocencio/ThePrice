@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.update
 class LoginViewModel(
     private val loginInUser: ILoginUser,
     private val getAccountInfo: IGetUserAccountInfo,
+    private val overdueReminderWorker: IOverduePaymentReminderWorker,
 ) : ViewModel() {
 
     private val userInfoState: StateFlow<User?> = getAccountInfo()
@@ -44,6 +46,7 @@ class LoginViewModel(
                     .onEach { result ->
                         when (result) {
                             is Resource.Success -> _uiState.update {
+                                overdueReminderWorker.sweepDailyDue() //<-- TODO("Move this to an App startup initializer")
                                 LoginUiState(isAuthenticated = true)
                             }
 
