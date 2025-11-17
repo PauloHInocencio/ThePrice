@@ -4,7 +4,7 @@ ThePrice is a budget app I'm building to help me track my monthly payments while
 
 ### Download
 
-[![Google Play — Closed testing](https://img.shields.io/badge/Google%20Play-Closed%20testing-0D96F6?logo=google-play&logoColor=white&style=for-the-badge)](https://groups.google.com/g/theprice-android-testers)
+[![Google Play — Closed testing](https://img.shields.io/badge/Google%20Play-Closed%20testing-0D96F6?logo=google-play&logoColor=white&style=for-the-badge)](https://play.google.com/store/apps/details?id=br.com.noartcode.theprice)
 
 ![Download on the App Store (coming soon)](https://img.shields.io/badge/App%20Store-Coming%20Soon-lightgrey?logo=apple&logoColor=white&style=for-the-badge)
 
