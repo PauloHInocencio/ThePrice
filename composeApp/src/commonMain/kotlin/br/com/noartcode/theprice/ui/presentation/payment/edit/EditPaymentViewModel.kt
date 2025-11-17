@@ -109,22 +109,21 @@ class EditPaymentViewModel(
                         isSaving = true
                     )
                 }
-                updatePayment(
-                    Payment(
-                        id = payment!!.id,
-                        billId = payment!!.billId,
-                        price = currencyFormatter.clenup(_state.value.payedValue),
-                        dueDate =  epochFormatter.to(_state.value.paidAtDate),
-                        isPayed = _state.value.paymentStatus == PAYED,
-                        createdAt = payment!!.createdAt,
-                        updatedAt = getTodayDate().toEpochMilliseconds(),
-                        isSynced = false,
-                    )
-                ).doIfSuccess {
-                    eventSyncQueue.enqueue(payment!!.toSyncEvent("update"))
+                val p = Payment(
+                    id = payment!!.id,
+                    billId = payment!!.billId,
+                    price = currencyFormatter.clenup(_state.value.payedValue),
+                    dueDate =  epochFormatter.to(_state.value.paidAtDate),
+                    isPayed = _state.value.paymentStatus == PAYED,
+                    createdAt = payment!!.createdAt,
+                    updatedAt = getTodayDate().toEpochMilliseconds(),
+                    isSynced = false,
+                )
+                updatePayment(p).doIfSuccess {
+                    eventSyncQueue.enqueue(p.toSyncEvent("update"))
                     _state.update { it.copy(isSaving = false, isSaved = true) }
                 }.doIfError {
-
+                    // TODO ("LOG error on Crashlytics")
                 }
             }
 
