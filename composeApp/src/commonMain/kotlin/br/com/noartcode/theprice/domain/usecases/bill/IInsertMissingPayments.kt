@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.domain.usecases.bill
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.isValid
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
@@ -39,10 +40,17 @@ class InsertMissingPayments(
         val timeStamp = getTodayDate().toEpochMilliseconds()
         for (bill in bills) {
             if (existingPayments.containsKey(bill.id).not()) {
+
+                // TODO: Search for a better way to find a valid due date
+                var dueDate:DayMonthAndYear = date.copy(day = bill.billingStartDate.day)
+                while(dueDate.isValid().not()) {
+                    dueDate = dueDate.copy(day = dueDate.day - 1)
+                }
+
                 paymentsToAdd.add(
                     Payment(
                         billId = bill.id,
-                        dueDate = date.copy(day = bill.billingStartDate.day),
+                        dueDate = dueDate,
                         price = bill.price,
                         isPayed = false,
                         createdAt = timeStamp,

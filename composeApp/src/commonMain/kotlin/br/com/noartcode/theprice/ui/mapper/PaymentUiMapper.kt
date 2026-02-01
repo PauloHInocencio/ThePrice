@@ -28,14 +28,7 @@ class PaymentDomainToUiMapper (
         val bill = dataSource.getBill(from.billId) ?: return null
         return if (!from.isPayed) {
 
-            // TODO: Find a better way to calculate a valid end day
-            val start = getTodayDate()
-            var end:DayMonthAndYear = from.dueDate.copy(day = bill.billingStartDate.day)
-            while(end.isValid().not()) {
-                end = end.copy(day = bill.billingStartDate.day - 1)
-            }
-
-            val days = getDaysUntil(startDate = start, endDate = end)
+            val days = getDaysUntil(startDate = getTodayDate() , endDate = from.dueDate)
 
             val (description, status) = when {
                 days > 0 -> { "Expires in $days days" to PaymentUi.Status.PENDING }

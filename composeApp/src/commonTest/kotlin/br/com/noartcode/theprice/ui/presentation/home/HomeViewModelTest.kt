@@ -380,7 +380,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
 
         assertTrue(result is Resource.Success)
 
-        // Set Current Day to November 21th
+        // Set Current Day to November 21st
         (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 21, month = 11, year = 2024)
 
         viewModel.uiState.test {
@@ -448,7 +448,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             with(updatedPayment) {
                 assertEquals(expected = PaymentUi.Status.OVERDUE, status)
                 assertEquals(expected = "R$ 100,00", actual = price)
-                assertEquals(expected = "9 days overdue", actual = statusDescription)
+                assertEquals(expected = "16 days overdue", actual = statusDescription)
             }
         }
     }
