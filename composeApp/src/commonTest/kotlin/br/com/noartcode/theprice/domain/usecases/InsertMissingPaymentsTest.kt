@@ -124,4 +124,28 @@ class InsertMissingPaymentsTest : KoinTest, RobolectricTests() {
 
     }
 
+
+    @Test
+    fun `Should insert missing payments with valid due dates`() = runTest {
+
+        // GIVEN
+        // A bill with start date at 01/31/2026 — A valid date
+        val date = DayMonthAndYear(day = 31, month = 1, year = 2026)
+        val bill = stubBills[0].copy(billingStartDate = date)
+
+        insertBill(bill)
+
+        // WHEN
+        // Inserting the payment of February
+        insertMissingPayments(date.copy(month = 2))
+
+        // THEN
+        // The February payment should be added with the next valid day (which in this case, should be 28)
+        val payment = paymentDataSource.getMonthPayments(month = 2, year = 2026).first().first()
+        assertEquals(
+            expected = 28,
+            actual = payment.dueDate.day
+        )
+    }
+
 }
