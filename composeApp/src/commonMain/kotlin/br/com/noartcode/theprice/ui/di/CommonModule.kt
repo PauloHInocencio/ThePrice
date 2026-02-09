@@ -136,6 +136,7 @@ fun commonModule() = module {
             eventSyncQueue = get(),
             billRemoteDataSource = get(),
             paymentsDataSource = get(),
+            session = get(),
             ioDispatcher = get(),
         )
     }
