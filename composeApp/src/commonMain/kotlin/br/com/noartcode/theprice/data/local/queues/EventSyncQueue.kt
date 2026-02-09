@@ -8,4 +8,6 @@ interface EventSyncQueue {
     suspend fun enqueue(event:SyncEvent)
     suspend fun peek(): SyncEvent?
     suspend fun remove(eventID:String)
+    suspend fun clean()
+    suspend fun size(): Int
 }

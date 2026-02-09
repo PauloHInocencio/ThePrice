@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
@@ -43,6 +45,7 @@ actual fun platformModule() = module {
             it.locale = NSLocale.currentLocale
         })
     }
+    single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore(scope = get()) }
     single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }

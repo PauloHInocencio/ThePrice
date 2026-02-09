@@ -18,16 +18,14 @@ import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.payment.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.payment.IInsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
-import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
 import br.com.noartcode.theprice.ui.mapper.UiMapper
-import br.com.noartcode.theprice.ui.presentation.account.AccountUiState
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError

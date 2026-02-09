@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.domain.usecases.user
 
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.domain.repository.AuthRepository
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
@@ -17,6 +18,7 @@ class LogoutUser(
     private val authRepository: AuthRepository,
     private val billsRepository: BillsRepository,
     private val paymentsRepository: PaymentsRepository,
+    private val eventSyncQueue: EventSyncQueue,
     private val dispatcher:CoroutineDispatcher,
 ) : ILogoutUser {
     override fun invoke(): Flow<Resource<Unit>> = flow {
@@ -27,6 +29,7 @@ class LogoutUser(
             emit(result)
             return@flow
         }
+        eventSyncQueue.clean()
         billsRepository.clean()
         paymentsRepository.clean()
         emit(Resource.Success(Unit))

@@ -1,16 +1,15 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubSyncEvents
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
+import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -34,7 +33,6 @@ import kotlin.getValue
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -53,9 +51,8 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
         refreshToken = "fake_refresh_token"
     )
     private val billsRepository:BillsRepository by inject()
-
-    // Unit Under Test
     private val paymentsRepository:PaymentsRepository by inject()
+    private val eventSyncQueue: EventSyncQueue by inject()
 
     // Unit Under Test
     private val logoutUser: ILogoutUser by inject()
@@ -112,10 +109,12 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
         // GIVEN
         authLocalDataSource.saveCredentials(user)
         authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+        repeat(3) { i -> eventSyncQueue.enqueue(stubSyncEvents[i]) }
         billsRepository.fetchAllBills()
         paymentsRepository.fetchAllPayments()
         assertTrue(billsRepository.getAllBills().first().size == 3)
         assertTrue(paymentsRepository.getAllPayments().first().size == 9)
+        assertTrue(eventSyncQueue.size() == 3)
 
         // WHEN
         logoutUser().test {
@@ -127,11 +126,8 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
 
             assertTrue(billsRepository.getAllBills().first().isEmpty())
             assertTrue(paymentsRepository.getAllPayments().first().isEmpty())
-
+            assertTrue(eventSyncQueue.isEmpty.first())
         }
-
-
-
     }
 
 

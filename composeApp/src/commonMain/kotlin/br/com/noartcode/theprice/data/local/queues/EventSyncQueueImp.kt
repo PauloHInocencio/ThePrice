@@ -14,24 +14,14 @@ import kotlinx.coroutines.launch
 
 class EventSyncQueueImp(
     private val database: ThePriceDatabase,
-    private val ioDispatcher: CoroutineDispatcher,
 ) : EventSyncQueue {
-
-    private lateinit var _isEmpty:MutableStateFlow<Boolean>
 
     private val dao by lazy { database.getEventsDao() }
 
+    private val _isEmpty = MutableStateFlow(true)
     override val isEmpty: Flow<Boolean>
         get() = _isEmpty
 
-    private val scope = CoroutineScope( ioDispatcher + SupervisorJob())
-
-    init {
-        scope.launch {
-            val initialValue = dao.count() == 0
-            _isEmpty = MutableStateFlow(initialValue)
-        }
-    }
 
     override suspend fun enqueue(event: SyncEvent) {
         dao.enqueue(event.toEntity())
@@ -44,7 +34,15 @@ class EventSyncQueueImp(
 
     override suspend fun remove(eventID: String) {
         dao.remove(eventID)
-        val count = dao.count()
-        _isEmpty.update { count == 0}
+        _isEmpty.update { size() == 0}
+    }
+
+    override suspend fun clean() {
+        dao.clean()
+        _isEmpty.update { size() == 0 }
+    }
+
+    override suspend fun size() : Int {
+        return dao.count()
     }
 }

@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.data.helpers
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
+import br.com.noartcode.theprice.domain.model.SyncEvent
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 
 val stubBills:List<Bill> by lazy {
@@ -165,6 +166,47 @@ val stubPayments:List<Payment> by lazy {
             createdAt = 0L,
             updatedAt = 0L,
             isSynced = false,
+        )
+    )
+}
+
+
+val stubSyncEvents: List<SyncEvent> by lazy {
+    listOf(
+        SyncEvent(
+            id = "event-1",
+            endpoint = "bill",
+            action = "create",
+            payload = """{"name":"Internet","price":12099}""",
+            createdAt = 1000L,
+        ),
+        SyncEvent(
+            id = "event-2",
+            endpoint = "payment",
+            action = "update",
+            payload = """{"id":"payment-1","isPayed":true}""",
+            createdAt = 2000L,
+        ),
+        SyncEvent(
+            id = "event-3",
+            endpoint = "bill",
+            action = "delete",
+            payload = """{"id":"bill-1"}""",
+            createdAt = 3000L,
+        ),
+        SyncEvent(
+            id = "event-4",
+            endpoint = "payment",
+            action = "create",
+            payload = """{"dueDate":"2024-01-05","price":12099}""",
+            createdAt = 4000L,
+        ),
+        SyncEvent(
+            id = "event-5",
+            endpoint = "bill",
+            action = "update",
+            payload = """{"id":"bill-2","price":15000}""",
+            createdAt = 5000L,
         )
     )
 }

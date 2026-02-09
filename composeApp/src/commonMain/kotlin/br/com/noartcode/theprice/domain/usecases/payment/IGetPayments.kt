@@ -5,7 +5,6 @@ import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +43,7 @@ class GetPayments(
                 val monthPaymentsMap = monthPayments.associateBy { it.billId }
                 val payments = activeBills.mapNotNull { bill ->
                     if (date > bill.billingStartDate ||
-                        (date.month == bill.billingStartDate.month && date.month == bill.billingStartDate.month)) {
+                        (date.month == bill.billingStartDate.month && date.year == bill.billingStartDate.year)) {
                         return@mapNotNull requireNotNull(monthPaymentsMap[bill.id])
                     }
                     return@mapNotNull null

@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.data.remote.workers
 
+import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -24,6 +26,7 @@ class SyncEventsWorker(
     private val eventSyncQueue: EventSyncQueue,
     private val billRemoteDataSource: BillRemoteDataSource,
     private val paymentsDataSource: PaymentRemoteDataSource,
+    private val session: AuthLocalDataSource,
     private val ioDispatcher: CoroutineDispatcher,
 ) : ISyncEventsWorker {
 
@@ -42,6 +45,14 @@ class SyncEventsWorker(
         syncJob = scope.launch {
             eventSyncQueue.isEmpty.collect { isEmpty ->
                 while (isActive && isEmpty.not()) {
+
+                    val accessToken = session.getAccessToken().first()
+                    if (accessToken?.isNotEmpty() == true) {
+                       println("No valid access token, stopping sync worker")
+                       break
+                    }
+
+
                     val  event = eventSyncQueue.peek()
                     if (event == null) {
                         println("No new events to sync...")

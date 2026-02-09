@@ -78,9 +78,9 @@ class AddBillViewModel(
                     state.update { it.copy(isSaving = true) }
                     insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
                         .doIfSuccess { (b, p) ->
-                            eventSyncQueue.enqueue(b.toSyncEvent("create"))
+                            eventSyncQueue.enqueue(b.toSyncEvent("create")) //TODO: Could this being responsible for the bills duplication in synchronized devices?
                             eventSyncQueue.enqueue(p.toSyncEvent("create"))
-                            bill.update { it.copy(id = b.id) }
+                            bill.update { it.copy(id = b.id) } // TODO: Is this call necessary?
                         }
                         .doIfError { error->
                             state.update { it.copy(errorMessage = error.message) }
