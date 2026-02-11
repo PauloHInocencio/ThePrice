@@ -14,15 +14,12 @@ import br.com.noartcode.theprice.data.local.preferences.createDataStore
 import br.com.noartcode.theprice.data.local.workers.AndroidOverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
-import br.com.noartcode.theprice.data.remote.workers.AndroidSyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.AndroidSyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedPaymentWorker
@@ -76,20 +73,10 @@ actual fun platformTestModule() = module {
     }
 
     single<WorkManager> { WorkManager.getInstance(ApplicationProvider.getApplicationContext()) }
-    single<ISyncBillWorker> { SyncBillWorker(manager = get()) }
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker(manager = get()) }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker(manager = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(manager = get()) }
     single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker(manager = get()) }
-
-    worker {
-        AndroidSyncBillWorker(
-            appContext = ApplicationProvider.getApplicationContext(),
-            params = get(),
-            billsRepository = get(),
-            ioDispatcher = get(),
-        )
-    }
 
     worker {
         AndroidSyncUpdatedBillWorker(

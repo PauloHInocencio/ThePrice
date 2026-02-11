@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.remote.datasource.bill
 
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
 import br.com.noartcode.theprice.data.remote.networking.safeCall
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.HttpClient
@@ -23,11 +24,11 @@ class BillRemoteDataSourceImp(
 
         }
 
-    override suspend fun post(bill: BillDto): Resource<Unit> =
+    override suspend fun post(billWithPayments: BillWithPaymentsDto): Resource<Unit> =
         safeCall {
             client.post{
                 url("bills")
-                setBody(bill)
+                setBody(billWithPayments)
             }
         }
 

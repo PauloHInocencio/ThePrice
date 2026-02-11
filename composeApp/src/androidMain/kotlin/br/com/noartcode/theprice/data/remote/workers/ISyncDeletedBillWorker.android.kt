@@ -47,6 +47,13 @@ class AndroidSyncDeletedBillWorker(
             ?: return@withContext Result.failure(workDataOf("error_message" to "No Bill ID found"))
 
 
+        /*
+            Every work request has a backoff policy and backoff delay.
+            The default policy is EXPONENTIAL with a delay of 30 seconds,
+            but you can override this in your work request configuration.
+
+            source: https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work#retries_backoff
+         */
         return@withContext when(val result = remoteDataSource.delete(billId)) {
             is Resource.Success -> { Result.success() }
             is Resource.Error -> {

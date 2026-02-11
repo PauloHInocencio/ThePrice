@@ -3,7 +3,6 @@ package br.com.noartcode.theprice.ui.di
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
@@ -28,11 +27,6 @@ import org.koin.dsl.module
 fun commonTestModule() = module {
     single<HttpClient> {
         createHttpClient(ThePriceApiMock.engine, localDataSource = get())
-    }
-    single<ISyncBillWorker> {
-        mock<ISyncBillWorker>().apply {
-            every { this@apply.sync(billID = any()) } returns Unit
-        }
     }
     single<ISyncPaymentsWorker> {
         mock<ISyncPaymentsWorker>(MockMode.autoUnit)

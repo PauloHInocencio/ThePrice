@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDataSource
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -69,8 +70,8 @@ class SyncEventsWorker(
                             paymentsDataSource.put(payment)
                         }
                         "bill" to "create" -> {
-                            val bill = defaultJson.decodeFromString<BillDto>(event.payload)
-                            billRemoteDataSource.post(bill)
+                            val billWithPayments = defaultJson.decodeFromString<BillWithPaymentsDto>(event.payload)
+                            billRemoteDataSource.post(billWithPayments)
                         }
                         "bill" to "update" -> {
                             val bill = defaultJson.decodeFromString<BillDto>(event.payload)

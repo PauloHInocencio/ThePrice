@@ -40,9 +40,6 @@ class BillsRepositoryImp(
         return id
     }
 
-    override suspend fun post(bill: Bill): Resource<Unit> {
-        return remote.post(bill.toDto())
-    }
 
     override suspend fun put(bill: Bill): Resource<Unit> {
         return remote.put(bill.toDto())

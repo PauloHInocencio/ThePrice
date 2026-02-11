@@ -115,7 +115,7 @@ fun commonModule() = module {
     single<EventSyncQueue> { EventSyncQueueImp(database = get()) }
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
-    single<IInsertBill> { InsertBill(repository = get(), worker = get(), ioDispatcher = get()) }
+    single<IInsertBill> { InsertBill(repository = get(), ioDispatcher = get()) }
     single<IUpdateBill> { UpdateBill(repository = get(), dispatcher = get()) }
     single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get()) }
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), dispatcher = get() ) }
@@ -186,7 +186,7 @@ fun viewModelsModule() = module {
             getEvents = get(),
             insertMissingPayments = get(),
             updateBill = get(),
-            insertNewBill = get(),
+            insertBillWithPayments = get(),
             updatePayment = get(),
             insertPayments = get(),
             deleteBill = get(),
