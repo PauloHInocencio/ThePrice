@@ -48,7 +48,7 @@ class SyncEventsWorker(
                 while (isActive && isEmpty.not()) {
 
                     val accessToken = session.getAccessToken().first()
-                    if (accessToken?.isNotEmpty() == true) {
+                    if (accessToken?.isEmpty() == true) {
                        println("No valid access token, stopping sync worker")
                        break
                     }

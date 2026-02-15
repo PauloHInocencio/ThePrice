@@ -126,7 +126,7 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
 
             assertTrue(billsRepository.getAllBills().first().isEmpty())
             assertTrue(paymentsRepository.getAllPayments().first().isEmpty())
-            assertTrue(eventSyncQueue.isEmpty.first())
+            assertTrue(eventSyncQueue.size() == 0)
         }
     }
 

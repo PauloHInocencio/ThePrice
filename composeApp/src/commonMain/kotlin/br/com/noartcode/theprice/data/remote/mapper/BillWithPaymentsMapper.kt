@@ -9,6 +9,8 @@ fun BillWithPaymentsDto.toDomain() : BillWithPayments =
         payments = this.payments.toDomain()
     )
 
+fun Iterable<BillWithPaymentsDto>.toDomain() = this.map { it.toDomain() }
+
 fun BillWithPayments.toDto() : BillWithPaymentsDto =
     BillWithPaymentsDto(
         bill = this.bill.toDto(),

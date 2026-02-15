@@ -8,12 +8,10 @@ import br.com.noartcode.theprice.data.local.preferences.createDataStore
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
@@ -52,7 +50,6 @@ actual fun platformModule() = module {
     factory<IAccountManager> { AccountManager(signInProvider = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker() }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker()}
-    single<ISyncBillWorker> { SyncBillWorker() }
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker()}
     single<ISyncDeletedBillWorker> { SyncDeletedBillWorker() }
 }

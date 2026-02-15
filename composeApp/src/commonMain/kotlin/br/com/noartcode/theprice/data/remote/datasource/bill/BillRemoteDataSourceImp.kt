@@ -16,7 +16,7 @@ class BillRemoteDataSourceImp(
     private val client:HttpClient
 ) : BillRemoteDataSource {
 
-    override suspend fun fetchAllBills(): Resource<List<BillDto>> =
+    override suspend fun fetchAllBillsWithPayments(): Resource<List<BillWithPaymentsDto>> =
         safeCall {
             client.get{
                 url("bills")

@@ -5,6 +5,7 @@ import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSourc
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
 import br.com.noartcode.theprice.data.remote.mapper.toDto
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.map
@@ -24,13 +25,12 @@ class BillsRepositoryImp(
         return local.getBillsBy(status)
     }
 
-    override suspend fun fetchAllBills(): Resource<Unit> {
-        return when(val result = remote.fetchAllBills()) {
+    override suspend fun fetchAllBills(): Resource<List<BillWithPayments>> {
+        return when(val result = remote.fetchAllBillsWithPayments()) {
             is Resource.Error -> result
             is Resource.Loading -> result
             is Resource.Success -> {
-                local.insert(result.data.toDomain())
-                Resource.Success(Unit)
+                Resource.Success(result.data.toDomain())
             }
         }
     }
