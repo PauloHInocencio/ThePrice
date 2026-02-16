@@ -34,7 +34,6 @@ import br.com.noartcode.theprice.domain.usecases.GetEvent
 import br.com.noartcode.theprice.domain.usecases.payment.GetOldestPaymentRecordDate
 import br.com.noartcode.theprice.domain.usecases.payment.GetPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.GetTodayDate
-import br.com.noartcode.theprice.domain.usecases.user.GetUserData
 import br.com.noartcode.theprice.domain.usecases.bill.IDeleteLocalBill
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
@@ -48,7 +47,6 @@ import br.com.noartcode.theprice.domain.usecases.payment.IGetPaymentByID
 import br.com.noartcode.theprice.domain.usecases.payment.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
-import br.com.noartcode.theprice.domain.usecases.user.IGetUserData
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertMissingPayments
@@ -129,7 +127,6 @@ fun commonModule() = module {
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<AuthRepository> { AuthRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<AuthLocalDataSource>()::getUser) }
-    single<IGetUserData> { GetUserData(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
     single<ISyncEventsWorker> {
         SyncEventsWorker(

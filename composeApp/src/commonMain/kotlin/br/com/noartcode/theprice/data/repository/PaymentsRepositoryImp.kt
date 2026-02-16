@@ -24,17 +24,6 @@ class PaymentsRepositoryImp(
         local.getAllPayments()
 
 
-    override suspend fun fetchAllPayments(): Resource<Unit> {
-        return when(val result = remote.fetchAllPayments()) {
-            is Resource.Success -> {
-                local.insert(result.data.toDomain())
-                Resource.Success(Unit)
-            }
-            is Resource.Error -> result
-            is Resource.Loading -> result
-        }
-    }
-
     override suspend fun getNotSynchronizedPayments(): List<Payment> {
         return local.getNotSynchronizedPayments()
     }

@@ -49,7 +49,7 @@ object ThePriceApiMock {
         path.contains("api/v1/bills") && method == HttpMethod.Get -> ApiRoute.GetBills
         path.contains("api/v1/bills") && method == HttpMethod.Post -> ApiRoute.PostBill
         path.contains("api/v1/bills") && method == HttpMethod.Put -> ApiRoute.PutBill
-        path.contains("api/v1/payments") && method == HttpMethod.Get -> ApiRoute.GetPayments
+        //path.contains("api/v1/payments") && method == HttpMethod.Get -> ApiRoute.GetPayments // This doesn't exist anymore
         path.contains("api/v1/payments") && method == HttpMethod.Post -> ApiRoute.PostPayments
         path.contains("api/v1/payments") && method == HttpMethod.Put -> ApiRoute.PutPayment
         path.contains("api/v1/users/create") && method == HttpMethod.Post -> ApiRoute.PostUser
