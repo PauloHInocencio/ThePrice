@@ -3,6 +3,8 @@ package br.com.noartcode.theprice.domain.usecases
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
@@ -38,6 +40,8 @@ class LoginUserTest : KoinTest, RobolectricTests() {
 
     private val database: ThePriceDatabase by inject()
     private val authLocalDataSource: AuthLocalDataSource by inject()
+    private val billLocalDS: BillLocalDataSource by inject()
+    private val paymentLocalDS: PaymentLocalDataSource by inject()
 
     // Unit Under Test
     private val loginUser: ILoginUser by inject()
@@ -93,8 +97,20 @@ class LoginUserTest : KoinTest, RobolectricTests() {
 
             ensureAllEventsConsumed()
         }
+    }
 
+    @Test
+    fun `User Data Should be retrieved Successfully After Login`() =  runTest {
+        loginUser().test {
+            skipItems(2)
+            awaitComplete()
 
+            assertEquals(expected = 3, billLocalDS.getAllBills().first().size)
+            assertEquals(expected = 9, paymentLocalDS.getAllPayments().first().size)
+
+            ensureAllEventsConsumed()
+
+        }
     }
 
 }

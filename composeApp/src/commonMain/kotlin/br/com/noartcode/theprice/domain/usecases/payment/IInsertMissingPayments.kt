@@ -1,4 +1,4 @@
-package br.com.noartcode.theprice.domain.usecases.bill
+package br.com.noartcode.theprice.domain.usecases.payment
 
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear

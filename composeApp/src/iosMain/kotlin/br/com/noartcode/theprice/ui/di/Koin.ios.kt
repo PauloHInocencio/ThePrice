@@ -5,13 +5,13 @@ import androidx.datastore.preferences.core.Preferences
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
@@ -43,13 +43,13 @@ actual fun platformModule() = module {
             it.locale = NSLocale.currentLocale
         })
     }
+    single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore(scope = get()) }
     single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
     factory<IAccountManager> { AccountManager(signInProvider = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker() }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker()}
-    single<ISyncBillWorker> { SyncBillWorker() }
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker()}
     single<ISyncDeletedBillWorker> { SyncDeletedBillWorker() }
 }

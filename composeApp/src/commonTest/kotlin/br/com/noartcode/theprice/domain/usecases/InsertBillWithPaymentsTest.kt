@@ -4,6 +4,7 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
@@ -93,14 +94,45 @@ class InsertBillWithPaymentsTest: KoinTest, RobolectricTests() {
     }
 
     @Test
-    fun `Payments Retrieval By Bill ID Should Return Correct Amount Of Data`() = runTest {
+    fun `Bill Started Three Months Ago Should Contain Three Payments`() = runTest {
+        // Given
+        val startDate = DayMonthAndYear(day = 1, month = 12, year = 2025)
+        val currentDate = DayMonthAndYear(day = 1, month = 2, year = 2026)
+
+        // When
         val result = insertBillWithPayments(
-            bill = stubBills[0],
-            currentDate = DayMonthAndYear(day = 21, month = 2, year = 2025)
+            bill = stubBills[0].copy(billingStartDate = startDate),
+            currentDate = currentDate
         )
 
-        val (_, payments) = (result as Resource.Success).data
+        // Then
+        val (_, payment) = (result as Resource.Success).data
+        assertEquals(expected = 3, actual = payment.size)
+    }
 
-        assertEquals(expected = 6, payments.size)
+    @Test
+    fun `Create Bill Without Payments and currentDate Should Fail`() = runTest {
+        // When
+        val result = insertBillWithPayments(
+            bill = stubBills[0]
+        )
+
+        // Then
+        assertTrue(result is Resource.Error)
+        assertEquals(expected = "currentDate is required if no payments are provided", result.message)
+    }
+
+    @Test
+    fun `Create Bill With Provided Payment Should Succeed`() = runTest {
+        // When
+        val result = insertBillWithPayments(
+            bill = stubBills[0],
+            payments = stubPayments
+        )
+
+        //Then
+        assertTrue(result is Resource.Success)
+        assertEquals(expected = stubPayments.size, actual = result.data.payments.size)
+
     }
 }

@@ -6,13 +6,13 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.getDatabase
 import br.com.noartcode.theprice.data.local.preferences.DATA_STORE_FILE_NAME
 import br.com.noartcode.theprice.data.local.preferences.createDataStore
+import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.local.workers.OverduePaymentReminderWorker
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
-import br.com.noartcode.theprice.data.remote.workers.ISyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.data.remote.workers.SyncBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
@@ -38,13 +38,13 @@ actual fun platformModule() = module {
             symbols = DecimalFormatSymbols(Locale.getDefault())
         )
     }
+    single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }, scope = get()) }
     single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
     factory<IAccountManager> { AccountManager() }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(paymentsRepository = get(), ioDispatcher = get()) }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker(paymentsRepository = get(), ioDispatcher = get()) }
-    single<ISyncBillWorker> { SyncBillWorker(billsRepository = get(), ioDispatcher = get()) }
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker(billsRepository = get(), ioDispatcher = get()) }
     single<ISyncDeletedBillWorker> { SyncDeletedBillWorker(remoteDataSource = get(), ioDispatcher = get())}
 }

@@ -1,8 +1,9 @@
 package br.com.noartcode.theprice.domain.usecases.user
 
+import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
+import br.com.noartcode.theprice.data.remote.mapper.toDomain
 import br.com.noartcode.theprice.domain.repository.AuthRepository
-import br.com.noartcode.theprice.domain.repository.BillsRepository
-import br.com.noartcode.theprice.domain.repository.PaymentsRepository
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.Resource.*
@@ -18,8 +19,8 @@ interface ILoginUser {
 
 class LoginUser(
     private val authRepository: AuthRepository,
-    private val billsRepository: BillsRepository,
-    private val paymentsRepository: PaymentsRepository,
+    private val billRemoteDS: BillRemoteDataSource,
+    private val insertBillWithPayments: IInsertBillWithPayments,
     private val accountManager: IAccountManager,
     private val dispatcher: CoroutineDispatcher
 ) : ILoginUser {
@@ -38,17 +39,20 @@ class LoginUser(
             return@flow
         }
 
-        val billsResult = billsRepository.fetchAllBills()
-        if (billsResult !is Success) {
-            emit(billsResult)
+        val result = billRemoteDS.fetchAllBillsWithPayments()
+        if (result is Error) {
+            emit(Error(message = result.message, exception = result.exception))
             return@flow
         }
 
-        val paymentsResult = paymentsRepository.fetchAllPayments()
-        if (paymentsResult !is Success){
-            emit(paymentsResult)
-            return@flow
-        }
+       if (result is Success){
+            for((bill, payment) in result.data){
+                insertBillWithPayments(
+                    bill = bill.toDomain(),
+                    payments = payment.toDomain()
+                )
+            }
+       }
 
         emit(Success(data = Unit))
     }.flowOn(dispatcher)

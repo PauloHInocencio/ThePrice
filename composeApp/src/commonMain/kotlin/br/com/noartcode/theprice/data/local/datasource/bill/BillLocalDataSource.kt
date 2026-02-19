@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.local.datasource.bill
 
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,7 @@ interface BillLocalDataSource {
     suspend fun insertBillWithPayments(
         bill:Bill,
         payments:List<Payment>
-    ) : Pair<Bill, List<Payment>>
+    ) : BillWithPayments
     suspend fun getBill(id:String) : Bill?
     suspend fun delete(id:String)
     suspend fun deleteAllBills()

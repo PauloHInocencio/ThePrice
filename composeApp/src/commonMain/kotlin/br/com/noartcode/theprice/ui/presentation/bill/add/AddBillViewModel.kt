@@ -77,10 +77,9 @@ class AddBillViewModel(
                 viewModelScope.launch {
                     state.update { it.copy(isSaving = true) }
                     insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
-                        .doIfSuccess { (b, p) ->
-                            eventSyncQueue.enqueue(b.toSyncEvent("create"))
-                            eventSyncQueue.enqueue(p.toSyncEvent("create"))
-                            bill.update { it.copy(id = b.id) }
+                        .doIfSuccess { billWithPayments ->
+                            eventSyncQueue.enqueue(billWithPayments.toSyncEvent())
+                            bill.update { it.copy(id = billWithPayments.bill.id) }
                         }
                         .doIfError { error->
                             state.update { it.copy(errorMessage = error.message) }

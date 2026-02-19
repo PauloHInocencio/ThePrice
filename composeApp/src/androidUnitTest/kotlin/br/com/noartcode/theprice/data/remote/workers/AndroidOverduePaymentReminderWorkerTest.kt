@@ -112,7 +112,13 @@ class AndroidOverduePaymentReminderWorkerTest : KoinTest {
             assertEquals(expected = WorkInfo.State.ENQUEUED, actual = workInfo.state)
 
             // Only four payments need to be notify
-            verify(exactly = 4) { notifier.showOverduePaymentNotification(title = any(), description = any(), paymentId = any())  }
+            verify(exactly = 4) {
+                notifier.showOverduePaymentNotification(
+                    title = any(),
+                    description = any(),
+                    paymentId = any()
+                )
+            }
         }
     }
 

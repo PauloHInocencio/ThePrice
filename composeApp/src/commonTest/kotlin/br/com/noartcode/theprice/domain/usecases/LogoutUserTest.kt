@@ -1,16 +1,19 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubSyncEvents
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
-import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
+import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
+import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.repository.BillsRepository
 import br.com.noartcode.theprice.domain.repository.PaymentsRepository
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -23,6 +26,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -35,6 +39,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -52,10 +57,10 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
         accessToken = "fake_access_token",
         refreshToken = "fake_refresh_token"
     )
-    private val billsRepository:BillsRepository by inject()
-
-    // Unit Under Test
-    private val paymentsRepository:PaymentsRepository by inject()
+    private val loginUser: ILoginUser by inject()
+    private val billLocalDS: BillLocalDataSource by inject()
+    private val paymentLocalDS: PaymentLocalDataSource by inject()
+    private val eventSyncQueue: EventSyncQueue by inject()
 
     // Unit Under Test
     private val logoutUser: ILogoutUser by inject()
@@ -112,10 +117,13 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
         // GIVEN
         authLocalDataSource.saveCredentials(user)
         authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
-        billsRepository.fetchAllBills()
-        paymentsRepository.fetchAllPayments()
-        assertTrue(billsRepository.getAllBills().first().size == 3)
-        assertTrue(paymentsRepository.getAllPayments().first().size == 9)
+        repeat(3) { i -> eventSyncQueue.enqueue(stubSyncEvents[i]) }
+        val loginResult = (loginUser().lastOrNull() as? Resource.Success)
+
+        assertNotNull(loginResult)
+        assertEquals(expected = 3, billLocalDS.getAllBills().first().size)
+        assertEquals(expected = 9, paymentLocalDS.getAllPayments().first().size)
+        assertEquals(expected = 3, eventSyncQueue.size())
 
         // WHEN
         logoutUser().test {
@@ -125,13 +133,10 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
             assertTrue(awaitItem() is Resource.Success)
             awaitComplete()
 
-            assertTrue(billsRepository.getAllBills().first().isEmpty())
-            assertTrue(paymentsRepository.getAllPayments().first().isEmpty())
-
+            assertEquals(expected = 0, billLocalDS.getAllBills().first().size)
+            assertEquals(expected = 0, paymentLocalDS.getAllPayments().first().size)
+            assertEquals(expected = 0, eventSyncQueue.size())
         }
-
-
-
     }
 
 

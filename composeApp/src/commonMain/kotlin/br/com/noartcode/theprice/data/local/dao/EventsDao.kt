@@ -19,4 +19,7 @@ interface EventsDao {
 
     @Query("SELECT COUNT(*) FROM events")
     suspend fun count() : Int
+
+    @Query("DELETE FROM events")
+    suspend fun clean()
 }

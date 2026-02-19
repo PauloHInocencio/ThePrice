@@ -19,16 +19,6 @@ class PaymentRemoteDataSourceImp(
     private val session: AuthLocalDataSource
 ) : PaymentRemoteDataSource {
 
-    override suspend fun fetchAllPayments(): Resource<List<PaymentDto>> =
-        safeCall {
-            val accessToken = session.getAccessToken().first()
-            client.get {
-                url("payments")
-                headers{
-                  append(HttpHeaders.Authorization, "Bearer $accessToken")
-                }
-            }
-        }
 
     override suspend fun post(payments: List<PaymentDto>) : Resource<Unit> =
         safeCall {

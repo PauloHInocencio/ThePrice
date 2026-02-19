@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
 import br.com.noartcode.theprice.data.remote.dtos.EventDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
@@ -17,17 +18,15 @@ import br.com.noartcode.theprice.domain.usecases.payment.IGetOldestPaymentRecord
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.payment.IGetPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertBill
-import br.com.noartcode.theprice.domain.usecases.bill.IInsertMissingPayments
+import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
+import br.com.noartcode.theprice.domain.usecases.payment.IInsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
-import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
 import br.com.noartcode.theprice.ui.mapper.UiMapper
-import br.com.noartcode.theprice.ui.presentation.account.AccountUiState
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import br.com.noartcode.theprice.util.doIfError
@@ -61,7 +60,7 @@ class HomeViewModel(
     private val getEvents: IGetEvents,
     private val updateBill: IUpdateBill,
     private val deleteBill: IDeleteLocalBill,
-    private val insertNewBill: IInsertBill,
+    private val insertBillWithPayments: IInsertBillWithPayments,
     private val updatePayment: IUpdatePayment,
     private val insertMissingPayments: IInsertMissingPayments,
     private val insertPayments: IInsertPayments,
@@ -87,8 +86,8 @@ class HomeViewModel(
                         updateBill(bill.toDomain())
                     }
                     ("bill" to "create") -> {
-                        val bill = defaultJson.decodeFromString<BillDto>(event.data!!)
-                        insertNewBill(bill.toDomain())
+                        val (bill, payments) = defaultJson.decodeFromString<BillWithPaymentsDto>(event.data!!)
+                        insertBillWithPayments(bill.toDomain(), payments = payments.toDomain())
                     }
                     ("bill" to "delete") -> {
                         val bill = defaultJson.decodeFromString<BillDto>(event.data!!)

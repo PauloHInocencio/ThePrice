@@ -2,6 +2,7 @@ package br.com.noartcode.theprice.domain.usecases.bill
 
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.toDayMonthAndYear
@@ -18,8 +19,9 @@ import kotlinx.datetime.until
 interface IInsertBillWithPayments {
     suspend operator fun invoke(
         bill: Bill,
-        currentDate:DayMonthAndYear,
-    ) : Resource<Pair<Bill, List<Payment>>>
+        currentDate:DayMonthAndYear? = null,
+        payments: List<Payment> = listOf()
+    ) : Resource<BillWithPayments>
 }
 
 class InsertBillWithPayments(
@@ -29,8 +31,22 @@ class InsertBillWithPayments(
 ) : IInsertBillWithPayments {
     override suspend fun invoke(
         bill: Bill,
-        currentDate: DayMonthAndYear
-    ): Resource<Pair<Bill, List<Payment>>> = withContext(dispatcher) {
+        currentDate: DayMonthAndYear?,
+        payments:List<Payment>
+    ): Resource<BillWithPayments> = withContext(dispatcher) {
+
+        if (!payments.isEmpty()) {
+            val result = localDataSource.insertBillWithPayments(bill, payments)
+            return@withContext Resource.Success(result)
+        }
+
+        if (currentDate == null) {
+            return@withContext Resource.Error(
+                message = "currentDate is required if no payments are provided"
+            )
+        }
+
+        // If no payments, it should create them.
         try {
             val start = bill.billingStartDate.toLocalDate()
             val numOfPayments = start.until(

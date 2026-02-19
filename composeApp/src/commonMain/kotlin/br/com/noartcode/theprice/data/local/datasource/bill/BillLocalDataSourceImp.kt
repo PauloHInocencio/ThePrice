@@ -4,6 +4,7 @@ import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.mapper.toDomain
 import br.com.noartcode.theprice.data.local.mapper.toEntity
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -43,20 +44,26 @@ class BillLocalDataSourceImp(
     override suspend fun insertBillWithPayments(
         bill: Bill,
         payments: List<Payment>
-    ) : Pair<Bill, List<Payment>> {
+    ) : BillWithPayments {
         val billEntity = bill.copy(id = bill.id.ifEmpty { Uuid.random().toString() }).toEntity()
-        val paymentEntity = payments
+        val paymentsEntity = payments
             .map{
                 it.copy(
                     id = it.id.ifEmpty { Uuid.random().toString() },
                     billId = billEntity.id
                 )
             }.toEntity()
+
+        // Transaction
         dao.insertBillWithPayments(
             bill = billEntity,
-            payments = paymentEntity
+            payments = paymentsEntity
         )
-        return billEntity.toDomain() to paymentEntity.toDomain()
+
+        return BillWithPayments(
+            bill = billEntity.toDomain(),
+            payments = paymentsEntity.toDomain()
+        )
     }
 
     override suspend fun update(bill: Bill) {
