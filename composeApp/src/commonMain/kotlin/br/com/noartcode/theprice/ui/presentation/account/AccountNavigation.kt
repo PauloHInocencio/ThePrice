@@ -11,15 +11,15 @@ import org.koin.compose.viewmodel.koinViewModel
 data object AccountDestination
 
 fun NavGraphBuilder.composeAccountScreen(
-    onNavigateToHome:() -> Unit,
-    onNavigateToLogin:() -> Unit,
+   onNavigateBack: () -> Unit,
+   onNavigateToLogin: () -> Unit,
 ){
    composable<AccountDestination> {
        val viewModel = koinViewModel<AccountViewModel>()
        AccountScreen(
            state = viewModel.uiState.collectAsState().value,
            onEvent = viewModel::onEvent,
-           onNavigateToHome = onNavigateToHome,
+           onNavigateBack = onNavigateBack,
            onNavigateToLogin = onNavigateToLogin,
        )
    }

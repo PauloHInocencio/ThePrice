@@ -54,8 +54,8 @@ fun AppNavGraph(
         )
 
         composeAccountScreen(
-            onNavigateToHome = { navController.navigateToHome() },
-            onNavigateToLogin = { navController.navigateToLogin() },
+            onNavigateBack = { navController.popBackStack() },
+            onNavigateToLogin = { navController.navigateToLogin() }
         )
 
         composeLoginScreen(
