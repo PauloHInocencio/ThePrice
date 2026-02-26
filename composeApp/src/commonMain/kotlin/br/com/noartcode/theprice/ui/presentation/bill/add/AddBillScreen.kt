@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.ui.presentation.bill.add
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -91,9 +94,15 @@ fun BillScreenContent(
     onSaveClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val localFocus = LocalFocusManager.current
     Column(
         modifier = modifier
             .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    localFocus.clearFocus()
+                })
+            }
     ) {
         PriceEditField(
             modifier = Modifier.padding(20.dp),
