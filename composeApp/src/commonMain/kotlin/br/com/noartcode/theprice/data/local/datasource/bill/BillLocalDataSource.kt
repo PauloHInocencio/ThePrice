@@ -16,6 +16,10 @@ interface BillLocalDataSource {
         bill:Bill,
         payments:List<Payment>
     ) : BillWithPayments
+    suspend fun updateBillWithPayments(
+        bill: Bill,
+        payments: List<Payment>
+    ) : BillWithPayments
     suspend fun getBill(id:String) : Bill?
     suspend fun delete(id:String)
     suspend fun deleteAllBills()

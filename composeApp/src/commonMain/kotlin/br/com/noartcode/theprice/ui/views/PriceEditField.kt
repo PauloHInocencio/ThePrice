@@ -17,13 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import br.com.noartcode.theprice.ui.theme.FieldLabelStyle
 
 
 @Composable
@@ -49,11 +48,7 @@ fun PriceEditField(
         Text(
             text = fieldName,
             maxLines = 1,
-            style = TextStyle(
-                color = Color.DarkGray.copy(alpha = 0.8f),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
+            style = FieldLabelStyle
         )
         Spacer(Modifier.height(10.dp))
         OutlinedTextField(

@@ -31,11 +31,6 @@ fun NavGraphBuilder.composeEditBillScreen(
             onEvent = viewModel::onEvent,
             onNavigateHome = onNavigateToHome,
         )
-        //TODO("Retrieve the BillID inside the ViewModel")
-        LaunchedEffect(Unit){
-            val billId = entry.toRoute<EditBillDestination>().billId
-            viewModel.onEvent(EditBillEvent.OnGetBill(billId))
-        }
     }
 
 }

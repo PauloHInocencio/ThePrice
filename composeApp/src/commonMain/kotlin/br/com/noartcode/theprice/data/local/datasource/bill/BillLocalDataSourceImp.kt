@@ -66,6 +66,24 @@ class BillLocalDataSourceImp(
         )
     }
 
+    override suspend fun updateBillWithPayments(
+        bill: Bill,
+        payments: List<Payment>
+    ): BillWithPayments {
+        val billEntity = bill.toEntity()
+        val paymentsEntity =payments.toEntity()
+
+        dao.updateBillWithPayments(
+            bill = billEntity,
+            payments = paymentsEntity
+        )
+
+        return BillWithPayments(
+            bill = bill,
+            payments = payments
+        )
+    }
+
     override suspend fun update(bill: Bill) {
 
         dao.update(

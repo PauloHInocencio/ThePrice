@@ -55,6 +55,7 @@ import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.bill.InsertBill
@@ -64,6 +65,7 @@ import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
 import br.com.noartcode.theprice.domain.usecases.datetime.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.user.LoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.UpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.UpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.user.RegisterUser
@@ -115,7 +117,21 @@ fun commonModule() = module {
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
     single<IInsertBill> { InsertBill(repository = get(), ioDispatcher = get()) }
     single<IUpdateBill> { UpdateBill(repository = get(), dispatcher = get()) }
-    single<IInsertBillWithPayments> { InsertBillWithPayments(localDataSource = get(), getTodayDate = get(), dispatcher = get()) }
+    single<IInsertBillWithPayments> {
+        InsertBillWithPayments(
+            localDataSource = get(),
+            getTodayDate = get(),
+            dispatcher = get()
+        )
+    }
+    single<IUpdateBillWithPayments> {
+        UpdateBillWithPayments(
+            billLocalDataSource = get(),
+            paymentLocalDataSource = get(),
+            getTodayDate = get(),
+            dispatcher = get()
+        )
+    }
     single<IInsertMissingPayments> { InsertMissingPayments(billsRepository = get(), paymentsRepository = get(), getTodayDate = get(), dispatcher = get() ) }
     single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert) }
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
@@ -196,7 +212,6 @@ fun viewModelsModule() = module {
             currencyFormatter = get(),
             insertBillWithPayments = get(),
             getTodayDate = get(),
-            epochFormatter = get(),
             getMonthName = get(),
             eventSyncQueue = get(),
         )
@@ -206,11 +221,12 @@ fun viewModelsModule() = module {
             currencyFormatter = get(),
             updateBill = get(),
             getTodayDate = get(),
-            epochFormatter = get(),
             getMonthName = get(),
             getBill = get(),
             deleteBill = get(),
-            eventSyncQueue = get()
+            eventSyncQueue = get(),
+            updateBillWithPayments = get(),
+            savedStateHandle = get()
         )
     }
     viewModel {

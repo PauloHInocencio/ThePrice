@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import br.com.noartcode.theprice.data.local.entities.BillEntity
 import br.com.noartcode.theprice.data.local.entities.PaymentEntity
+import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.Payment
 import kotlinx.coroutines.flow.Flow
 
@@ -41,9 +42,18 @@ interface BillDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayments(payments:List<PaymentEntity>)
 
+    @Update
+    suspend fun updatePayments(payments: List<PaymentEntity>)
+
     @Transaction
     suspend fun insertBillWithPayments(bill:BillEntity, payments:List<PaymentEntity>) {
         insert(bill)
         insertPayments(payments)
+    }
+
+    @Transaction
+    suspend fun updateBillWithPayments(bill: BillEntity, payments: List<PaymentEntity>) {
+        update(bill)
+        updatePayments(payments)
     }
 }

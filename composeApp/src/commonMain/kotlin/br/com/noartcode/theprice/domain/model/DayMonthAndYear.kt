@@ -11,6 +11,12 @@ data class DayMonthAndYear(
     val month: Int,
     val year: Int
 ) : Comparable<DayMonthAndYear>{
+
+    companion object {
+        // TODO: MAKE this an invalid date
+        val EMPTY = DayMonthAndYear(day = 1, month = 1, year = 1900)
+    }
+
     override fun compareTo(other: DayMonthAndYear): Int {
         return compareValuesBy(this, other,
             DayMonthAndYear::year,
