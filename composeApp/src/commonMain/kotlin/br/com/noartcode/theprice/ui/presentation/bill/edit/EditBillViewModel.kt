@@ -13,8 +13,8 @@ import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillWithPayments
-import br.com.noartcode.theprice.domain.usecases.bill.UpdateBillWithPayments
 import br.com.noartcode.theprice.ui.presentation.home.views.capitalizeWords
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
@@ -33,7 +33,7 @@ class EditBillViewModel(
     private val getBill: IGetBillByID,
     private val deleteBill: IDeleteLocalBill,
     private val eventSyncQueue: EventSyncQueue,
-    private val updateBillWithPayments: IUpdateBillWithPayments,
+    private val updateBillAndApplyToPayments: IUpdateBillAndApplyToPayments,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -68,44 +68,27 @@ class EditBillViewModel(
                 }
             }
             EditBillEvent.OnSave -> {
-                _uiState.update { it.copy(isSaving = true) }
-
                 val priceInt = currencyFormatter.clenup(_uiState.value.price)
+                if (
+                    originalBill.billingStartDate != _uiState.value.billingStartDate ||
+                    originalBill.price != priceInt) {
+                    _uiState.update {
+                        it.copy(
+                            showingChangePropagationDialog = true,
+                        )
+                    }
+                    return@launch
+                }
+
                 // check if something changed
                 if (
                     originalBill.name != _uiState.value.name ||
-                    originalBill.price != priceInt ||
-                    originalBill.description !=_uiState.value.description ||
-                    originalBill.billingStartDate != _uiState.value.billingStartDate
+                    originalBill.description !=_uiState.value.description
                 ) {
-                    val changedBill = originalBill.copy(
-                        name = _uiState.value.name,
-                        price = priceInt,
-                        description = _uiState.value.description,
-                        billingStartDate = _uiState.value.billingStartDate
-                    )
+                    _uiState.update { it.copy(isSaving = true) }
+                    //updateBillOnly()
+                    applyChangesToPayments(from = null)
 
-                    if (
-                        originalBill.billingStartDate != changedBill.billingStartDate ||
-                        originalBill.price != priceInt) {
-                        _uiState.update {
-                            it.copy(
-                                showingChangePropagationDialog = true,
-                            )
-                        }
-
-                        return@launch
-
-                    }
-                    updateBill(changedBill)
-                        .doIfSuccess {
-                            eventSyncQueue.enqueue(changedBill.toSyncEvent("update"))
-                            _uiState.update { it.copy(canClose = true) }
-                        }
-                        .doIfError { error ->
-                            _uiState.update { it.copy(errorMessage = error.message) }
-                            println("${error.message}, ${error.exception.toString()}" )
-                        }
                 } else {
                     println("Nothing to save")
                     _uiState.update { it.copy(canClose = true) }
@@ -171,53 +154,59 @@ class EditBillViewModel(
                 _uiState.update {
                     it.copy(
                         showingChangePropagationDialog = false,
+                        isSaving = true,
                     )
                 }
-
-                val priceInt = currencyFormatter.clenup(_uiState.value.price)
-                val changedBill = originalBill.copy(
-                    name = _uiState.value.name,
-                    price = priceInt,
-                    description = _uiState.value.description,
-                    billingStartDate = _uiState.value.billingStartDate
-                )
-
-
-                updateBillWithPayments(changedBill, originalBill.billingStartDate)
-                    .doIfSuccess {
-                        eventSyncQueue.enqueue(changedBill.toSyncEvent("update"))
-                        _uiState.update { it.copy(canClose = true) }
-                    }
-                    .doIfError { error ->
-                        _uiState.update { it.copy(errorMessage = error.message, isSaving = false) }
-                    }
+                applyChangesToPayments(from = originalBill.billingStartDate)
             }
 
             EditBillEvent.OnApplyChangesToFuturePayments -> {
                 _uiState.update {
                     it.copy(
                         showingChangePropagationDialog = false,
+                        isSaving = true,
                     )
                 }
-
-                val priceInt = currencyFormatter.clenup(_uiState.value.price)
-                val changedBill = originalBill.copy(
-                    name = _uiState.value.name,
-                    price = priceInt,
-                    description = _uiState.value.description,
-                    billingStartDate = _uiState.value.billingStartDate
-                )
-
-                updateBillWithPayments(changedBill,  getTodayDate())
-                    .doIfSuccess {
-                        eventSyncQueue.enqueue(changedBill.toSyncEvent("update"))
-                        _uiState.update { it.copy(canClose = true) }
-                    }
-                    .doIfError { error ->
-                        _uiState.update { it.copy(errorMessage = error.message, isSaving = false) }
-                    }
+                applyChangesToPayments(from = getTodayDate())
             }
         }
+    }
+
+    private suspend fun updateBillOnly() {
+        val changedBill = originalBill.copy(
+            description = _uiState.value.description,
+            billingStartDate = _uiState.value.billingStartDate
+        )
+
+        updateBill(changedBill)
+            .doIfSuccess { updatedBill ->
+                eventSyncQueue.enqueue(updatedBill.toSyncEvent("update"))
+                _uiState.update { it.copy(canClose = true) }
+            }
+            .doIfError { error ->
+                _uiState.update { it.copy(errorMessage = error.message) }
+                println("${error.message}, ${error.exception.toString()}" )
+            }
+    }
+
+    private suspend fun applyChangesToPayments(from: DayMonthAndYear?) {
+        val priceInt = currencyFormatter.clenup(_uiState.value.price)
+        val changedBill = originalBill.copy(
+            name = _uiState.value.name,
+            price = priceInt,
+            description = _uiState.value.description,
+            billingStartDate = _uiState.value.billingStartDate
+        )
+
+
+        updateBillAndApplyToPayments(changedBill, from)
+            .doIfSuccess { updatedBillWithPayments ->
+                eventSyncQueue.enqueue(updatedBillWithPayments.toSyncEvent("update"))
+                _uiState.update { it.copy(canClose = true) }
+            }
+            .doIfError { error ->
+                _uiState.update { it.copy(errorMessage = error.message, isSaving = false) }
+            }
     }
 
     private fun loadOriginalBill(billID: String?) {

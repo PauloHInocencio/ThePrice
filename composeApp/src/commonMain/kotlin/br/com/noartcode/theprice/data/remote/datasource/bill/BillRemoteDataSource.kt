@@ -9,5 +9,6 @@ interface BillRemoteDataSource {
     suspend fun fetchAllBillsWithPayments() : Resource<List<BillWithPaymentsDto>>
     suspend fun post(billWithPayments: BillWithPaymentsDto) : Resource<Unit>
     suspend fun put(bill:BillDto) : Resource<Unit>
+    suspend fun put(billWithPayments: BillWithPaymentsDto) : Resource<Unit>
     suspend fun delete(id:String) : Resource<BillDto>
 }

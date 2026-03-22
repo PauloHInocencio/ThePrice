@@ -74,8 +74,9 @@ class SyncEventsWorker(
                             billRemoteDataSource.post(billWithPayments)
                         }
                         "bill" to "update" -> {
-                            val bill = defaultJson.decodeFromString<BillDto>(event.payload)
-                            billRemoteDataSource.put(bill)
+                            val billWithPayment = defaultJson.decodeFromString<BillWithPaymentsDto>(event.payload)
+                            billRemoteDataSource.put(billWithPayment)
+
                         }
                         "bill" to "delete" -> {
                             val bill = defaultJson.decodeFromString<BillDto>(event.payload)

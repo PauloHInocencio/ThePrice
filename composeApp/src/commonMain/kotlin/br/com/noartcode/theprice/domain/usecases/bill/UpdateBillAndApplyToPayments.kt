@@ -5,7 +5,6 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.isTotalMonthsGreaterOrEqual
 import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
@@ -14,25 +13,50 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 
-interface IUpdateBillWithPayments {
+interface IUpdateBillAndApplyToPayments {
     suspend operator fun invoke(
-        billWithPayments: BillWithPayments
+        bill: Bill,
+        startDateToApplyChanges: DayMonthAndYear?,
     ) : Resource<BillWithPayments>
 }
 
-class UpdateBillWithPayments(
+class UpdateBillAndApplyToPayments(
     private val billLocalDataSource: BillLocalDataSource,
+    private val paymentLocalDataSource: PaymentLocalDataSource,
+    private val getTodayDate: IGetTodayDate,
     private val dispatcher: CoroutineDispatcher
-) : IUpdateBillWithPayments {
+) : IUpdateBillAndApplyToPayments {
 
     override suspend operator fun invoke(
-        billWithPayments: BillWithPayments
+        bill: Bill,
+        startDateToApplyChanges: DayMonthAndYear?
     ) : Resource<BillWithPayments> = withContext(dispatcher) {
         try {
+            val paymentsToUpdate = if (startDateToApplyChanges != null) {
+                paymentLocalDataSource
+                    .getBillPayments(bill.id)
+                    .filter { payment ->
+                        payment.dueDate.isTotalMonthsGreaterOrEqual(startDateToApplyChanges)
+                    }
+                    .map { payment ->
+                        // The changes propagated to payments are the payment Due Day and Price
+                        payment.copy(
+                            dueDate = payment.dueDate.copy(day = bill.billingStartDate.day),
+                            price = bill.price,
+                            updatedAt = getTodayDate().toEpochMilliseconds(),
+                            isSynced = false
+                        )
+                    }
+            } else listOf()
+
             val result = billLocalDataSource.updateBillWithPayments(
-               bill = billWithPayments.bill,
-               payments = billWithPayments.payments
+               bill = bill.copy(
+                   updatedAt = getTodayDate().toEpochMilliseconds(),
+                   isSynced = false
+               ),
+               payments = paymentsToUpdate
            )
+
             return@withContext Resource.Success(result)
         } catch (e: Throwable) {
             return@withContext Resource.Error(

@@ -77,7 +77,7 @@ class AddBillViewModel(
                     state.update { it.copy(isSaving = true) }
                     insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
                         .doIfSuccess { billWithPayments ->
-                            eventSyncQueue.enqueue(billWithPayments.toSyncEvent())
+                            eventSyncQueue.enqueue(billWithPayments.toSyncEvent("create"))
                             bill.update { it.copy(id = billWithPayments.bill.id) }
                         }
                         .doIfError { error->

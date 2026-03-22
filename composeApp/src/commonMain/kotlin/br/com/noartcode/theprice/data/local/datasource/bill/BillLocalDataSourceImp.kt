@@ -85,7 +85,6 @@ class BillLocalDataSourceImp(
     }
 
     override suspend fun update(bill: Bill) {
-
         dao.update(
             bill.toEntity()
         )

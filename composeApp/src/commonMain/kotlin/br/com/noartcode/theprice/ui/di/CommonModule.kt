@@ -55,6 +55,7 @@ import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
@@ -65,6 +66,7 @@ import br.com.noartcode.theprice.domain.usecases.user.LogoutUser
 import br.com.noartcode.theprice.domain.usecases.datetime.MoveMonth
 import br.com.noartcode.theprice.domain.usecases.user.LoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.UpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.UpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.bill.UpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.UpdatePaymentStatus
@@ -116,7 +118,7 @@ fun commonModule() = module {
     single<IGetBillByID> { IGetBillByID(get<BillLocalDataSource>()::getBill) }
     single<IDeleteLocalBill> { IDeleteLocalBill(get<BillLocalDataSource>()::delete) }
     single<IInsertBill> { InsertBill(repository = get(), ioDispatcher = get()) }
-    single<IUpdateBill> { UpdateBill(repository = get(), dispatcher = get()) }
+    single<IUpdateBill> { UpdateBill(repository = get(), getTodayDate = get(), dispatcher = get()) }
     single<IInsertBillWithPayments> {
         InsertBillWithPayments(
             localDataSource = get(),
@@ -124,11 +126,17 @@ fun commonModule() = module {
             dispatcher = get()
         )
     }
-    single<IUpdateBillWithPayments> {
-        UpdateBillWithPayments(
+    single<IUpdateBillAndApplyToPayments> {
+        UpdateBillAndApplyToPayments(
             billLocalDataSource = get(),
             paymentLocalDataSource = get(),
             getTodayDate = get(),
+            dispatcher = get()
+        )
+    }
+    single<IUpdateBillWithPayments> {
+        UpdateBillWithPayments(
+            billLocalDataSource = get(),
             dispatcher = get()
         )
     }
@@ -198,7 +206,7 @@ fun viewModelsModule() = module {
             updatePaymentStatus = get(),
             getEvents = get(),
             insertMissingPayments = get(),
-            updateBill = get(),
+            updateBillWithPayments = get(),
             insertBillWithPayments = get(),
             updatePayment = get(),
             insertPayments = get(),
@@ -225,7 +233,7 @@ fun viewModelsModule() = module {
             getBill = get(),
             deleteBill = get(),
             eventSyncQueue = get(),
-            updateBillWithPayments = get(),
+            updateBillAndApplyToPayments = get(),
             savedStateHandle = get()
         )
     }

@@ -40,6 +40,15 @@ class BillRemoteDataSourceImp(
             }
         }
 
+    override suspend fun put(billWithPayments: BillWithPaymentsDto): Resource<Unit> =
+        safeCall {
+            client.put {
+                url("bills/${billWithPayments.bill.id}")
+                setBody(billWithPayments)
+            }
+        }
+
+
     override suspend fun delete(id: String): Resource<BillDto> =
         safeCall {
             client.delete {

@@ -69,3 +69,11 @@ fun DayMonthAndYear.isValid() : Boolean {
         return false
     }
 }
+
+fun DayMonthAndYear.isTotalMonthsGreaterOrEqual(
+    other: DayMonthAndYear
+): Boolean {
+    val totalMonths = this.year * 12 + this.month
+    val otherTotalMonths = other.year * 12 + other.month
+    return totalMonths >= otherTotalMonths
+}
