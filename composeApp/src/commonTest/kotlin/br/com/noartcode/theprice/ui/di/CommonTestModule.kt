@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.ui.di
 
+import androidx.lifecycle.SavedStateHandle
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
@@ -21,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import org.koin.core.context.loadKoinModules
 
 import org.koin.dsl.module
 
@@ -47,6 +49,17 @@ fun commonTestModule() = module {
     }
 
     single<IGetTodayDate> { GetTodayDateStub() }
+}
+
+private fun savedHandleStateModule(handle: SavedStateHandle = SavedStateHandle()) = module {
+    single<SavedStateHandle> { handle }
+}
+
+fun useSavedStateHandle(vararg pairs: Pair<String, Any?>) {
+   val handle = SavedStateHandle().apply {
+        pairs.forEach { (key, value) -> this[key] = value }
+    }
+    loadKoinModules(savedHandleStateModule(handle))
 }
 
 fun dispatcherTestModule() = module {
