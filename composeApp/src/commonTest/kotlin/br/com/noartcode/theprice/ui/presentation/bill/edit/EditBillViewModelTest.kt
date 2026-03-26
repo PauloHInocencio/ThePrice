@@ -5,6 +5,11 @@ import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
+import br.com.noartcode.theprice.data.remote.dtos.BillDto
+import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
+import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.isTotalMonthsGreaterOrEqual
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
@@ -16,6 +21,7 @@ import br.com.noartcode.theprice.ui.di.commonTestModule
 import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
+import br.com.noartcode.theprice.ui.di.updateBillAndApplyToPaymentsErrorModule
 import br.com.noartcode.theprice.ui.di.useSavedStateHandle
 import br.com.noartcode.theprice.ui.di.viewModelsModule
 import br.com.noartcode.theprice.util.Resource
@@ -25,6 +31,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.serialization.json.Json
+import org.koin.core.context.loadKoinModules
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
@@ -33,6 +41,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EditBillViewModelTest : KoinTest, RobolectricTests() {
@@ -41,6 +50,7 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
     private val paymentDataSource: PaymentLocalDataSource by inject()
     private val getTodayDate: IGetTodayDate by inject()
+    private val eventSyncQueue: EventSyncQueue by inject()
 
 
     private val billingStartDate = DayMonthAndYear(day = 15, month = 1, year = 2026)
@@ -75,21 +85,10 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
 
     @Test
     fun `save with price change shows propagation dialog`() = runTest {
-
-        // Populating database with 1 bill.
-        val billWithPayments = (insertBillWithPayments(
-            bill = stubBills[0].copy(billingStartDate = billingStartDate),
-            currentDate = currentDate
-        ) as Resource.Success).data
-
-        // Passing the bill id to the ViewModel SavedStateHandle
-        useSavedStateHandle("billId" to billWithPayments.bill.id)
-
+        initBill(stubBills[0].copy(billingStartDate = billingStartDate))
         viewModel.uiState.test {
-
             // Skip initial state
             skipItems(2)
-
 
             // GIVEN an edited bill with changed price
             viewModel.onEvent(EditBillEvent.OnPriceChanged("R$ 120,9"))
@@ -107,24 +106,12 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
 
             ensureAllEventsConsumed()
         }
-
-
     }
 
     @Test
     fun `save with billing date change shows propagation dialog`() = runTest {
-
-        // Populating database with 1 bill.
-        val billWithPayments = (insertBillWithPayments(
-            bill = stubBills[0].copy(billingStartDate = billingStartDate),
-            currentDate = currentDate
-        ) as Resource.Success).data
-
-        // Passing the bill id to the ViewModel SavedStateHandle
-        useSavedStateHandle("billId" to billWithPayments.bill.id)
-
+        initBill(stubBills[0].copy(billingStartDate = billingStartDate))
         viewModel.uiState.test {
-
             // Skip initial state
             skipItems(2)
 
@@ -149,18 +136,8 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
 
     @Test
     fun `apply changes to all payments updates from original date`() = runTest {
-
-        // Populating database with 1 bill.
-        val billWithPayments = (insertBillWithPayments(
-            bill = stubBills[0].copy(billingStartDate = billingStartDate),
-            currentDate = currentDate
-        ) as Resource.Success).data
-
-        // Passing the bill id to the ViewModel SavedStateHandle
-        useSavedStateHandle("billId" to billWithPayments.bill.id)
-
+        val billWithPayments = initBill(stubBills[0].copy(billingStartDate = billingStartDate))
         viewModel.uiState.test {
-
             // GIVEN billingStartDate and price changed and saved
             // Skip initial state
             skipItems(2)
@@ -190,31 +167,15 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
                 assertEquals(expected = 30000L, actual = payment.price)
                 assertEquals(expected = 20, actual = payment.dueDate.day)
             }
-
-
         }
-
-
-
     }
 
     @Test
     fun `apply changes to future payments uses today date`() = runTest {
-
-        // Populating database with 1 bill.
-        val billWithPayments = (insertBillWithPayments(
-            bill = stubBills[0].copy(billingStartDate = billingStartDate),
-            currentDate = currentDate
-        ) as Resource.Success).data
-
-        // Passing the bill id to the ViewModel SavedStateHandle
-        useSavedStateHandle("billId" to billWithPayments.bill.id)
-
+        val billWithPayments = initBill(stubBills[0].copy(billingStartDate = billingStartDate))
         // Set Current Day to March 25th
         (getTodayDate as GetTodayDateStub).date =  DayMonthAndYear(day = 25, month = 3, year = 2026)
-
         viewModel.uiState.test {
-
             // GIVEN billingStartDate and price changed and saved
             // Skip initial state
             skipItems(2)
@@ -258,29 +219,95 @@ class EditBillViewModelTest : KoinTest, RobolectricTests() {
 
     @Test
     fun `successful update enqueues sync event`() = runTest {
-        // GIVEN a valid bill update
-        // WHEN update completes successfully
-        // THEN sync event is enqueued with action "update"
-    }
+        val billWithPayments = initBill(stubBills[0].copy(billingStartDate = billingStartDate))
+        viewModel.uiState.test {
+            // Skip initial state
+            skipItems(2)
 
-    @Test
-    fun `successful update sets canClose to true`() = runTest {
-        // GIVEN a valid bill update
-        // WHEN update completes successfully
-        // THEN uiState.canClose is set to true
+            // GIVEN a valid bill update
+            viewModel.onEvent(EditBillEvent.OnPriceChanged("R$ 120,9"))
+            skipItems(1)
+            viewModel.onEvent(EditBillEvent.OnApplyChangesToAllPayments)
+            skipItems(1)
+
+            // WHEN update completes successfully
+            with(awaitItem()){
+                assertEquals(expected = true, actual = this.canClose)
+            }
+
+            ensureAllEventsConsumed()
+
+            // THEN sync event is enqueued with action "update"
+            val event = eventSyncQueue.peek()!!
+            val (bill, payments) = Json.decodeFromString<BillWithPaymentsDto>(event.payload)
+            assertEquals(expected = "update", actual = event.action)
+            assertEquals(expected = billWithPayments.bill.id, actual =  bill.id)
+            assertEquals(expected = 3, actual = payments.size)
+        }
     }
 
     @Test
     fun `update error sets error message and stops saving`() = runTest {
         // GIVEN a bill update that fails
-        // WHEN update completes with error
-        // THEN uiState.errorMessage is set and isSaving is false
+        initBill(stubBills[0].copy(billingStartDate = billingStartDate))
+
+        // Load mock that returns error
+        loadKoinModules(updateBillAndApplyToPaymentsErrorModule())
+
+        viewModel.uiState.test {
+            // Skip initial state
+            skipItems(2)
+
+            // WHEN update completes with error
+            viewModel.onEvent(EditBillEvent.OnNameChanged("Updated Name"))
+            skipItems(1)
+            viewModel.onEvent(EditBillEvent.OnApplyChangesToAllPayments)
+
+            // Set isSaving to true
+            with(awaitItem()) {
+                assertEquals(expected = true, isSaving)
+            }
+
+            // THEN uiState.errorMessage is set and isSaving is false
+            with(awaitItem()) {
+                assertNotNull(errorMessage)
+                assertEquals(expected = false, actual = isSaving)
+            }
+
+            ensureAllEventsConsumed()
+        }
     }
 
     @Test
     fun `save with no changes sets canClose immediately`() = runTest {
         // GIVEN no fields have changed from original bill
-        // WHEN onEvent(OnSave) is called
-        // THEN uiState.canClose is true without calling update
+        initBill(stubBills[0].copy(billingStartDate = billingStartDate))
+        viewModel.uiState.test {
+            // Skip initial state
+            skipItems(2)
+
+            // WHEN onEvent(OnSave) is called
+            viewModel.onEvent(EditBillEvent.OnSave)
+
+            // THEN uiState.canClose is true without calling update
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = this.canClose)
+            }
+
+            ensureAllEventsConsumed()
+        }
+    }
+
+    private suspend fun initBill(bill: Bill) : BillWithPayments {
+        // Populating database with 1 bill.
+        val billWithPayments = (insertBillWithPayments(
+            bill = bill,
+            currentDate = currentDate
+        ) as Resource.Success).data
+
+        // Passing the bill id to the ViewModel SavedStateHandle
+        useSavedStateHandle("billId" to billWithPayments.bill.id)
+
+        return billWithPayments
     }
 }

@@ -6,11 +6,13 @@ import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
 import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import br.com.noartcode.theprice.util.Resource
 import dev.mokkery.MockMode
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.everySuspend
@@ -19,6 +21,7 @@ import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -49,6 +52,22 @@ fun commonTestModule() = module {
     }
 
     single<IGetTodayDate> { GetTodayDateStub() }
+}
+
+fun updateBillAndApplyToPaymentsErrorModule() = module {
+    single<IUpdateBillAndApplyToPayments> {
+        mock<IUpdateBillAndApplyToPayments>().apply {
+            everySuspend {
+                this@apply.invoke(any(), any())
+            } calls {
+                delay(500)
+                Resource.Error(
+                    message = "An error occurred when trying to update bill with payments",
+                    exception = Exception("Database error")
+                )
+            }
+        }
+    }
 }
 
 private fun savedHandleStateModule(handle: SavedStateHandle = SavedStateHandle()) = module {
