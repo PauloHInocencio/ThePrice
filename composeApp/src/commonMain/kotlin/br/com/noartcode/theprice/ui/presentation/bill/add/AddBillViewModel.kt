@@ -27,7 +27,6 @@ class AddBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
     private val insertBillWithPayments: IInsertBillWithPayments,
     private val getTodayDate: IGetTodayDate,
-    private val epochFormatter: IEpochMillisecondsFormatter,
     private val getMonthName: IGetMonthName,
     private val eventSyncQueue: EventSyncQueue,
 ) : ViewModel() {
@@ -52,7 +51,7 @@ class AddBillViewModel(
             isSaving = s.isSaving,
             errorMessage = s.errorMessage,
             billingStartDateTitle = formatTitle(b.billingStartDate),
-            billingStartDate = epochFormatter.from(b.billingStartDate),
+            billingStartDate = b.billingStartDate,
             priceHasError = price == currencyFormatter.format(0)
         )
     }
@@ -78,7 +77,7 @@ class AddBillViewModel(
                     state.update { it.copy(isSaving = true) }
                     insertBillWithPayments(bill = bill.value, currentDate = getTodayDate())
                         .doIfSuccess { billWithPayments ->
-                            eventSyncQueue.enqueue(billWithPayments.toSyncEvent())
+                            eventSyncQueue.enqueue(billWithPayments.toSyncEvent("create"))
                             bill.update { it.copy(id = billWithPayments.bill.id) }
                         }
                         .doIfError { error->
@@ -92,7 +91,7 @@ class AddBillViewModel(
             is AddBillEvent.OnBillingStartDateChanged -> {
                 bill.update {
                     it.copy(
-                        billingStartDate = epochFormatter.to(event.date),
+                        billingStartDate = event.date,
                     )
                 }
             }

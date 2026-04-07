@@ -8,12 +8,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-fun BillWithPayments.toSyncEvent() : SyncEvent {
+fun BillWithPayments.toSyncEvent(action: String) : SyncEvent {
     val defaultJson = Json { ignoreUnknownKeys = true }
     return SyncEvent(
         id = Uuid.random().toString(),
         endpoint = "bill",
-        action = "create",
+        action = action,
         payload = defaultJson.encodeToString(this.toDto()),
         createdAt = this.bill.createdAt
     )

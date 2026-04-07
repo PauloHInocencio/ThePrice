@@ -11,6 +11,12 @@ data class DayMonthAndYear(
     val month: Int,
     val year: Int
 ) : Comparable<DayMonthAndYear>{
+
+    companion object {
+        // TODO: MAKE this an invalid date
+        val EMPTY = DayMonthAndYear(day = 1, month = 1, year = 1900)
+    }
+
     override fun compareTo(other: DayMonthAndYear): Int {
         return compareValuesBy(this, other,
             DayMonthAndYear::year,
@@ -62,4 +68,12 @@ fun DayMonthAndYear.isValid() : Boolean {
         e.printStackTrace()
         return false
     }
+}
+
+fun DayMonthAndYear.isTotalMonthsGreaterOrEqual(
+    other: DayMonthAndYear
+): Boolean {
+    val totalMonths = this.year * 12 + this.month
+    val otherTotalMonths = other.year * 12 + other.month
+    return totalMonths >= otherTotalMonths
 }

@@ -86,7 +86,6 @@ fun EditPaymentScreen(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                modifier = Modifier.weight(1f),
                 text = state.billName,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold
@@ -99,14 +98,7 @@ fun EditPaymentScreen(
                 hasError = state.priceHasError,
                 onValueChanged = { onEvent(EditPaymentEvent.OnPriceChanged(it)) },
             )
-            Spacer(Modifier.height(20.dp))
-            DateEditFieldView(
-                title = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Paid on" else "Due date",
-                dateTitle = state.paidDateTitle,
-                selectedDate = state.paidAtDate,
-                onSelectDate = { date -> onEvent(EditPaymentEvent.OnPaidAtDateChanged(date)) },
-            )
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(40.dp))
             Button(
                 onClick = { onEvent(EditPaymentEvent.OnStatusChanged) },
                 shape = RoundedCornerShape(20.dp),
@@ -141,9 +133,56 @@ fun EditPaymentScreen(
 
 @Preview
 @Composable
-fun EditPaymentScreen_Preview() {
+fun EditPaymentScreen_PendingPreview() {
     EditPaymentScreen(
-        state = EditPaymentUiState(),
+        state = EditPaymentUiState(
+            billId = "1",
+            billName = "Netflix Subscription",
+            paymentStatus = PaymentUi.Status.PENDING,
+            payedValue = "15.99",
+            paidDateTitle = "Mar 15, 2026",
+            paidAtDate = 1741996800000L,
+            priceHasChanged = true
+        ),
+        onEvent = {},
+        onNavigateToEditBill = {},
+        onNavigateBack = {}
+    )
+}
+
+@Preview
+@Composable
+fun EditPaymentScreen_PaidPreview() {
+    EditPaymentScreen(
+        state = EditPaymentUiState(
+            billId = "2",
+            billName = "Spotify Premium",
+            paymentStatus = PaymentUi.Status.PAYED,
+            payedValue = "9.99",
+            paidDateTitle = "Mar 1, 2026",
+            paidAtDate = 1741737600000L,
+            priceHasChanged = false
+        ),
+        onEvent = {},
+        onNavigateToEditBill = {},
+        onNavigateBack = {}
+    )
+}
+
+@Preview
+@Composable
+fun EditPaymentScreen_WithConfirmationDialog() {
+    EditPaymentScreen(
+        state = EditPaymentUiState(
+            billId = "3",
+            billName = "Gym Membership",
+            paymentStatus = PaymentUi.Status.PENDING,
+            payedValue = "45.00",
+            paidDateTitle = "Mar 20, 2026",
+            paidAtDate = 1742428800000L,
+            askingConfirmation = true,
+            priceHasChanged = true
+        ),
         onEvent = {},
         onNavigateToEditBill = {},
         onNavigateBack = {}

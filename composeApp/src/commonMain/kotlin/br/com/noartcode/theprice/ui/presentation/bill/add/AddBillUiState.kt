@@ -1,10 +1,12 @@
 package br.com.noartcode.theprice.ui.presentation.bill.add
 
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
+
 data class AddBillUiState(
     val price:String = "",
     val name:String = "",
     val billingStartDateTitle:String = "",
-    val billingStartDate:Long = 0L,
+    val billingStartDate: DayMonthAndYear = DayMonthAndYear.EMPTY,
     val description:String? = null,
     val isSaving:Boolean = false,
     val isSaved:Boolean = false,

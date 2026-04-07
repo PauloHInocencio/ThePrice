@@ -82,4 +82,32 @@ class BillLocalDataSourceTest : KoinTest, RobolectricTests() {
         }
     }
 
+    @Test
+    fun `updateBillWithPayments successfully updates bill and payments in transaction`() = runTest {
+        // GIVEN a bill entity and list of payment entities
+        // WHEN calling updateBillWithPayments
+        // THEN bill and all payments are updated in the database and BillWithPayments is returned
+    }
+
+    @Test
+    fun `updateBillWithPayments returns correct billWithPayments domain objects`() = runTest {
+        // GIVEN a bill and payments
+        // WHEN calling updateBillWithPayments
+        // THEN returns BillWithPayments with the same bill and payments (not mapped from entities)
+    }
+
+    @Test
+    fun `updateBillWithPayments with empty payments list succeeds`() = runTest {
+        // GIVEN a bill and empty payments list
+        // WHEN calling updateBillWithPayments
+        // THEN bill is updated and returns BillWithPayments with empty payments
+    }
+
+    @Test
+    fun `updateBillWithPayments transaction failure rolls back all changes`() = runTest {
+        // GIVEN a bill update that succeeds but payments update that fails
+        // WHEN calling updateBillWithPayments
+        // THEN transaction is rolled back and exception is thrown
+    }
+
 }

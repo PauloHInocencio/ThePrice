@@ -23,6 +23,7 @@ import br.com.noartcode.theprice.domain.usecases.payment.IInsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
@@ -58,7 +59,7 @@ class HomeViewModel(
     getFirstPaymentDate: IGetOldestPaymentRecordDate,
     private val updatePaymentStatus: IUpdatePaymentStatus,
     private val getEvents: IGetEvents,
-    private val updateBill: IUpdateBill,
+    private val updateBillWithPayments: IUpdateBillWithPayments,
     private val deleteBill: IDeleteLocalBill,
     private val insertBillWithPayments: IInsertBillWithPayments,
     private val updatePayment: IUpdatePayment,
@@ -82,8 +83,8 @@ class HomeViewModel(
 
                 when (Pair(event.table, event.action)) {
                     ("bill" to "update") -> {
-                        val bill = defaultJson.decodeFromString<BillDto>(event.data!!)
-                        updateBill(bill.toDomain())
+                        val billWithPayments = defaultJson.decodeFromString<BillWithPaymentsDto>(event.data!!)
+                        updateBillWithPayments(billWithPayments.toDomain())
                     }
                     ("bill" to "create") -> {
                         val (bill, payments) = defaultJson.decodeFromString<BillWithPaymentsDto>(event.data!!)
