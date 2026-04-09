@@ -248,6 +248,7 @@ fun viewModelsModule() = module {
             paymentUiMapper = get(),
             getTodayDate = get(),
             eventSyncQueue = get(),
+            savedStateHandle = get(),
         )
     }
 

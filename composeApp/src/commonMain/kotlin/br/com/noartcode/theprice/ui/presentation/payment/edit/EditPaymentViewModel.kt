@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.ui.presentation.payment.edit
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
@@ -21,6 +22,7 @@ import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,6 +37,7 @@ class EditPaymentViewModel(
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
     private val getTodayDate: IGetTodayDate,
     private val eventSyncQueue: EventSyncQueue,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private var payment:Payment? = null
@@ -43,11 +46,13 @@ class EditPaymentViewModel(
 
 
     private val _state = MutableStateFlow(EditPaymentUiState())
-    val uiState = _state.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = EditPaymentUiState()
-    )
+    val uiState = _state
+        .onStart { setupPayment(savedStateHandle["paymentId"]) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = EditPaymentUiState()
+        )
 
     fun onEvent(event: EditPaymentEvent) = viewModelScope.launch {
         when(event){
@@ -86,16 +91,26 @@ class EditPaymentViewModel(
             }
 
             EditPaymentEvent.OnSave -> {
-                _state.update {
-                    it.copy(
-                        askingConfirmation = true,
-                    )
+                if (_state.value.priceHasChanged) {
+                    _state.update {
+                        it.copy(
+                            askingConfirmation = true,
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isSaving = true
+                        )
+                    }
+                    changeOnlyCurrentPayment()
                 }
+
             }
 
-            is EditPaymentEvent.OnGetPayment -> {
+            /*is EditPaymentEvent.OnGetPayment -> {
                 setupPayment(event.id)
-            }
+            }*/
 
 
             EditPaymentEvent.OnChangeAllFuturePayments -> {
@@ -109,22 +124,7 @@ class EditPaymentViewModel(
                         isSaving = true
                     )
                 }
-                val p = Payment(
-                    id = payment!!.id,
-                    billId = payment!!.billId,
-                    price = currencyFormatter.clenup(_state.value.payedValue),
-                    dueDate =  epochFormatter.to(_state.value.paidAtDate),
-                    isPayed = _state.value.paymentStatus == PAYED,
-                    createdAt = payment!!.createdAt,
-                    updatedAt = getTodayDate().toEpochMilliseconds(),
-                    isSynced = false,
-                )
-                updatePayment(p).doIfSuccess {
-                    eventSyncQueue.enqueue(p.toSyncEvent("update"))
-                    _state.update { it.copy(isSaving = false, isSaved = true) }
-                }.doIfError {
-                    // TODO ("LOG error on Crashlytics")
-                }
+               changeOnlyCurrentPayment()
             }
 
             EditPaymentEvent.OnDismissConfirmationDialog -> {
@@ -134,6 +134,25 @@ class EditPaymentViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun changeOnlyCurrentPayment() {
+        val p = Payment(
+            id = payment!!.id,
+            billId = payment!!.billId,
+            price = currencyFormatter.clenup(_state.value.payedValue),
+            dueDate =  epochFormatter.to(_state.value.paidAtDate),
+            isPayed = _state.value.paymentStatus == PAYED,
+            createdAt = payment!!.createdAt,
+            updatedAt = getTodayDate().toEpochMilliseconds(),
+            isSynced = false,
+        )
+        updatePayment(p).doIfSuccess {
+            eventSyncQueue.enqueue(p.toSyncEvent("update"))
+            _state.update { it.copy(isSaving = false, isSaved = true) }
+        }.doIfError {
+            // TODO ("LOG error on Crashlytics")
         }
     }
 
@@ -147,19 +166,28 @@ class EditPaymentViewModel(
         }
 
 
-    private suspend fun setupPayment(paymentId:String) {
-        payment = checkNotNull(getPayment(paymentId))
-        bill = getBill(payment!!.billId)
-        paymentUi = paymentUiMapper.mapFrom(payment!!)
-        _state.update {
-            it.copy(
-                billId = bill!!.id,
-                billName = bill!!.name,
-                payedValue = paymentUi!!.price,
-                paidAtDate = payment!!.dueDate.let { date -> epochFormatter.from(date) },
-                paidDateTitle = dateFormatter(payment!!.dueDate),
-                paymentStatus = paymentUi!!.status,
-            )
+    private suspend fun setupPayment(paymentId:String?) {
+        if (paymentId != null) {
+            payment = getPayment(paymentId)
+            bill = getBill(payment!!.billId)
+            paymentUi = paymentUiMapper.mapFrom(payment!!)
+            _state.update {
+                it.copy(
+                    billId = bill!!.id,
+                    billName = bill!!.name,
+                    payedValue = paymentUi!!.price,
+                    paidAtDate = payment!!.dueDate.let { date -> epochFormatter.from(date) },
+                    paidDateTitle = dateFormatter(payment!!.dueDate),
+                    paymentStatus = paymentUi!!.status,
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    errorMessage = "paymentId is null"
+                )
+            }
         }
+
     }
 }
