@@ -3,14 +3,12 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.helpers.stubBills
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
-import br.com.noartcode.theprice.data.local.dao.PaymentDao
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.domain.model.Bill
 import br.com.noartcode.theprice.domain.model.BillWithPayments
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
-import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -19,7 +17,6 @@ import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.useSavedStateHandle
 import br.com.noartcode.theprice.ui.di.viewModelsModule
-import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +33,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
@@ -162,16 +158,18 @@ class EditPaymentViewModelTest : KoinTest, RobolectricTests() {
         val payment = billWithPayments.payments.last()
         useSavedStateHandle("paymentId" to payment.id)
 
+
+        // WHEN
         viewModel.uiState.test {
 
             skipItems(2)
 
             viewModel.onEvent(EditPaymentEvent.OnPriceChanged("R$ 120,9"))
-
             skipItems(1)
 
             viewModel.onEvent(EditPaymentEvent.OnSave)
 
+            // THEN
             with(awaitItem()) {
                 assertEquals(expected = true, actual = askingConfirmation)
                 assertEquals(expected = false, actual = isSaving)
@@ -179,6 +177,81 @@ class EditPaymentViewModelTest : KoinTest, RobolectricTests() {
             }
 
             ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `When OnChangeAllFuturePayments bill and affected payments should be updated`() = runTest {
+        // GIVEN
+        val billWithPayments = initBill(stubBills[0].copy(billingStartDate = billingStartDate))
+        // Passing the payment id to the ViewModel SavedStateHandle
+        val payment = billWithPayments.payments[1]
+        useSavedStateHandle("paymentId" to payment.id)
+
+        // WHEN
+        viewModel.uiState.test {
+
+            skipItems(2)
+
+            viewModel.onEvent(EditPaymentEvent.OnPriceChanged("R$ 120,9"))
+            skipItems(1)
+
+            viewModel.onEvent(EditPaymentEvent.OnChangeAllFuturePayments)
+            skipItems(2)
+
+            ensureAllEventsConsumed()
+
+            val event = eventSyncQueue.peek()!!
+            val (bill, payments) = Json.decodeFromString<BillWithPaymentsDto>(event.payload)
+
+            assertEquals(expected = 1, eventSyncQueue.size())
+            assertEquals(expected = "update", actual = event.action)
+            assertEquals(expected = 1209L, actual = bill.price)
+            assertEquals(expected = 3, actual = billWithPayments.payments.size)
+            assertEquals(expected = 2, actual = payments.size)
+            assertTrue { payments.all { it.price == 1209L }}
+        }
+    }
+
+    @Test
+    fun `When OnChangeAllFuturePayments payment status should be update after bill and payments`() = runTest {
+        // GIVEN
+        val billWithPayments = initBill(stubBills[0].copy(billingStartDate = billingStartDate))
+        // Passing the payment id to the ViewModel SavedStateHandle
+        val payment = billWithPayments.payments[1]
+        useSavedStateHandle("paymentId" to payment.id)
+
+        // WHEN
+        viewModel.uiState.test {
+
+            skipItems(2)
+
+            viewModel.onEvent(EditPaymentEvent.OnPriceChanged("R$ 120,9"))
+            skipItems(1)
+
+            viewModel.onEvent(EditPaymentEvent.OnStatusChanged)
+            skipItems(1)
+
+            viewModel.onEvent(EditPaymentEvent.OnChangeAllFuturePayments)
+            skipItems(2)
+
+            ensureAllEventsConsumed()
+
+            val paymentEvent = eventSyncQueue.peek()!!
+            val paymentToSync = Json.decodeFromString<PaymentDto>(paymentEvent.payload)
+
+            assertEquals(expected = 2, eventSyncQueue.size()) // two events
+            assertEquals(expected = "update", actual = paymentEvent.action)
+            assertEquals(expected = true, actual = paymentToSync.isPayed)
+
+            eventSyncQueue.remove(paymentEvent.id)
+            val billWithPaymentsEvent = eventSyncQueue.peek()!!
+            val (_, payments) = Json.decodeFromString<BillWithPaymentsDto>(billWithPaymentsEvent.payload)
+
+            assertEquals(expected = "update", actual = billWithPaymentsEvent.action)
+            assertEquals(expected = 2, payments.size)
+            assertEquals(expected = true, payments[0].isPayed)
+            assertEquals(expected = false, payments[1].isPayed)
         }
     }
 

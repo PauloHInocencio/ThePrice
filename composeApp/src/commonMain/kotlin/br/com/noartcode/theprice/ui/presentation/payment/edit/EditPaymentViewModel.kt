@@ -6,20 +6,21 @@ import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.data.local.mapper.toSyncEvent
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.domain.model.Bill
+import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
-import br.com.noartcode.theprice.domain.model.toEpochMilliseconds
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IEpochMillisecondsFormatter
 import br.com.noartcode.theprice.domain.usecases.bill.IGetBillByID
 import br.com.noartcode.theprice.domain.usecases.IGetDateFormat
+import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IGetPaymentByID
-import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.*
 import br.com.noartcode.theprice.util.doIfError
 import br.com.noartcode.theprice.util.doIfSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -35,18 +36,18 @@ class EditPaymentViewModel(
     private val epochFormatter: IEpochMillisecondsFormatter,
     private val updatePayment: IUpdatePayment,
     private val paymentUiMapper: UiMapper<Payment, PaymentUi?>,
-    private val getTodayDate: IGetTodayDate,
+    private val updateBillAndApplyToPayments: IUpdateBillAndApplyToPayments,
     private val eventSyncQueue: EventSyncQueue,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var payment:Payment? = null
-    private var bill:Bill? = null
+    private lateinit var payment:Payment
+    private lateinit var bill:Bill
     private var paymentUi: PaymentUi? = null
 
 
-    private val _state = MutableStateFlow(EditPaymentUiState())
-    val uiState = _state
+    private val _uiState = MutableStateFlow(EditPaymentUiState())
+    val uiState = _uiState
         .onStart { setupPayment(savedStateHandle["paymentId"]) }
         .stateIn(
             scope = viewModelScope,
@@ -58,8 +59,8 @@ class EditPaymentViewModel(
         when(event){
 
             is EditPaymentEvent.OnPaidAtDateChanged -> {
-                val originalPaidDate = (payment!!.dueDate).let { date -> epochFormatter.from(date) }
-                _state.update {
+                val originalPaidDate = (payment.dueDate).let { date -> epochFormatter.from(date) }
+                _uiState.update {
                     it.copy(
                         paidAtDate = event.date,
                         paidDateTitle = dateFormatter(epochFormatter.to(event.date)),
@@ -71,7 +72,7 @@ class EditPaymentViewModel(
             is EditPaymentEvent.OnPriceChanged -> {
                 val value = currencyFormatter.clenup(event.value)
                 val newPrice = currencyFormatter.format(value)
-                _state.update {
+                _uiState.update {
                     it.copy(
                         payedValue = newPrice,
                         priceHasError = value == 0L,
@@ -81,8 +82,8 @@ class EditPaymentViewModel(
             }
 
             is EditPaymentEvent.OnStatusChanged -> {
-                val newStatus = generateNewPaymentStatus(_state.value.paymentStatus)
-                _state.update {
+                val newStatus = generateNewPaymentStatus(_uiState.value.paymentStatus)
+                _uiState.update {
                     it.copy(
                         paymentStatus =  newStatus,
                         statusHasChanged = newStatus != paymentUi!!.status
@@ -91,76 +92,86 @@ class EditPaymentViewModel(
             }
 
             EditPaymentEvent.OnSave -> {
-                if (_state.value.priceHasChanged) {
-                    _state.update {
-                        it.copy(
-                            askingConfirmation = true,
-                        )
-                    }
+                if (_uiState.value.priceHasChanged) {
+                    _uiState.update { it.copy(askingConfirmation = true) }
                 } else {
-                    _state.update {
-                        it.copy(
-                            isSaving = true
-                        )
-                    }
+                    _uiState.update { it.copy(isSaving = true) }
                     changeOnlyCurrentPayment()
                 }
-
             }
-
-            /*is EditPaymentEvent.OnGetPayment -> {
-                setupPayment(event.id)
-            }*/
 
 
             EditPaymentEvent.OnChangeAllFuturePayments -> {
-
+                _uiState.update { it.copy(askingConfirmation = false, isSaving = true) }
+                applyChangesToFuturePayments(from = payment.dueDate)
             }
 
             EditPaymentEvent.OnChangeOnlyCurrentPayment -> {
-                _state.update {
-                    it.copy(
-                        askingConfirmation = false,
-                        isSaving = true
-                    )
-                }
+                _uiState.update { it.copy(askingConfirmation = false, isSaving = true) }
                changeOnlyCurrentPayment()
             }
 
             EditPaymentEvent.OnDismissConfirmationDialog -> {
-                _state.update {
-                    it.copy(
-                        askingConfirmation = false,
-                    )
-                }
+                _uiState.update { it.copy(askingConfirmation = false) }
             }
         }
     }
 
     private suspend fun changeOnlyCurrentPayment() {
-        val p = Payment(
-            id = payment!!.id,
-            billId = payment!!.billId,
+       /* val p = Payment(
+            id = payment.id,
+            billId = payment.billId,
             price = currencyFormatter.clenup(_state.value.payedValue),
             dueDate =  epochFormatter.to(_state.value.paidAtDate),
             isPayed = _state.value.paymentStatus == PAYED,
-            createdAt = payment!!.createdAt,
+            createdAt = payment.createdAt,
             updatedAt = getTodayDate().toEpochMilliseconds(),
             isSynced = false,
+        )*/
+        val paymentToUpdate = payment.copy(
+            price = currencyFormatter.clenup(_uiState.value.payedValue),
+            isPayed = _uiState.value.paymentStatus == PAYED
         )
-        updatePayment(p).doIfSuccess {
-            eventSyncQueue.enqueue(p.toSyncEvent("update"))
-            _state.update { it.copy(isSaving = false, isSaved = true) }
-        }.doIfError {
-            // TODO ("LOG error on Crashlytics")
+        updatePayment(paymentToUpdate).doIfSuccess { updatedPayment ->
+            eventSyncQueue.enqueue(updatedPayment.toSyncEvent("update"))
+            _uiState.update { it.copy(isSaving = false, isSaved = true) }
+        }.doIfError { error ->
+            _uiState.update { it.copy(errorMessage = error.message, isSaving = false) }
         }
+    }
+
+    private suspend fun applyChangesToFuturePayments(from: DayMonthAndYear?) {
+        val priceInt = currencyFormatter.clenup(_uiState.value.payedValue)
+        val changedBill = bill.copy(
+            price = priceInt // the only bill info that this screen can change
+        )
+
+        // If status has changed, we should update the payment first
+        if (_uiState.value.statusHasChanged) {
+            val paymentToUpdate = payment.copy(
+                price = priceInt,
+                isPayed = _uiState.value.paymentStatus == PAYED
+            )
+            updatePayment(paymentToUpdate).doIfSuccess { updatedPayment ->
+                eventSyncQueue.enqueue(updatedPayment.toSyncEvent("update"))
+            }
+        }
+
+        updateBillAndApplyToPayments(changedBill, from)
+            .doIfSuccess { updatedBillWithPayments ->
+                eventSyncQueue.enqueue(updatedBillWithPayments.toSyncEvent("update"))
+                _uiState.update { it.copy(isSaving = false, isSaved = true) }
+            }
+            .doIfError { error ->
+                _uiState.update { it.copy(errorMessage = error.message, isSaving = false) }
+            }
     }
 
     private suspend fun generateNewPaymentStatus(status: PaymentUi.Status) : PaymentUi.Status =
         when(status) {
             OVERDUE, PENDING -> PAYED
             PAYED -> {
-                val paymentWithoutPaidDate = payment!!.copy(isPayed = false)
+                val paymentWithoutPaidDate = payment.copy(isPayed = false)
                 paymentUiMapper.mapFrom(paymentWithoutPaidDate)!!.status
             }
         }
@@ -168,26 +179,31 @@ class EditPaymentViewModel(
 
     private suspend fun setupPayment(paymentId:String?) {
         if (paymentId != null) {
-            payment = getPayment(paymentId)
-            bill = getBill(payment!!.billId)
-            paymentUi = paymentUiMapper.mapFrom(payment!!)
-            _state.update {
-                it.copy(
-                    billId = bill!!.id,
-                    billName = bill!!.name,
-                    payedValue = paymentUi!!.price,
-                    paidAtDate = payment!!.dueDate.let { date -> epochFormatter.from(date) },
-                    paidDateTitle = dateFormatter(payment!!.dueDate),
-                    paymentStatus = paymentUi!!.status,
-                )
+            try {
+                payment = getPayment(paymentId)!!
+                bill = getBill(payment.billId)!!
+                paymentUi = paymentUiMapper.mapFrom(payment)
+                _uiState.update {
+                    it.copy(
+                        billId = bill.id,
+                        billName = bill.name,
+                        payedValue = paymentUi!!.price,
+                        paidAtDate = payment.dueDate.let { date -> epochFormatter.from(date) },
+                        paidDateTitle = dateFormatter(payment.dueDate),
+                        paymentStatus = paymentUi!!.status,
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(errorMessage ="Setup failed due to ${e.message}")
+                }
             }
         } else {
-            _state.update {
+            _uiState.update {
                 it.copy(
                     errorMessage = "paymentId is null"
                 )
             }
         }
-
     }
 }
