@@ -47,6 +47,7 @@ class InsertBillWithPayments(
         }
 
         // If no payments, it should create them.
+        // TODO("Change this logic to count the months difference not the date")
         try {
             val start = bill.billingStartDate.toLocalDate()
             val numOfPayments = start.until(

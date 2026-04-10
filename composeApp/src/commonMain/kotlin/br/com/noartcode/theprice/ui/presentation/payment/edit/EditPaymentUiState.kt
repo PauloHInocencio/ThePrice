@@ -17,7 +17,8 @@ data class EditPaymentUiState(
     val priceHasChanged:Boolean = false,
     val dateHasChanged:Boolean = false,
     val statusHasChanged:Boolean = false,
+    val errorMessage:String? = null
 ) {
     val canSave: Boolean
-        get() = !priceHasError && (dateHasChanged || priceHasChanged || statusHasChanged)
+        get() = !priceHasError && errorMessage == null && (dateHasChanged || priceHasChanged || statusHasChanged)
 }

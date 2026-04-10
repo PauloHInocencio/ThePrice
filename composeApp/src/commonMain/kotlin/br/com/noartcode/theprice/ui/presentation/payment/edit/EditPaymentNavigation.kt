@@ -36,10 +36,10 @@ fun NavGraphBuilder.composeEditPaymentScreen(
             onNavigateBack = onNavigateBack,
         )
         //TODO("Retrieve the PaymentID inside the ViewModel")
-        LaunchedEffect(Unit){
+       /* LaunchedEffect(Unit){
             val id = entry.toRoute<EditPaymentDestination>().paymentId
             viewModel.onEvent(EditPaymentEvent.OnGetPayment(id))
-        }
+        }*/
     }
 }
 

@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 
 class EditBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
-    private val updateBill: IUpdateBill,
     private val getTodayDate: IGetTodayDate,
     private val getMonthName: IGetMonthName,
     private val getBill: IGetBillByID,
@@ -170,23 +169,6 @@ class EditBillViewModel(
                 applyChangesToPayments(from = getTodayDate())
             }
         }
-    }
-
-    private suspend fun updateBillOnly() {
-        val changedBill = originalBill.copy(
-            description = _uiState.value.description,
-            billingStartDate = _uiState.value.billingStartDate
-        )
-
-        updateBill(changedBill)
-            .doIfSuccess { updatedBill ->
-                eventSyncQueue.enqueue(updatedBill.toSyncEvent("update"))
-                _uiState.update { it.copy(canClose = true) }
-            }
-            .doIfError { error ->
-                _uiState.update { it.copy(errorMessage = error.message) }
-                println("${error.message}, ${error.exception.toString()}" )
-            }
     }
 
     private suspend fun applyChangesToPayments(from: DayMonthAndYear?) {

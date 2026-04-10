@@ -144,7 +144,7 @@ fun commonModule() = module {
     single<IInsertPayments> { IInsertPayments(get<PaymentsRepository>()::insert) }
     single<IGetPayments> { GetPayments(billsRepository = get(), paymentsRepository = get(), ioDispatcher = get()) }
     single<IGetPaymentByID> { IGetPaymentByID(get<PaymentLocalDataSource>()::getPayment) }
-    single<IUpdatePayment> { UpdatePayment(repository = get(), dispatcher = get()) }
+    single<IUpdatePayment> { UpdatePayment(repository = get(), dispatcher = get(), getTodayDate = get()) }
     single<IUpdatePaymentStatus> { UpdatePaymentStatus(repository = get(), dispatcher = get()) }
     single<IGetOldestPaymentRecordDate> { GetOldestPaymentRecordDate(repository = get(), epochFormatter = get() ) }
     single<BillsRepository> { BillsRepositoryImp(local = get(), remote = get()) }
@@ -227,7 +227,6 @@ fun viewModelsModule() = module {
     viewModel {
         EditBillViewModel(
             currencyFormatter = get(),
-            updateBill = get(),
             getTodayDate = get(),
             getMonthName = get(),
             getBill = get(),
@@ -246,8 +245,9 @@ fun viewModelsModule() = module {
             currencyFormatter = get(),
             updatePayment = get(),
             paymentUiMapper = get(),
-            getTodayDate = get(),
+            updateBillAndApplyToPayments = get(),
             eventSyncQueue = get(),
+            savedStateHandle = get(),
         )
     }
 

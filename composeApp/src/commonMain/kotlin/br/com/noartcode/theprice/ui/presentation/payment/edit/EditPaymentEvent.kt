@@ -2,7 +2,7 @@ package br.com.noartcode.theprice.ui.presentation.payment.edit
 
 
 sealed interface EditPaymentEvent {
-    data class OnGetPayment(val id:String) : EditPaymentEvent
+   // data class OnGetPayment(val id:String) : EditPaymentEvent
     data class OnPriceChanged(val value:String) : EditPaymentEvent
     data class OnPaidAtDateChanged(val date:Long) : EditPaymentEvent
     data object OnStatusChanged : EditPaymentEvent
