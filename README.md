@@ -25,8 +25,8 @@ ThePrice is a budget app I'm building to help me track my monthly payments while
 - :white_check_mark: Option to update future recurring payments
 - :white_check_mark: Jump back to current month quickly
 - :white_large_square: View historical payments for any month
-- :white_large_square: Ability to change a payment and update all subsequent ones
-- :white_large_square: Due date notifications
+- :white_check_mark: Ability to change a payment and update all subsequent ones
+- :construction: Due date notifications — (Implemented on Android)
 
 
 #### User Account & Authentication
