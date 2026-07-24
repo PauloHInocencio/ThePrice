@@ -34,7 +34,17 @@ import br.com.noartcode.theprice.ui.views.DayPickerView
 import br.com.noartcode.theprice.ui.views.MonthYearPickerView
 import br.com.noartcode.theprice.ui.views.NormalEditField
 import br.com.noartcode.theprice.ui.views.PriceEditField
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.bill_name_label
+import theprice.composeapp.generated.resources.bill_name_placeholder
+import theprice.composeapp.generated.resources.bill_price_placeholder
+import theprice.composeapp.generated.resources.billing_start_date
+import theprice.composeapp.generated.resources.description_label
+import theprice.composeapp.generated.resources.description_placeholder
+import theprice.composeapp.generated.resources.pay_day
+import theprice.composeapp.generated.resources.price_label
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,8 +122,8 @@ fun BillScreenContent(
     ) {
         PriceEditField(
             modifier = Modifier.padding(20.dp),
-            fieldName = "Price",
-            fieldLabel = "enter the bill's price",
+            fieldName = stringResource(Res.string.price_label),
+            fieldLabel = stringResource(Res.string.bill_price_placeholder),
             value = price,
             hasError = priceHasError,
             onValueChanged = onPriceChanged,
@@ -121,8 +131,8 @@ fun BillScreenContent(
         Spacer(Modifier.height(10.dp))
         NormalEditField(
             modifier = Modifier.padding(20.dp),
-            fieldName = "Name",
-            fieldLabel = "enter the bill's name",
+            fieldName = stringResource(Res.string.bill_name_label),
+            fieldLabel = stringResource(Res.string.bill_name_placeholder),
             value = name,
             hasError = nameHasError,
             onValueChanged = onNameChanged,
@@ -136,7 +146,7 @@ fun BillScreenContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             MonthYearPickerView(
-                title = "Billing Start Date",
+                title = stringResource(Res.string.billing_start_date),
                 selectedMonth = selectedDate.month,
                 selectedYear = selectedDate.year,
                 enabled = canChangeBillingStartDate,
@@ -145,7 +155,7 @@ fun BillScreenContent(
                 }
             )
             DayPickerView(
-                title = "Pay Day",
+                title = stringResource(Res.string.pay_day),
                 selectedDay = selectedDate.day,
                 onSelectDay = { day ->
                     val newDate = selectedDate.copy(day = day)
@@ -158,8 +168,8 @@ fun BillScreenContent(
         Spacer(Modifier.height(10.dp))
         NormalEditField(
             modifier = Modifier.padding(20.dp),
-            fieldName = "Description",
-            fieldLabel = "enter the description (optional)",
+            fieldName = stringResource(Res.string.description_label),
+            fieldLabel = stringResource(Res.string.description_placeholder),
             value = description,
             onValueChanged = onDescriptionChanged,
             keyboardOptions = KeyboardOptions().copy(

@@ -29,9 +29,11 @@ import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.IGetMonthName
 import io.mockk.every
 import io.mockk.mockk
+import android.content.ContentProvider
 import org.junit.runner.RunWith
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.dsl.module
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.Calendar
@@ -124,4 +126,15 @@ actual fun platformTestModule() = module {
     manifest= Config.NONE,
     application = ThePriceAppTest::class
 )
-actual abstract class RobolectricTests
+actual abstract class RobolectricTests {
+    init {
+        // Compose Multiplatform resources (stringResource/getString) read via an
+        // auto-registered ContentProvider that sets the Android context it needs.
+        // manifest = Config.NONE skips manifest parsing, so it never gets created -
+        // create it manually so getString()/stringResource() work in these tests.
+        @Suppress("UNCHECKED_CAST")
+        val provider = Class.forName("org.jetbrains.compose.resources.AndroidContextProvider")
+            .asSubclass(ContentProvider::class.java)
+        Robolectric.buildContentProvider(provider).create()
+    }
+}
