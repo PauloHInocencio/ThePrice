@@ -27,6 +27,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.error_payment_id_null
+import theprice.composeapp.generated.resources.error_setup_failed
 
 class EditPaymentViewModel(
     private val getPayment: IGetPaymentByID,
@@ -194,14 +198,16 @@ class EditPaymentViewModel(
                     )
                 }
             } catch (e: Exception) {
+                val message = getString(Res.string.error_setup_failed, e.message.toString())
                 _uiState.update {
-                    it.copy(errorMessage ="Setup failed due to ${e.message}")
+                    it.copy(errorMessage = message)
                 }
             }
         } else {
+            val message = getString(Res.string.error_payment_id_null)
             _uiState.update {
                 it.copy(
-                    errorMessage = "paymentId is null"
+                    errorMessage = message
                 )
             }
         }

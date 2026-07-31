@@ -32,9 +32,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.app_name
+import theprice.composeapp.generated.resources.logout
 import theprice.composeapp.generated.resources.pric_logo
+import theprice.composeapp.generated.resources.profile
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +52,7 @@ fun HomeToolbar(
         mutableStateOf(false)
     }
 
-    val menuItems = listOf("Profile","Logout")
+    val menuItems = listOf(stringResource(Res.string.profile), stringResource(Res.string.logout))
 
     TopAppBar(
         modifier = modifier,
@@ -64,7 +68,7 @@ fun HomeToolbar(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "ThePrice",
+                    text = stringResource(Res.string.app_name),
                     fontWeight = FontWeight.SemiBold,
                     color  = Color(red =69,	green = 154, blue = 229),
                     fontSize = 18.sp

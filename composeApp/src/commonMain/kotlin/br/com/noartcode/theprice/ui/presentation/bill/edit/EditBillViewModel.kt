@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.error_retrieve_bill_id
 
 class EditBillViewModel(
     private val currencyFormatter: ICurrencyFormatter,
@@ -206,9 +209,10 @@ class EditBillViewModel(
                   )
               }
           } else {
+              val message = getString(Res.string.error_retrieve_bill_id)
               _uiState.update {
                   it.copy(
-                      errorMessage = "Not able to retrieve billID"
+                      errorMessage = message
                   )
               }
           }

@@ -53,9 +53,20 @@ import androidx.compose.ui.unit.sp
 import br.com.noartcode.theprice.ui.presentation.account.add.NewAccountEvent.*
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.account_name_placeholder
 import theprice.composeapp.generated.resources.app_logo
+import theprice.composeapp.generated.resources.app_name
+import theprice.composeapp.generated.resources.app_slogan
+import theprice.composeapp.generated.resources.create
+import theprice.composeapp.generated.resources.email
+import theprice.composeapp.generated.resources.hide_password
+import theprice.composeapp.generated.resources.log_in
+import theprice.composeapp.generated.resources.ok
+import theprice.composeapp.generated.resources.password
+import theprice.composeapp.generated.resources.show_password
 
 @Composable
 fun NewAccountScreen(
@@ -83,7 +94,7 @@ fun NewAccountScreen(
                                     onEvent(ErrorMessageDismissed)
                                 }
                             ) {
-                                Text("Ok")
+                                Text(stringResource(Res.string.ok))
                             }
                         }
                     ) {
@@ -147,13 +158,13 @@ private fun NewAccountIconContainer(
         Spacer(modifier = Modifier.height(10.dp))
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "The Price",
+                text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Of your freedom",
+                text = stringResource(Res.string.app_slogan),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Light
@@ -177,7 +188,7 @@ private fun NewAccountFormFieldsContainer(
             onValueChange = { onEvent(OnNameChanged(it)) },
             placeholder = {
                 Text(
-                    text = "Name",
+                    text = stringResource(Res.string.account_name_placeholder),
                     fontSize = 16.sp,
                     style = TextStyle(
                         color = Color.DarkGray.copy(alpha = 0.8f)
@@ -199,7 +210,7 @@ private fun NewAccountFormFieldsContainer(
             onValueChange = { onEvent(OnEmailChanged(it)) },
             placeholder = {
                 Text(
-                    text = "Email",
+                    text = stringResource(Res.string.email),
                     fontSize = 16.sp,
                     style = TextStyle(
                         color = Color.DarkGray.copy(alpha = 0.8f)
@@ -231,14 +242,14 @@ private fun NewAccountFormFieldsContainer(
                         imageVector = if (isPasswordVisible)
                             Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                         contentDescription = if (isPasswordVisible)
-                            "Hide password" else "Show password",
+                            stringResource(Res.string.hide_password) else stringResource(Res.string.show_password),
                         tint = LocalContentColor.current
                     )
                 }
             },
             placeholder = {
                 Text(
-                    text = "Password",
+                    text = stringResource(Res.string.password),
                     fontSize = 16.sp,
                     style = TextStyle(
                         color = Color.DarkGray.copy(alpha = 0.8f)
@@ -269,7 +280,7 @@ private fun NewAccountCreateAccountTextButtonContainer(
             onClick = onNavigateToLogin,
             enabled = uiState.shouldEnableActions,
             content = {
-                Text("Log In")
+                Text(stringResource(Res.string.log_in))
             }
         )
     }
@@ -295,7 +306,7 @@ private fun NewAccountButtonContainer(
             )
         } else {
             Text(
-                text = "Create",
+                text = stringResource(Res.string.create),
                 fontWeight = FontWeight.SemiBold
             )
         }

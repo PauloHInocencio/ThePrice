@@ -47,6 +47,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.jetbrains.compose.resources.getString
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.error_getting_payments
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -132,7 +135,7 @@ class HomeViewModel(
                 return@retryWhen false
             }.catch { e ->
                 if (e is CancellationException) throw e
-                emit(Resource.Error(exception = e, message = "Something wrong happen when trying to get payments"))
+                emit(Resource.Error(exception = e, message = getString(Res.string.error_getting_payments)))
             }.map { result ->
                 result to (currentDate to firstPaymentDate)
             }

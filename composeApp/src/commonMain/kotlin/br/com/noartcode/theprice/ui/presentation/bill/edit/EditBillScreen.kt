@@ -26,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.presentation.bill.add.BillScreenContent
 import br.com.noartcode.theprice.ui.views.ConfirmBillChangeDialog
 import br.com.noartcode.theprice.ui.views.ConfirmBillDeletionDialog
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.ok
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +94,7 @@ fun EditBillScreen(
                                     onEvent(EditBillEvent.OnDismissErrorMessage)
                                 }
                             ) {
-                                Text("OK")
+                                Text(stringResource(Res.string.ok))
                             }
                         }
                     ) {

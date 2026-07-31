@@ -1,6 +1,81 @@
 <resources>
+    <string name="app_name">ThePrice</string>
+    <string name="app_slogan">Of your freedom</string>
+
     <string name="home">Payments List</string>
     <string name="new_bill">Add New Bill</string>
+    <string name="edit_payment">Edit Payment</string>
+    <string name="edit_bill">Edit Bill</string>
+    <string name="account">Account Information</string>
+    <string name="login">Login</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="log_in">Log In</string>
+    <string name="logout">Logout</string>
+    <string name="billing_start_date">Billing Start Date</string>
+    <string name="pay_day">Pay Day</string>
+
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="invalid_month">Invalid</string>
+
+    <string name="every_day_with_ordinal">Every %1$s</string>
+    <string name="ordinal_st">st</string>
+    <string name="ordinal_nd">nd</string>
+    <string name="ordinal_rd">rd</string>
+    <string name="ordinal_th">th</string>
+
+    <string name="delete_bill_confirmation">You\'ll lose all payments related to this bill. This action cannot be undone.</string>
+    <string name="payment_repeats_prompt">This payment repeats. What do you want to update?</string>
+    <string name="update_only_this_one">Update only this one</string>
+    <string name="this_and_next_ones">This and the next ones</string>
+    <string name="bill_change_recurring_prompt">This bill has recurring payments. What do you want to change?</string>
+    <string name="all_payments">All payments</string>
+    <string name="current_and_future">Current and future payments</string>
+
+    <string name="add_new_bill_content_description">Add new Bill</string>
+    <string name="profile">Profile</string>
+    <string name="bills_of_month_year">Bills of %1$s %2$s</string>
+
+    <string name="profile_picture">Profile Picture</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="not_authenticated">Not Authenticated</string>
+    <string name="user_login_succeed">User Login succeed</string>
+
+    <string name="create_account">Create Account</string>
+    <string name="create">Create</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="account_name_placeholder">Name</string>
+
+    <string name="price_label">Price</string>
+    <string name="bill_price_placeholder">enter the bill\'s price</string>
+    <string name="bill_name_label">Name</string>
+    <string name="bill_name_placeholder">enter the bill\'s name</string>
+    <string name="description_label">Description</string>
+    <string name="description_placeholder">enter the description (optional)</string>
+
+    <string name="paid_amount">Paid amount</string>
+    <string name="amount_to_pay">Amount to pay</string>
+    <string name="enter_paid_amount">Enter the paid amount</string>
+    <string name="enter_amount_to_pay">Enter the amount to pay</string>
+    <string name="paid">Paid</string>
+    <string name="unpaid">Unpaid</string>
+
+    <string name="expires_in_days">Expires in %1$d days</string>
+    <string name="days_overdue">%1$d days overdue</string>
+    <string name="expires_today">Expire today!</string>
+    <string name="paid_in_date">Paid in %1$s</string>
+    <string name="error_retrieve_bill_id">Not able to retrieve billID</string>
+    <string name="error_setup_failed">Setup failed due to %1$s</string>
+    <string name="error_payment_id_null">paymentId is null</string>
+    <string name="error_getting_payments">Something went wrong when trying to get payments</string>
+
     <string-array name="months">
         <item>January</item>
         <item>February</item>
@@ -14,5 +89,20 @@
         <item>October</item>
         <item>November</item>
         <item>December</item>
+    </string-array>
+
+    <string-array name="months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
     </string-array>
 </resources>
