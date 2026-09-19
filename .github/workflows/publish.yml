@@ -38,7 +38,7 @@ jobs:
 
     - name: Create local.properties
       env:
-        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        API_BASE_URL: ${{ vars.API_BASE_URL }}
         API_KEY: ${{ secrets.API_KEY }}
         GOOGLE_AUTH_CLIENT_ID_SERVER: ${{ secrets.GOOGLE_AUTH_CLIENT_ID_SERVER }}
         GOOGLE_AUTH_CLIENT_ID_DESKTOP: ${{ secrets.GOOGLE_AUTH_CLIENT_ID_DESKTOP }}
