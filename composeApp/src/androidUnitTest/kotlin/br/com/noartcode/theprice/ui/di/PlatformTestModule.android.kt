@@ -122,6 +122,7 @@ actual fun platformTestModule() = module {
 @RunWith(RobolectricTestRunner::class)
 @Config(
     manifest= Config.NONE,
-    application = ThePriceAppTest::class
+    application = ThePriceAppTest::class,
+    sdk = [35]
 )
 actual abstract class RobolectricTests
