@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import org.jetbrains.compose.resources.getString
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.user_login_succeed
 
 class AccountViewModel(
     private val signInUser: ILoginUser,
@@ -52,7 +55,8 @@ class AccountViewModel(
                     .onEach { result ->
                         when(result){
                             is Resource.Success -> {
-                                _uiState.update { it.copy(singInStatus = "User Login succeed", loading = false) }
+                                val message = getString(Res.string.user_login_succeed)
+                                _uiState.update { it.copy(singInStatus = message, loading = false) }
                             }
                             is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
                             is Resource.Loading ->  {

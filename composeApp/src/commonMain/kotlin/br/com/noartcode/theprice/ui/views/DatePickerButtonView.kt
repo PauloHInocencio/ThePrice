@@ -26,6 +26,9 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.ok
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +79,7 @@ fun DatePickerButtonView(
                     }
                 }) {
                     Text(
-                        text = "OK",
+                        text = stringResource(Res.string.ok),
                         fontSize = 18.sp,
                     )
                 }

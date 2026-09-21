@@ -18,6 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.bills_of_month_year
 
 @Composable
 fun HomeHeaderView(
@@ -29,13 +32,14 @@ fun HomeHeaderView(
     canGoNext:Boolean,
     modifier: Modifier = Modifier
 ) {
+    val (month, year) = if (title.isNotEmpty()) title.split("-").map { it.trim() } else listOf("", "")
+    val billsOfMonthYear = stringResource(Res.string.bills_of_month_year, month, year)
     Row(
         modifier = modifier
             //.padding(vertical = 16.dp)
             .semantics {
                 if (title.isNotEmpty()) {
-                    val (month, year) = title.split("-").map { it.trim() }
-                    contentDescription = "Bills of $month $year"
+                    contentDescription = billsOfMonthYear
                 }
             }
         ,

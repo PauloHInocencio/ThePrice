@@ -34,7 +34,15 @@ import br.com.noartcode.theprice.ui.views.BottomCircularButton
 import br.com.noartcode.theprice.ui.views.ConfirmPaymentChangeDialog
 import br.com.noartcode.theprice.ui.views.DateEditFieldView
 import br.com.noartcode.theprice.ui.views.PriceEditField
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.amount_to_pay
+import theprice.composeapp.generated.resources.enter_amount_to_pay
+import theprice.composeapp.generated.resources.enter_paid_amount
+import theprice.composeapp.generated.resources.paid
+import theprice.composeapp.generated.resources.paid_amount
+import theprice.composeapp.generated.resources.unpaid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,8 +100,8 @@ fun EditPaymentScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             PriceEditField(
-                fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  "Payed amount" else "Amount to pay",
-                fieldLabel = if (state.paymentStatus == PaymentUi.Status.PAYED) "Enter the payed amount" else "Enter the amount to pay",
+                fieldName = if (state.paymentStatus == PaymentUi.Status.PAYED)  stringResource(Res.string.paid_amount) else stringResource(Res.string.amount_to_pay),
+                fieldLabel = if (state.paymentStatus == PaymentUi.Status.PAYED) stringResource(Res.string.enter_paid_amount) else stringResource(Res.string.enter_amount_to_pay),
                 value = state.payedValue,
                 hasError = state.priceHasError,
                 onValueChanged = { onEvent(EditPaymentEvent.OnPriceChanged(it)) },
@@ -106,7 +114,7 @@ fun EditPaymentScreen(
                     containerColor = if (state.paymentStatus == PaymentUi.Status.PAYED) Color.Magenta else Color.LightGray
                 )
             ) {
-                Text(if (state.paymentStatus == PaymentUi.Status.PAYED) "Paid" else "Unpaid")
+                Text(if (state.paymentStatus == PaymentUi.Status.PAYED) stringResource(Res.string.paid) else stringResource(Res.string.unpaid))
             }
             BottomCircularButton(
                 isEnable = state.canSave,

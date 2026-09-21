@@ -56,10 +56,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.app_name
+import theprice.composeapp.generated.resources.app_slogan
+import theprice.composeapp.generated.resources.continue_with_google
+import theprice.composeapp.generated.resources.create_account
+import theprice.composeapp.generated.resources.email
+import theprice.composeapp.generated.resources.hide_password
 import theprice.composeapp.generated.resources.ic_google_logo
+import theprice.composeapp.generated.resources.log_in
+import theprice.composeapp.generated.resources.ok
+import theprice.composeapp.generated.resources.password
 import theprice.composeapp.generated.resources.pric_logo
+import theprice.composeapp.generated.resources.show_password
 
 @Composable
 fun LoginScreen(
@@ -87,7 +98,7 @@ fun LoginScreen(
                                     onEvent(LoginEvent.ErrorMessageDismissed)
                                 }
                             ) {
-                                Text("Ok")
+                                Text(stringResource(Res.string.ok))
                             }
                         }
                     ) {
@@ -143,13 +154,13 @@ private fun LoginIconContainer(){
         )
         Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "ThePrice",
+                text = stringResource(Res.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color(red =69,	green = 154, blue = 229),
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Of your freedom",
+                text = stringResource(Res.string.app_slogan),
                 style = MaterialTheme.typography.titleMedium,
                 color = Color(red =69,	green = 154, blue = 229),
                 fontWeight = FontWeight.Light
@@ -174,7 +185,7 @@ private fun LoginEmailAndPasswordFieldsContainer(
             enabled = uiState.shouldEnableActions,
             placeholder = {
                 Text(
-                    text = "Email",
+                    text = stringResource(Res.string.email),
                     fontSize = 16.sp,
                     style = TextStyle(
                         color = Color.DarkGray.copy(alpha = 0.8f)
@@ -207,14 +218,14 @@ private fun LoginEmailAndPasswordFieldsContainer(
                         imageVector = if (passwordIsVisible)
                             Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                         contentDescription = if (passwordIsVisible)
-                            "Hide password" else "Show password",
+                            stringResource(Res.string.hide_password) else stringResource(Res.string.show_password),
                         tint = LocalContentColor.current
                     )
                 }
             },
             placeholder = {
                 Text(
-                    text = "Password",
+                    text = stringResource(Res.string.password),
                     fontSize = 16.sp,
                     style = TextStyle(
                         color = Color.DarkGray.copy(alpha = 0.8f)
@@ -248,7 +259,7 @@ private fun LoginCreateAccountTextButtonContainer(
             onClick = onNavigateToAddAccount,
             enabled = uiState.shouldEnableActions,
             content = {
-                Text("Create Account")
+                Text(stringResource(Res.string.create_account))
             }
         )
     }
@@ -277,7 +288,7 @@ private fun LoginButtonsContainer(
             }
         } else {
             Text(
-                text = "Log In",
+                text = stringResource(Res.string.log_in),
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -312,7 +323,7 @@ private fun LoginButtonsContainer(
                 )
                 Spacer(modifier = Modifier.width(20.dp))
                 Text(
-                    "Continue with Google",
+                    stringResource(Res.string.continue_with_google),
                     color = if (uiState.shouldEnableActions) Color.Black else LocalContentColor.current,
                     fontWeight = FontWeight.SemiBold
                 )

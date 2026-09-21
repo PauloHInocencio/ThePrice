@@ -2,6 +2,11 @@ package br.com.noartcode.theprice.ui.views
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.bill_change_recurring_prompt
+import theprice.composeapp.generated.resources.all_payments
+import theprice.composeapp.generated.resources.current_and_future
 
 @Composable
 fun ConfirmBillChangeDialog(
@@ -11,12 +16,11 @@ fun ConfirmBillChangeDialog(
     modifier: Modifier = Modifier,
 ) {
     ConfirmationDialog(
-        description = "This change affects recurring payments.\nWhich payments should be updated?",
-        primaryButtonText = "All payments",
+        description = stringResource(Res.string.bill_change_recurring_prompt),
+        primaryButtonText = stringResource(Res.string.all_payments),
         onPrimaryButtonClick = onConfirmToAllPayments,
-        secondaryButtonText = "Current and future",
+        secondaryButtonText = stringResource(Res.string.current_and_future),
         onSecondaryButtonClick = onConfirmToFuturePayments,
-        cancelButtonText = "Cancel",
         onDismiss = onDismiss,
         modifier = modifier,
     )

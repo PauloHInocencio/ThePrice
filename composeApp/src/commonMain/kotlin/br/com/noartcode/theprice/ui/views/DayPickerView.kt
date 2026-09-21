@@ -24,7 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.noartcode.theprice.ui.theme.FieldLabelStyle
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.every_day_with_ordinal
+import theprice.composeapp.generated.resources.ordinal_nd
+import theprice.composeapp.generated.resources.ordinal_rd
+import theprice.composeapp.generated.resources.ordinal_st
+import theprice.composeapp.generated.resources.ordinal_th
+import theprice.composeapp.generated.resources.pay_day
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +43,10 @@ fun DayPickerView(
     modifier: Modifier = Modifier
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    val ordinalSt = stringResource(Res.string.ordinal_st)
+    val ordinalNd = stringResource(Res.string.ordinal_nd)
+    val ordinalRd = stringResource(Res.string.ordinal_rd)
+    val ordinalTh = stringResource(Res.string.ordinal_th)
     Column(
         modifier = modifier.sizeIn(maxWidth= 150.dp),
         horizontalAlignment = Alignment.Start
@@ -48,7 +60,10 @@ fun DayPickerView(
             val interactionSource = remember { MutableInteractionSource() }
             BasicTextField(
                 modifier = Modifier.menuAnchor().padding(0.dp),
-                value = "Every ${getDayWithOrdinal(selectedDay)}",
+                value = stringResource(
+                    Res.string.every_day_with_ordinal,
+                    getDayWithOrdinal(selectedDay, ordinalSt, ordinalNd, ordinalRd, ordinalTh)
+                ),
                 onValueChange = {},
                 readOnly = true,
                 textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
@@ -69,7 +84,7 @@ fun DayPickerView(
             ) {
                 (1..31).forEach { day ->
                     DropdownMenuItem(
-                        text = { Text(getDayWithOrdinal(day)) },
+                        text = { Text(getDayWithOrdinal(day, ordinalSt, ordinalNd, ordinalRd, ordinalTh)) },
                         onClick = {
                             onSelectDay(day)
                             isExpanded = false
@@ -85,13 +100,13 @@ fun DayPickerView(
 
 
 
-private fun getDayWithOrdinal(day: Int): String {
+private fun getDayWithOrdinal(day: Int, st: String, nd: String, rd: String, th: String): String {
     val suffix = when {
-        day in 11..13 -> "th"  // Special cases: 11th, 12th, 13th
-        day % 10 == 1 -> "st"  // 1st, 21st, 31st
-        day % 10 == 2 -> "nd"  // 2nd, 22nd
-        day % 10 == 3 -> "rd"  // 3rd, 23rd
-        else -> "th"           // 4th, 5th, 6th, 7th, 8th, 9th, 10th, etc.
+        day in 11..13 -> th  // Special cases: 11th, 12th, 13th
+        day % 10 == 1 -> st  // 1st, 21st, 31st
+        day % 10 == 2 -> nd  // 2nd, 22nd
+        day % 10 == 3 -> rd  // 3rd, 23rd
+        else -> th           // 4th, 5th, 6th, 7th, 8th, 9th, 10th, etc.
     }
     return "$day$suffix"
 }
@@ -101,7 +116,7 @@ private fun getDayWithOrdinal(day: Int): String {
 private fun DayPickerView_Preview() {
     Surface {
         DayPickerView(
-            title = "Pay Day",
+            title = stringResource(Res.string.pay_day),
             selectedDay = 10,
             onSelectDay = {},
         )

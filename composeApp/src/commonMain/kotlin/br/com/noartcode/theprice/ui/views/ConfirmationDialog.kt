@@ -19,6 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.cancel
 
 @Composable
 fun ConfirmationDialog(
@@ -27,7 +30,7 @@ fun ConfirmationDialog(
     onPrimaryButtonClick: () -> Unit,
     secondaryButtonText: String,
     onSecondaryButtonClick: () -> Unit,
-    cancelButtonText: String = "Cancel",
+    cancelButtonText: String = stringResource(Res.string.cancel),
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

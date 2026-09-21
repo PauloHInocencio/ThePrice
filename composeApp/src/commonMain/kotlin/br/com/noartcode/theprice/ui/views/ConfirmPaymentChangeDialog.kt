@@ -2,6 +2,11 @@ package br.com.noartcode.theprice.ui.views
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.payment_repeats_prompt
+import theprice.composeapp.generated.resources.update_only_this_one
+import theprice.composeapp.generated.resources.this_and_next_ones
 
 @Composable
 fun ConfirmPaymentChangeDialog(
@@ -11,12 +16,11 @@ fun ConfirmPaymentChangeDialog(
     modifier: Modifier = Modifier,
 ) {
     ConfirmationDialog(
-        description = "This entry repeats on other dates. \nWhat would you like to do?",
-        primaryButtonText = "Update only this one",
+        description = stringResource(Res.string.payment_repeats_prompt),
+        primaryButtonText = stringResource(Res.string.update_only_this_one),
         onPrimaryButtonClick = onConfirmToCurrent,
-        secondaryButtonText = "This and the next ones",
+        secondaryButtonText = stringResource(Res.string.this_and_next_ones),
         onSecondaryButtonClick = onConfirmToAll,
-        cancelButtonText = "Cancel",
         onDismiss = onDismiss,
         modifier = modifier,
     )
