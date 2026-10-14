@@ -1,7 +1,7 @@
 package br.com.noartcode.theprice.data.local.workers
 
 class OverduePaymentReminderWorker : IOverduePaymentReminderWorker {
-    override fun sweepDailyDue() {
+    override fun sweepDailyDue(restart: Boolean) {
 
     }
 }
