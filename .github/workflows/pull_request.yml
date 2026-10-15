@@ -73,7 +73,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Run Desktop Tests
-      run: ./gradlew :composeApp:desktopTest
+      run: xvfb-run --auto-servernum ./gradlew :composeApp:desktopTest
 
   test-ios:
     runs-on: macos-latest
