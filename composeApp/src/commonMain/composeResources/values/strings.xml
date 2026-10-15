@@ -40,7 +40,7 @@
     <string name="current_and_future">Current and future payments</string>
 
     <string name="add_new_bill_content_description">Add new Bill</string>
-    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
     <string name="bills_of_month_year">Bills of %1$s %2$s</string>
 
     <string name="profile_picture">Profile Picture</string>
@@ -105,4 +105,13 @@
         <item>Nov</item>
         <item>Dec</item>
     </string-array>
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_portuguese">Português</string>
+    <string name="settings_currency">Currency</string>
+    <string name="settings_currency_usd">US Dollar</string>
+    <string name="settings_currency_brl">Brazilian Real</string>
+    <string name="settings_restart_required">Restart the app for this change to take effect</string>
+    <string name="settings_version_footer">%1$s • Version %2$s (%3$s)</string>
 </resources>

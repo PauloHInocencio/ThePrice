@@ -4,6 +4,7 @@ android-compileSdk = "36"
 android-minSdk = "25"
 android-targetSdk = "36"
 androidx-activity = "1.10.1"
+androidx-appcompat = "1.7.0"
 androidx-test = '1.7.0'
 androidx-compose = "1.9.0"
 composeMultiplatform = "1.8.2"
@@ -75,6 +76,7 @@ koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
 
 # Compose
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose" }
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigationMultiplatform" }

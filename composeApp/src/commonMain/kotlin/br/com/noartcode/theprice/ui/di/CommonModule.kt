@@ -6,6 +6,18 @@ import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.bill.BillLocalDataSourceImp
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSourceImp
+import br.com.noartcode.theprice.data.local.datasource.settings.AppSettingsCache
+import br.com.noartcode.theprice.data.local.datasource.settings.SettingsLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.settings.SettingsLocalDataSourceImp
+import br.com.noartcode.theprice.domain.model.AppCurrency
+import br.com.noartcode.theprice.domain.model.AppLanguage
+import br.com.noartcode.theprice.domain.usecases.settings.IGetAppCurrency
+import br.com.noartcode.theprice.domain.usecases.settings.IGetAppLanguage
+import br.com.noartcode.theprice.domain.usecases.settings.ILoadAppSettings
+import br.com.noartcode.theprice.domain.usecases.settings.ISetAppCurrency
+import br.com.noartcode.theprice.domain.usecases.settings.ISetAppLanguage
+import br.com.noartcode.theprice.domain.usecases.settings.LoadAppSettings
+import br.com.noartcode.theprice.domain.usecases.settings.SetAppLanguage
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueueImp
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
@@ -88,6 +100,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.map
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -152,6 +165,20 @@ fun commonModule() = module {
     single<PaymentsRepository> { PaymentsRepositoryImp(local = get(), remote = get()) }
     single<AuthRepository> { AuthRepositoryImp(local = get(), remote = get()) }
     single<IGetUserAccountInfo> { IGetUserAccountInfo(get<AuthLocalDataSource>()::getUser) }
+    single<SettingsLocalDataSource> { SettingsLocalDataSourceImp(dataStore = get(), ioDispatcher = get()) }
+    single<AppSettingsCache> { AppSettingsCache() }
+    single<IGetAppLanguage> { IGetAppLanguage { get<SettingsLocalDataSource>().getLanguage().map(AppLanguage::fromCode) } }
+    single<ISetAppLanguage> { SetAppLanguage(localDataSource = get(), localeManager = get()) }
+    single<IGetAppCurrency> { IGetAppCurrency { get<SettingsLocalDataSource>().getCurrency().map(AppCurrency::fromCode) } }
+    single<ISetAppCurrency> { ISetAppCurrency { get<SettingsLocalDataSource>().saveCurrency(it.code) } }
+    single<ILoadAppSettings> {
+        LoadAppSettings(
+            getAppLanguage = get(),
+            getAppCurrency = get(),
+            localeManager = get(),
+            cache = get(),
+        )
+    }
     single<IGetEvents> { GetEvent(remoteDataSource = get(), dispatcher = get())}
     single<ISyncEventsWorker> {
         SyncEventsWorker(
@@ -257,6 +284,10 @@ fun viewModelsModule() = module {
             signInUser = get(),
             getAccountInfo = get(),
             logOutUser = get(),
+            getAppLanguage = get(),
+            setAppLanguage = get(),
+            getAppCurrency = get(),
+            setAppCurrency = get(),
         )
     }
 
@@ -274,7 +305,8 @@ fun viewModelsModule() = module {
     viewModel {
         SplashViewModel(
             getAccountInfo = get(),
-            overdueReminderWorker = get()
+            overdueReminderWorker = get(),
+            loadAppSettings = get(),
         )
     }
 }

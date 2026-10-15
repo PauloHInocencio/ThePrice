@@ -38,7 +38,7 @@ import theprice.composeapp.generated.resources.Res
 import theprice.composeapp.generated.resources.app_name
 import theprice.composeapp.generated.resources.logout
 import theprice.composeapp.generated.resources.pric_logo
-import theprice.composeapp.generated.resources.profile
+import theprice.composeapp.generated.resources.settings
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +52,7 @@ fun HomeToolbar(
         mutableStateOf(false)
     }
 
-    val menuItems = listOf(stringResource(Res.string.profile), stringResource(Res.string.logout))
+    val menuItems = listOf(stringResource(Res.string.settings), stringResource(Res.string.logout))
 
     TopAppBar(
         modifier = modifier,
