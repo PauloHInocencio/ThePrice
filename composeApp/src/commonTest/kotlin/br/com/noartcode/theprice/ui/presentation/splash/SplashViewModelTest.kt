@@ -3,6 +3,7 @@ package br.com.noartcode.theprice.ui.presentation.splash
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
 import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.domain.usecases.settings.ILoadAppSettings
 import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +43,7 @@ class SplashViewModelTest {
     private fun createViewModel() = SplashViewModel(
         getAccountInfo = IGetUserAccountInfo { savedUser },
         overdueReminderWorker = worker,
+        loadAppSettings = ILoadAppSettings { },
     )
 
     @Test

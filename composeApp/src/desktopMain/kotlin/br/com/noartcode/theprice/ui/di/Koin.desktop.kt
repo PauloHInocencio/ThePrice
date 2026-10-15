@@ -17,7 +17,10 @@ import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedPaymentWorker
-import br.com.noartcode.theprice.domain.model.AppCurrency
+import br.com.noartcode.theprice.data.local.datasource.settings.AppSettingsCache
+import br.com.noartcode.theprice.domain.usecases.settings.IGetAppCurrency
+import br.com.noartcode.theprice.platform.locale.ILocaleManager
+import br.com.noartcode.theprice.platform.locale.DesktopLocaleManager
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
@@ -26,16 +29,22 @@ import br.com.noartcode.theprice.ui.presentation.account.AccountManager
 import br.com.noartcode.theprice.ui.presentation.account.IAccountManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.util.Calendar
-import java.util.Locale
 
 actual fun platformModule() = module {
     single<ThePriceDatabase> { getDatabase(ioDispatcher = get()) }
     single<ICurrencyFormatter> {
-        CurrencyFormatter(currency = AppCurrency.fromLocaleTag(Locale.getDefault().toLanguageTag()))
+        // Resolved once per process (currency changes apply after restart). Normally filled by Splash;
+        // the blocking read only happens on paths that skip Splash (e.g. notification deep link).
+        val currency = get<AppSettingsCache>().settings?.currency
+            ?: runBlocking { get<IGetAppCurrency>().invoke().first() }
+        CurrencyFormatter(currency = currency)
     }
+    single<ILocaleManager> { DesktopLocaleManager() }
     single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }, scope = get()) }

@@ -40,7 +40,7 @@
     <string name="current_and_future">Pagamentos atuais e futuros</string>
 
     <string name="add_new_bill_content_description">Adicionar nova conta</string>
-    <string name="profile">Perfil</string>
+    <string name="settings">Configurações</string>
     <string name="bills_of_month_year">Contas de %1$s %2$s</string>
 
     <string name="profile_picture">Foto de Perfil</string>
@@ -90,4 +90,13 @@
         <item>nov</item>
         <item>dez</item>
     </string-array>
+    <string name="settings_title">Configurações</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_english">Inglês</string>
+    <string name="settings_language_portuguese">Português</string>
+    <string name="settings_currency">Moeda</string>
+    <string name="settings_currency_usd">Dólar Americano</string>
+    <string name="settings_currency_brl">Real Brasileiro</string>
+    <string name="settings_restart_required">Reinicie o aplicativo para aplicar esta alteração</string>
+    <string name="settings_version_footer">%1$s • Versão %2$s (%3$s)</string>
 </resources>

@@ -21,6 +21,8 @@ plugins {
     alias(libs.plugins.skie)
 }
 
+val appVersionName = "1.0"
+val appVersionCode = 1
 
 val localProps = Properties().apply {
     val localPropsFile = rootProject.file("local.properties")
@@ -76,6 +78,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.appcompat)
 
             implementation(libs.koin.android)
             implementation(libs.koin.workmanager)
@@ -213,8 +216,8 @@ android {
         applicationId = "br.com.noartcode.theprice"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
         testInstrumentationRunner = "br.com.noartcode.theprice.InstrumentationTestRunner"
     }
     
@@ -297,6 +300,8 @@ buildkonfig {
     defaultConfigs{
         buildConfigField(STRING, "apiBaseUrl", localProps["API_BASE_URL"] as String)
         buildConfigField(STRING, "apiKey", localProps["API_KEY"] as String)
+        buildConfigField(STRING, "appVersionName", appVersionName)
+        buildConfigField(STRING, "appVersionCode", appVersionCode.toString())
     }
 
     targetConfigs {
