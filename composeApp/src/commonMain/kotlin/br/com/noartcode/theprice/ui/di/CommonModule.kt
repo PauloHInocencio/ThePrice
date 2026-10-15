@@ -82,6 +82,7 @@ import br.com.noartcode.theprice.ui.presentation.payment.edit.EditPaymentViewMod
 import br.com.noartcode.theprice.ui.presentation.account.AccountViewModel
 import br.com.noartcode.theprice.ui.presentation.account.add.NewAccountViewModel
 import br.com.noartcode.theprice.ui.presentation.login.LoginViewModel
+import br.com.noartcode.theprice.ui.presentation.splash.SplashViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -266,6 +267,12 @@ fun viewModelsModule() = module {
     viewModel {
         LoginViewModel(
             loginInUser = get(),
+            overdueReminderWorker = get()
+        )
+    }
+
+    viewModel {
+        SplashViewModel(
             getAccountInfo = get(),
             overdueReminderWorker = get()
         )

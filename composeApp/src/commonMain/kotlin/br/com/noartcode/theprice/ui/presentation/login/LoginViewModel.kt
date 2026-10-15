@@ -3,41 +3,24 @@ package br.com.noartcode.theprice.ui.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
-import br.com.noartcode.theprice.domain.model.User
-import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class LoginViewModel(
     private val loginInUser: ILoginUser,
-    private val getAccountInfo: IGetUserAccountInfo,
     private val overdueReminderWorker: IOverduePaymentReminderWorker,
 ) : ViewModel() {
 
-    private val userInfoState: StateFlow<User?> = getAccountInfo()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(500),
-            initialValue = null,
-        )
-
+    // Only the login flow result drives navigation. Already-logged-in users are routed to
+    // Home by SplashViewModel and never reach this screen.
     private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState = combine(_uiState, userInfoState) { ui, user ->
-        if (user != null) LoginUiState(isAuthenticated = true)
-        else ui
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(500),
-        initialValue = LoginUiState()
-    )
+    val uiState = _uiState.asStateFlow()
 
     fun onEvent(event: LoginEvent) {
         when (event) {
@@ -45,9 +28,10 @@ class LoginViewModel(
                 loginInUser()
                     .onEach { result ->
                         when (result) {
-                            is Resource.Success -> _uiState.update {
-                                overdueReminderWorker.sweepDailyDue() //<-- TODO("Move this to an App startup initializer")
-                                LoginUiState(isAuthenticated = true)
+                            is Resource.Success -> {
+                                // Bills were just stored: restart the schedule so the first sweep runs now with fresh data
+                                overdueReminderWorker.sweepDailyDue(restart = true)
+                                _uiState.update { it.copy(isAuthenticated = true) }
                             }
 
                             is Resource.Error -> _uiState.update {
@@ -58,7 +42,13 @@ class LoginViewModel(
                                 LoginUiState(isAuthenticatingWithGoogle = true)
                             }
                         }
-                    }.launchIn(viewModelScope)
+                    }
+                    .catch { e ->
+                        _uiState.update {
+                            LoginUiState(errorMessage = e.message ?: "Unexpected error while logging in")
+                        }
+                    }
+                    .launchIn(viewModelScope)
             }
 
             LoginEvent.ErrorMessageDismissed -> {
