@@ -16,11 +16,12 @@ import br.com.noartcode.theprice.ui.presentation.bill.edit.composeEditBillScreen
 import br.com.noartcode.theprice.ui.presentation.bill.edit.navigateToEditBillScreen
 import br.com.noartcode.theprice.ui.presentation.home.composeHomeScreen
 import br.com.noartcode.theprice.ui.presentation.home.navigateToHome
-import br.com.noartcode.theprice.ui.presentation.login.LoginDestination
 import br.com.noartcode.theprice.ui.presentation.login.composeLoginScreen
 import br.com.noartcode.theprice.ui.presentation.login.navigateToLogin
 import br.com.noartcode.theprice.ui.presentation.payment.edit.composeEditPaymentScreen
 import br.com.noartcode.theprice.ui.presentation.payment.edit.navigateToEditPaymentScreen
+import br.com.noartcode.theprice.ui.presentation.splash.SplashDestination
+import br.com.noartcode.theprice.ui.presentation.splash.composeSplashScreen
 
 @Composable
 fun AppNavGraph(
@@ -29,9 +30,14 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = LoginDestination,
+        startDestination = SplashDestination,
         modifier = modifier.fillMaxSize()
     ) {
+
+        composeSplashScreen(
+            onNavigateToHome = { navController.navigateToHome() },
+            onNavigateToLogin = { navController.navigateToLogin() }
+        )
 
         composeHomeScreen(
             onNavigateToEditPayment = { id -> navController.navigateToEditPaymentScreen(id) },

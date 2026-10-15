@@ -18,6 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.Calendar
 import java.util.Locale
+import kotlin.intArrayOf
 
 actual fun platformTestModule() = module {
     single<ThePriceDatabase> {

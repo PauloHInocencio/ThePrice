@@ -24,16 +24,17 @@ const val OVERDUE_PAYMENT_REMINDER_WORKER_TAG = "daily-due-sweep"
 class OverduePaymentReminderWorker(
     private val manager: WorkManager
 ) : IOverduePaymentReminderWorker {
-     override fun sweepDailyDue() {
+     override fun sweepDailyDue(restart: Boolean) {
          val workRequest = PeriodicWorkRequestBuilder<AndroidOverduePaymentReminderWorker>(6, TimeUnit.HOURS)
              .addTag(OVERDUE_PAYMENT_REMINDER_WORKER_TAG)
              .build()
 
          manager.enqueueUniquePeriodicWork(
              OVERDUE_PAYMENT_REMINDER_WORKER_TAG,
-             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+             if (restart) ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE else ExistingPeriodicWorkPolicy.KEEP,
              workRequest
          )
+         println("JOB SCHEDULED")
     }
 }
 
@@ -56,6 +57,7 @@ class AndroidOverduePaymentReminderWorker(
             .first()
             .filter { !it.isPayed && maxOf(it.dueDate.day - 2, 1) <= today.day  }
 
+        println("Count of pending Payments: ${pendingPayments.size}")
 
         for (p in pendingPayments) {
             val bill = billsRepository.get(p.billId) ?: continue

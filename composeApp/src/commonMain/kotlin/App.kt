@@ -1,4 +1,4 @@
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
 import br.com.noartcode.theprice.ui.navigation.AppNavGraph
