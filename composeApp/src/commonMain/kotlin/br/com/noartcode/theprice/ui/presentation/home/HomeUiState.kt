@@ -1,5 +1,7 @@
 package br.com.noartcode.theprice.ui.presentation.home
 
+import br.com.noartcode.theprice.ui.views.LogoutDialog
+
 
 data class HomeUiState(
     val paymentSection: List<PaymentSectionUi> = listOf(),
@@ -9,4 +11,5 @@ data class HomeUiState(
     val canGoNext:Boolean = false,
     val errorMessage:String? = null,
     val loggedOut: Boolean = false,
+    val logoutDialog: LogoutDialog? = null,
 )

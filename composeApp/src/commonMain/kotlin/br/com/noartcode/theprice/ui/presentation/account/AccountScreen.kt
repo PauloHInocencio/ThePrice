@@ -46,6 +46,7 @@ import br.com.noartcode.theprice.BuildKonfig
 import br.com.noartcode.theprice.domain.model.AppCurrency
 import br.com.noartcode.theprice.domain.model.AppLanguage
 import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.ui.views.LogoutDialogHost
 import br.com.noartcode.theprice.ui.views.SettingsRow
 import br.com.noartcode.theprice.ui.views.SpinnerSettingsRow
 import coil3.compose.AsyncImage
@@ -214,7 +215,7 @@ fun AccountScreen(
                 SettingsRow(
                     icon = Icons.AutoMirrored.Filled.Logout,
                     label = stringResource(Res.string.logout),
-                    onClick = { onEvent(AccountEvent.LogOutUser) },
+                    onClick = { onEvent(AccountEvent.LogoutRequested) },
                 )
             } else {
                 val displayedStatus = state.singInStatus.ifBlank { stringResource(Res.string.not_authenticated) }
@@ -231,6 +232,13 @@ fun AccountScreen(
             }
         }
     }
+
+    LogoutDialogHost(
+        dialog = state.logoutDialog,
+        onConfirm = { onEvent(AccountEvent.LogoutConfirmed) },
+        onForceLogout = { onEvent(AccountEvent.ForceLogoutConfirmed) },
+        onDismiss = { onEvent(AccountEvent.LogoutDialogDismissed) },
+    )
 }
 
 

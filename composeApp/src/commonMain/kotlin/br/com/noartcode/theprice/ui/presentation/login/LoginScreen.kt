@@ -68,6 +68,7 @@ import theprice.composeapp.generated.resources.hide_password
 import theprice.composeapp.generated.resources.ic_google_logo
 import theprice.composeapp.generated.resources.log_in
 import theprice.composeapp.generated.resources.ok
+import theprice.composeapp.generated.resources.session_expired
 import theprice.composeapp.generated.resources.password
 import theprice.composeapp.generated.resources.pric_logo
 import theprice.composeapp.generated.resources.show_password
@@ -75,6 +76,7 @@ import theprice.composeapp.generated.resources.show_password
 @Composable
 fun LoginScreen(
     uiState: LoginUiState,
+    sessionExpired: Boolean = false,
     onEvent: (LoginEvent) -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToNewAccount: () -> Unit,
@@ -115,6 +117,16 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val sessionExpiredMessage = stringResource(Res.string.session_expired)
+            LaunchedEffect(sessionExpired) {
+                if (sessionExpired) {
+                    snackbarHostState.showSnackbar(
+                        message = sessionExpiredMessage,
+                        duration = SnackbarDuration.Long
+                    )
+                }
+            }
+
             LaunchedEffect(uiState) {
                 if (uiState.errorMessage != null) {
                     coroutineScope.launch {

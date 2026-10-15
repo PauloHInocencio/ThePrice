@@ -1,6 +1,7 @@
 package br.com.noartcode.theprice.data.remote.networking
 
 import br.com.noartcode.theprice.data.remote.dtos.NetworkError
+import br.com.noartcode.theprice.domain.model.DataError
 import br.com.noartcode.theprice.util.Resource
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
@@ -52,7 +53,11 @@ suspend inline fun <reified T> responseToResult(response: HttpResponse) : Resour
                 "Failed to parse error response"
             }
 
-            Resource.Error(message = errorMessage, code = code)
+            Resource.Error(
+                message = errorMessage,
+                code = code,
+                exception = if (code == 401) DataError.Unauthorized else null,
+            )
         }
     }
 }

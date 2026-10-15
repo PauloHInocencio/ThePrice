@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -27,6 +28,7 @@ import br.com.noartcode.theprice.ui.presentation.home.views.HomeHeaderView
 import br.com.noartcode.theprice.ui.presentation.home.views.HomeToolbar
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentDateHeader
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
+import br.com.noartcode.theprice.ui.views.LogoutDialogHost
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,7 +57,7 @@ fun HomeScreen(
         },
         topBar = { HomeToolbar(onMenuItemClick = { index ->
             if (index == 0) { onNavigateToAccount() }
-            if (index == 1) { onEvent(HomeEvent.OnLogoutUser) }
+            if (index == 1) { onEvent(HomeEvent.OnLogoutRequested) }
         }) },
         floatingActionButton = {
             FloatingActionButton(
@@ -72,6 +74,9 @@ fun HomeScreen(
             .padding(6.dp)
             .fillMaxSize()
         ) {
+            if (state.loading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
             HomeHeaderView(
                 modifier = Modifier.fillMaxWidth(),
                 title = state.monthName,
@@ -127,6 +132,13 @@ fun HomeScreen(
 
         if (state.loggedOut) onNavigateToLogin()
     }
+
+    LogoutDialogHost(
+        dialog = state.logoutDialog,
+        onConfirm = { onEvent(HomeEvent.OnLogoutConfirmed) },
+        onForceLogout = { onEvent(HomeEvent.OnForceLogoutConfirmed) },
+        onDismiss = { onEvent(HomeEvent.OnLogoutDialogDismissed) },
+    )
 }
 
 

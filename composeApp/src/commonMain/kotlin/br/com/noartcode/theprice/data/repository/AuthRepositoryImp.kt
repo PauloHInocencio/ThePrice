@@ -4,6 +4,7 @@ import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.remote.datasource.auth.AuthRemoteDataSource
 import br.com.noartcode.theprice.data.remote.dtos.UserCredentialsDto
 import br.com.noartcode.theprice.data.remote.mapper.toDomain
+import br.com.noartcode.theprice.domain.model.DataError
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.repository.AuthRepository
 import br.com.noartcode.theprice.util.Resource
@@ -54,16 +55,19 @@ class AuthRepositoryImp(
         }
     }
 
+    // Remote only: local cleanup is done by ClearUserSession
     override suspend fun logoutUser(): Resource<Unit> {
         val rt = local.getRefreshToken().first() ?: ""
         val deviceID = local.getDeviceID().first() ?: ""
-        return when(val result = remote.logoutUser(refreshToken = rt, deviceID= deviceID)) {
-            is Resource.Success -> {
-                local.clean()
-                remote.clean()
-                Resource.Success(Unit)
-            }
+        return when (val result = remote.logoutUser(refreshToken = rt, deviceID = deviceID)) {
+            // The server already considers this session invalid: treat it as logged out
+            is Resource.Error -> if (result.exception is DataError.Unauthorized) Resource.Success(Unit) else result
             else -> result
         }
+    }
+
+    override suspend fun clearSession() {
+        local.clean()
+        remote.clean()
     }
 }

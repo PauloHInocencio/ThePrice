@@ -31,7 +31,7 @@ import org.koin.dsl.module
 
 fun commonTestModule() = module {
     single<HttpClient> {
-        createHttpClient(ThePriceApiMock.engine, localDataSource = get())
+        createHttpClient(ThePriceApiMock.engine, localDataSource = get(), sessionEvents = get())
     }
     single<ISyncPaymentsWorker> {
         mock<ISyncPaymentsWorker>(MockMode.autoUnit)

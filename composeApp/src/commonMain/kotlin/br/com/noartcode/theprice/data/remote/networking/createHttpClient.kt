@@ -31,7 +31,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.seconds
 
-fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSource) : HttpClient {
+fun createHttpClient(
+    engine: HttpClientEngine,
+    localDataSource: AuthLocalDataSource,
+    sessionEvents: SessionEvents,
+) : HttpClient {
     return HttpClient(engine) {
         install(ContentNegotiation){
             json(
@@ -92,6 +96,8 @@ fun createHttpClient(engine: HttpClientEngine, localDataSource: AuthLocalDataSou
                         }
                         is Resource.Error -> {
                             println("Error while authenticating: ${result.message}")
+                            // Only an explicit rejection ends the session; network errors keep the user logged in
+                            if (result.code == 401 || result.code == 403) sessionEvents.notifyExpired()
                             return@refreshTokens null
                         }
                         is Resource.Loading -> {

@@ -5,5 +5,8 @@ sealed class HomeEvent {
     data object OnBackToPreviousMonth : HomeEvent()
     data object OnGoToNexMonth: HomeEvent()
     data object OnGoToCurrentMonth: HomeEvent()
-    data object OnLogoutUser : HomeEvent()
+    data object OnLogoutRequested : HomeEvent()
+    data object OnLogoutConfirmed : HomeEvent()
+    data object OnForceLogoutConfirmed : HomeEvent()
+    data object OnLogoutDialogDismissed : HomeEvent()
 }

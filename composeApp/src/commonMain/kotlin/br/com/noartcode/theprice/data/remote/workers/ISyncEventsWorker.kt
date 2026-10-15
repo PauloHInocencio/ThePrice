@@ -7,6 +7,7 @@ import br.com.noartcode.theprice.data.remote.datasource.payment.PaymentRemoteDat
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import br.com.noartcode.theprice.data.remote.dtos.BillWithPaymentsDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
+import br.com.noartcode.theprice.domain.model.DataError
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -94,6 +95,11 @@ class SyncEventsWorker(
                         }
                         is Resource.Error -> {
                             println("Error during synchronization: ${result.message}")
+                            if (result.exception is DataError.Unauthorized) {
+                                // Session is gone; SessionEvents → App clears the queue. Don't spin retrying.
+                                println("Unauthorized, stopping sync worker")
+                                break
+                            }
                             result.exception?.printStackTrace()
                             delay(5_000) // TODO("Find a better way to retry, maybe based on exponential attempts")
                         }

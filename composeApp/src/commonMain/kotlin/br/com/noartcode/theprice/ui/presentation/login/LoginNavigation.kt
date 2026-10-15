@@ -8,12 +8,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @Serializable
-data object LoginDestination
+data class LoginDestination(val sessionExpired: Boolean = false)
 
 @OptIn(KoinExperimentalAPI::class)
 fun NavGraphBuilder.composeLoginScreen(
@@ -25,10 +26,12 @@ fun NavGraphBuilder.composeLoginScreen(
         exitTransition = { fadeOut() + slideOutOfContainer(SlideDirection.Left) },
         popEnterTransition = { fadeIn() + slideIntoContainer(SlideDirection.Right) },
         popExitTransition = { fadeOut() + slideOutOfContainer(SlideDirection.Right) }
-    ) {
+    ) { entry ->
+        val sessionExpired = entry.toRoute<LoginDestination>().sessionExpired
         val viewModel = koinViewModel<LoginViewModel>()
         LoginScreen(
             uiState = viewModel.uiState.collectAsState().value,
+            sessionExpired = sessionExpired,
             onEvent = viewModel::onEvent,
             onNavigateToHome = onNavigateToHome,
             onNavigateToNewAccount = onNavigateToNewAccount,
@@ -36,8 +39,8 @@ fun NavGraphBuilder.composeLoginScreen(
     }
 }
 
-fun NavController.navigateToLogin(){
-    navigate(LoginDestination) {
+fun NavController.navigateToLogin(sessionExpired: Boolean = false){
+    navigate(LoginDestination(sessionExpired)) {
         popUpTo(0) { inclusive = true }
         launchSingleTop = true
     }

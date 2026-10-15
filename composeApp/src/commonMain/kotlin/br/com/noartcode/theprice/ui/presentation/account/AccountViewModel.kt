@@ -9,6 +9,8 @@ import br.com.noartcode.theprice.domain.usecases.settings.ISetAppCurrency
 import br.com.noartcode.theprice.domain.usecases.settings.ISetAppLanguage
 import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.sync.IGetPendingSyncCount
+import br.com.noartcode.theprice.ui.views.LogoutDialog
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,7 @@ class AccountViewModel(
     private val signInUser: ILoginUser,
     private val getAccountInfo: IGetUserAccountInfo,
     private val logOutUser: ILogoutUser,
+    private val getPendingSyncCount: IGetPendingSyncCount,
     private val getAppLanguage: IGetAppLanguage,
     private val setAppLanguage: ISetAppLanguage,
     private val getAppCurrency: IGetAppCurrency,
@@ -74,17 +77,24 @@ class AccountViewModel(
                    }.launchIn(viewModelScope)
             }
 
-            AccountEvent.LogOutUser -> {
-                logOutUser()
-                    .onEach { result ->
-                        when(result) {
-                            is Resource.Success -> {
-                                _uiState.update { AccountUiState(loggedOut = true) }
-                            }
-                            is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
-                            is Resource.Loading -> _uiState.update { it.copy(loading = true) }
-                        }
-                    }.launchIn(viewModelScope)
+            AccountEvent.LogoutRequested -> {
+                viewModelScope.launch {
+                    _uiState.update { it.copy(logoutDialog = LogoutDialog.Confirm(getPendingSyncCount())) }
+                }
+            }
+
+            AccountEvent.LogoutConfirmed -> {
+                _uiState.update { it.copy(logoutDialog = null) }
+                runLogout(force = false)
+            }
+
+            AccountEvent.ForceLogoutConfirmed -> {
+                _uiState.update { it.copy(logoutDialog = null) }
+                runLogout(force = true)
+            }
+
+            AccountEvent.LogoutDialogDismissed -> {
+                _uiState.update { it.copy(logoutDialog = null) }
             }
 
             AccountEvent.ErrorMessageDismissed -> {
@@ -111,5 +121,17 @@ class AccountViewModel(
                 _uiState.update { it.copy(showRestartRequiredMessage = false) }
             }
         }
+    }
+
+    private fun runLogout(force: Boolean) {
+        logOutUser(force)
+            .onEach { result ->
+                when (result) {
+                    is Resource.Success -> _uiState.update { AccountUiState(loggedOut = true) }
+                    // Server unreachable (or 5xx): let the user choose to log out locally
+                    is Resource.Error -> _uiState.update { it.copy(logoutDialog = LogoutDialog.Offline, loading = false) }
+                    is Resource.Loading -> _uiState.update { it.copy(loading = true) }
+                }
+            }.launchIn(viewModelScope)
     }
 }
