@@ -5,9 +5,13 @@ import br.com.noartcode.theprice.domain.model.AppCurrency
 import java.util.Locale
 
 
-actual class CurrencyFormatter actual constructor(currency: AppCurrency) : ICurrencyFormatter {
+actual class CurrencyFormatter internal constructor(
+    private val symbols: DecimalFormatSymbols
+) : ICurrencyFormatter {
 
-   private val symbols = DecimalFormatSymbols(Locale.forLanguageTag(currency.localeTag))
+    actual constructor(currency: AppCurrency) : this(
+        symbols = DecimalFormatSymbols(Locale.forLanguageTag(currency.localeTag))
+    )
 
     override fun format(value: Long): String {
         val decimalDigits = 2

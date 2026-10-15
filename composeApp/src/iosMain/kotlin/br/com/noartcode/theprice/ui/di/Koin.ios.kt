@@ -16,6 +16,7 @@ import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.domain.model.AppCurrency
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
@@ -29,19 +30,14 @@ import platform.Foundation.NSCalendar
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import platform.Foundation.NSLocale
-import platform.Foundation.NSNumberFormatter
-import platform.Foundation.NSNumberFormatterCurrencyStyle
 import platform.Foundation.currentLocale
+import platform.Foundation.localeIdentifier
 
 
 actual fun platformModule() = module {
     single<ThePriceDatabase> { getDatabase(ioDispatcher = get()) }
     single<ICurrencyFormatter> {
-        CurrencyFormatter(formatter = NSNumberFormatter().also {
-            it.usesGroupingSeparator = true
-            it.numberStyle = NSNumberFormatterCurrencyStyle
-            it.locale = NSLocale.currentLocale
-        })
+        CurrencyFormatter(currency = AppCurrency.fromLocaleTag(NSLocale.currentLocale.localeIdentifier))
     }
     single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }

@@ -5,12 +5,18 @@ import platform.Foundation.NSLocale
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterCurrencyStyle
 
-actual class CurrencyFormatter actual constructor(currency: AppCurrency) : ICurrencyFormatter {
+actual class CurrencyFormatter internal constructor(
+    private val formatter: NSNumberFormatter
+) : ICurrencyFormatter {
 
-    private val formatter = NSNumberFormatter().also {
-        it.numberStyle = NSNumberFormatterCurrencyStyle
-        it.locale = NSLocale(localeIdentifier = currency.localeTag)
-    }
+    actual constructor(currency: AppCurrency) : this(
+        formatter = NSNumberFormatter().also {
+            it.usesGroupingSeparator = true
+            it.numberStyle = NSNumberFormatterCurrencyStyle
+            it.locale = NSLocale(localeIdentifier = currency.localeTag)
+        }
+    )
+
     override fun format(value: Long): String {
         val decimalDigits = 2
         val text = value.toString()

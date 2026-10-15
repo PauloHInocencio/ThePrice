@@ -10,5 +10,13 @@ enum class AppCurrency(
     companion object {
         fun fromCode(code:String?) : AppCurrency =
             entries.firstOrNull { it.code == code } ?: USD
+
+        // Accepts both "pt-BR" and "pt_BR" (iOS locale identifiers use '_')
+        fun fromLocaleTag(tag: String?) : AppCurrency {
+            val normalized = tag?.replace('_', '-') ?: return USD
+            return entries.firstOrNull { it.localeTag.equals(normalized, ignoreCase = true) }
+                ?: entries.firstOrNull { it.localeTag.substringBefore('-').equals(normalized.substringBefore('-'), ignoreCase = true) }
+                ?: USD
+        }
     }
 }
