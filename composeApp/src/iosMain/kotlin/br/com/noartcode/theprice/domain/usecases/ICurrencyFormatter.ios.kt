@@ -1,10 +1,21 @@
 package br.com.noartcode.theprice.domain.usecases
 
+import br.com.noartcode.theprice.domain.model.AppCurrency
+import platform.Foundation.NSLocale
 import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSNumberFormatterCurrencyStyle
 
-actual class CurrencyFormatter(
+actual class CurrencyFormatter internal constructor(
     private val formatter: NSNumberFormatter
 ) : ICurrencyFormatter {
+
+    actual constructor(currency: AppCurrency) : this(
+        formatter = NSNumberFormatter().also {
+            it.usesGroupingSeparator = true
+            it.numberStyle = NSNumberFormatterCurrencyStyle
+            it.locale = NSLocale(localeIdentifier = currency.localeTag)
+        }
+    )
 
     override fun format(value: Long): String {
         val decimalDigits = 2

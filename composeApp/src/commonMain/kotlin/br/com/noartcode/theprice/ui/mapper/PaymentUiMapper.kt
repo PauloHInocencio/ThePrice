@@ -10,6 +10,12 @@ import br.com.noartcode.theprice.domain.usecases.datetime.IGetDaysUntil
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi
 import kotlin.math.abs
+import org.jetbrains.compose.resources.getString
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.days_overdue
+import theprice.composeapp.generated.resources.expires_in_days
+import theprice.composeapp.generated.resources.expires_today
+import theprice.composeapp.generated.resources.paid_in_date
 
 
 interface UiMapper<F,T> {
@@ -31,9 +37,9 @@ class PaymentDomainToUiMapper (
             val days = getDaysUntil(startDate = getTodayDate() , endDate = from.dueDate)
 
             val (description, status) = when {
-                days > 0 -> { "Expires in $days days" to PaymentUi.Status.PENDING }
-                days < 0 -> {  "${abs(days)} days overdue" to PaymentUi.Status.OVERDUE }
-                else -> { "Expire today!" to PaymentUi.Status.PENDING }
+                days > 0 -> { getString(Res.string.expires_in_days, days) to PaymentUi.Status.PENDING }
+                days < 0 -> {  getString(Res.string.days_overdue, abs(days)) to PaymentUi.Status.OVERDUE }
+                else -> { getString(Res.string.expires_today) to PaymentUi.Status.PENDING }
             }
             PaymentUi(
                 id = from.id,
@@ -47,7 +53,7 @@ class PaymentDomainToUiMapper (
                 id = from.id,
                 billName = bill.name,
                 status = PaymentUi.Status.PAYED,
-                statusDescription = "Paid in ${dateFormat(from.dueDate)}",
+                statusDescription = getString(Res.string.paid_in_date, dateFormat(from.dueDate)),
                 price = formatter.format(from.price)
             )
         }

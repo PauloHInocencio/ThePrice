@@ -1,8 +1,93 @@
 <resources>
+    <string name="app_name">ThePrice</string>
+    <string name="app_slogan">Da sua liberdade</string>
+
     <string name="home">Pagamentos</string>
     <string name="new_bill">Adicionar Conta</string>
     <string name="edit_payment">Editar Pagamento</string>
     <string name="edit_bill">Editar Conta</string>
     <string name="account">Informações da Conta</string>
     <string name="login">Login</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Excluir</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="show_password">Mostrar senha</string>
+    <string name="hide_password">Ocultar senha</string>
+    <string name="log_in">Entrar</string>
+    <string name="logout">Sair</string>
+    <string name="billing_start_date">Data de Início da Cobrança</string>
+    <string name="pay_day">Dia de Pagamento</string>
+
+    <string name="month">Mês</string>
+    <string name="year">Ano</string>
+    <string name="invalid_month">Inválido</string>
+
+    <string name="every_day_with_ordinal">Todo dia %1$s</string>
+    <string name="ordinal_st">º</string>
+    <string name="ordinal_nd">º</string>
+    <string name="ordinal_rd">º</string>
+    <string name="ordinal_th">º</string>
+
+    <string name="delete_bill_confirmation">Você perderá todos os pagamentos relacionados a esta conta. Essa ação não pode ser desfeita.</string>
+    <string name="payment_repeats_prompt">Este pagamento se repete. O que você deseja atualizar?</string>
+    <string name="update_only_this_one">Atualizar somente este</string>
+    <string name="this_and_next_ones">Este e os próximos</string>
+    <string name="bill_change_recurring_prompt">Esta conta possui pagamentos recorrentes. O que você deseja alterar?</string>
+    <string name="all_payments">Todos os pagamentos</string>
+    <string name="current_and_future">Pagamentos atuais e futuros</string>
+
+    <string name="add_new_bill_content_description">Adicionar nova conta</string>
+    <string name="profile">Perfil</string>
+    <string name="bills_of_month_year">Contas de %1$s %2$s</string>
+
+    <string name="profile_picture">Foto de Perfil</string>
+    <string name="sign_in_with_google">Entrar com Google</string>
+    <string name="not_authenticated">Não Autenticado</string>
+    <string name="user_login_succeed">Login realizado com sucesso</string>
+
+    <string name="create_account">Criar Conta</string>
+    <string name="create">Criar</string>
+    <string name="continue_with_google">Continuar com Google</string>
+    <string name="account_name_placeholder">Nome</string>
+
+    <string name="price_label">Preço</string>
+    <string name="bill_price_placeholder">digite o preço da conta</string>
+    <string name="bill_name_label">Nome</string>
+    <string name="bill_name_placeholder">digite o nome da conta</string>
+    <string name="description_label">Descrição</string>
+    <string name="description_placeholder">digite a descrição (opcional)</string>
+
+    <string name="paid_amount">Valor pago</string>
+    <string name="amount_to_pay">Valor a pagar</string>
+    <string name="enter_paid_amount">Digite o valor pago</string>
+    <string name="enter_amount_to_pay">Digite o valor a pagar</string>
+    <string name="paid">Pago</string>
+    <string name="unpaid">Não pago</string>
+
+    <string name="expires_in_days">Vence em %1$d dias</string>
+    <string name="days_overdue">%1$d dias em atraso</string>
+    <string name="expires_today">Vence hoje!</string>
+    <string name="paid_in_date">Pago em %1$s</string>
+    <string name="error_retrieve_bill_id">Não foi possível obter o ID da conta</string>
+    <string name="error_setup_failed">Falha na configuração devido a %1$s</string>
+    <string name="error_payment_id_null">paymentId é nulo</string>
+    <string name="error_getting_payments">Algo deu errado ao tentar obter os pagamentos</string>
+
+    <string-array name="months_short">
+        <item>jan</item>
+        <item>fev</item>
+        <item>mar</item>
+        <item>abr</item>
+        <item>mai</item>
+        <item>jun</item>
+        <item>jul</item>
+        <item>ago</item>
+        <item>set</item>
+        <item>out</item>
+        <item>nov</item>
+        <item>dez</item>
+    </string-array>
 </resources>

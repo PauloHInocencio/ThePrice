@@ -32,7 +32,17 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringArrayResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.billing_start_date
+import theprice.composeapp.generated.resources.cancel
+import theprice.composeapp.generated.resources.invalid_month
+import theprice.composeapp.generated.resources.month
+import theprice.composeapp.generated.resources.months_short
+import theprice.composeapp.generated.resources.ok
+import theprice.composeapp.generated.resources.year
 
 @Composable
 fun MonthYearPickerView(
@@ -49,11 +59,14 @@ fun MonthYearPickerView(
 
     var showDialog by remember { mutableStateOf(false) }
 
+    val monthsShort = stringArrayResource(Res.array.months_short)
+    val invalidMonth = stringResource(Res.string.invalid_month)
+
     Column(modifier = modifier.alpha(if (enabled) 1f else 0.38f)) {
         Text(title, style = FieldLabelStyle)
         Spacer(Modifier.height(12.dp))
         Text(
-            text = "${getMonthName(selectedMonth)} - $selectedYear",
+            text = "${getMonthName(selectedMonth, monthsShort, invalidMonth)} - $selectedYear",
             style = MaterialTheme.typography.labelLarge.copy(
                 color = if (enabled) {
                     MaterialTheme.colorScheme.primary
@@ -98,16 +111,18 @@ private fun MonthYearPickerDialog(
 ){
     var tempMonth by remember { mutableStateOf(selectedMonth) }
     var tempYear by remember { mutableStateOf(selectedYear) }
+    val monthsShort = stringArrayResource(Res.array.months_short)
+    val invalidMonth = stringResource(Res.string.invalid_month)
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Billing Start Date") },
+        title = { Text(stringResource(Res.string.billing_start_date)) },
         text = {
             Column {
 
                 // Month Dropdown
                 var isMonthExpanded by remember { mutableStateOf(false) }
-                Text("Month", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(Res.string.month), style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(4.dp))
                 ExposedDropdownMenuBox(
                     expanded =  isMonthExpanded,
@@ -117,7 +132,7 @@ private fun MonthYearPickerDialog(
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth(),
-                        value = getMonthName(tempMonth),
+                        value = getMonthName(tempMonth, monthsShort, invalidMonth),
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(isMonthExpanded )},
@@ -133,7 +148,7 @@ private fun MonthYearPickerDialog(
                             } else { true }
 
                             DropdownMenuItem(
-                                text = { Text(getMonthName(month)) },
+                                text = { Text(getMonthName(month, monthsShort, invalidMonth)) },
                                 onClick = {
                                     if (isEnable) {
                                         tempMonth = month
@@ -150,7 +165,7 @@ private fun MonthYearPickerDialog(
 
                 // Year Dropdown
                 var isYearExpanded by remember { mutableStateOf(false)}
-                Text("Year", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(Res.string.year), style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.height(4.dp))
                 ExposedDropdownMenuBox(
                     expanded = isYearExpanded,
@@ -189,33 +204,19 @@ private fun MonthYearPickerDialog(
         },
         confirmButton = {
             Button(onClick = { onConfirm(tempMonth, tempYear)}) {
-                Text("OK")
+                Text(stringResource(Res.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(Res.string.cancel))
             }
         }
     )
 }
 
-private fun getMonthName(month: Int): String {
-    return when (month) {
-        1 -> "Jan"
-        2 -> "Feb"
-        3 -> "Mar"
-        4 -> "Apr"
-        5 -> "May"
-        6 -> "Jun"
-        7 -> "Jul"
-        8 -> "Aug"
-        9 -> "Sep"
-        10 -> "Oct"
-        11 -> "Nov"
-        12 -> "Dec"
-        else -> "Invalid"
-    }
+private fun getMonthName(month: Int, monthsShort: List<String>, invalidMonth: String): String {
+    return monthsShort.getOrNull(month - 1) ?: invalidMonth
 }
 
 
@@ -243,7 +244,7 @@ private fun MonthYearPickerView_Preview() {
     MaterialTheme {
         Surface {
             MonthYearPickerView(
-                title = "Billing Start Date",
+                title = stringResource(Res.string.billing_start_date),
                 selectedMonth = 3,
                 selectedYear = 2026,
                 enabled = true,
@@ -259,7 +260,7 @@ private fun MonthYearPickerViewDisable_Preview() {
     MaterialTheme {
         Surface {
             MonthYearPickerView(
-                title = "Billing Start Date",
+                title = stringResource(Res.string.billing_start_date),
                 selectedMonth = 3,
                 selectedYear = 2026,
                 enabled = false,

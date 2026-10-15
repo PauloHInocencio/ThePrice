@@ -41,7 +41,14 @@ import androidx.compose.ui.unit.sp
 import br.com.noartcode.theprice.domain.model.User
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.logout
+import theprice.composeapp.generated.resources.not_authenticated
+import theprice.composeapp.generated.resources.ok
+import theprice.composeapp.generated.resources.profile_picture
+import theprice.composeapp.generated.resources.sign_in_with_google
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +99,7 @@ fun AccountScreen(
                                     onEvent(AccountEvent.ErrorMessageDismissed)
                                 }
                             ) {
-                                Text("Ok")
+                                Text(stringResource(Res.string.ok))
                             }
                         }
                     ) {
@@ -131,18 +138,19 @@ fun AccountScreen(
                     user = state.user
                 )
                 Button(onClick = {  onEvent(AccountEvent.LogOutUser)  }) {
-                    Text("Logout")
+                    Text(stringResource(Res.string.logout))
                 }
             } else {
+                val displayedStatus = state.singInStatus.ifBlank { stringResource(Res.string.not_authenticated) }
                 Text(
                     modifier = Modifier.clickable(
-                        onClick = { clipboardManager.setText(AnnotatedString(state.singInStatus)) }
+                        onClick = { clipboardManager.setText(AnnotatedString(displayedStatus)) }
                     ),
-                    text = state.singInStatus
+                    text = displayedStatus
                 )
                 Spacer(modifier.height(30.dp))
                 Button(onClick = { onEvent(AccountEvent.SignInWithGoogle)}) {
-                    Text("Sign in with Google")
+                    Text(stringResource(Res.string.sign_in_with_google))
                 }
             }
         }
@@ -158,7 +166,7 @@ fun UserProfileCard(user: User, modifier: Modifier = Modifier) {
     ) {
         AsyncImage(
             model = user.picture,
-            contentDescription = "Profile Picture",
+            contentDescription = stringResource(Res.string.profile_picture),
             modifier = Modifier.size(100.dp).aspectRatio(1f),
             contentScale = ContentScale.Crop
         )

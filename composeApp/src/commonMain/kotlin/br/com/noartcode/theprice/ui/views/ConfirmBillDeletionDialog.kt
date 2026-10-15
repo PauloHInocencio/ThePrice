@@ -19,6 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.jetbrains.compose.resources.stringResource
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.delete_bill_confirmation
+import theprice.composeapp.generated.resources.delete
+import theprice.composeapp.generated.resources.cancel
 
 @Composable
 fun ConfirmBillDeletionDialog(
@@ -41,14 +46,13 @@ fun ConfirmBillDeletionDialog(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text("Are you sure you want to delete this bill? " +
-                        "\nThis action cannot be undone. \nYou'll lost all your payment records.")
+                Text(stringResource(Res.string.delete_bill_confirmation))
                 Spacer(Modifier.height(20.dp))
                 OutlinedButton(onClick = onConfirmDeletion) {
-                    Text("Delete")
+                    Text(stringResource(Res.string.delete))
                 }
                 Button(onClick = onDismiss) {
-                    Text("Cancel")
+                    Text(stringResource(Res.string.cancel))
                 }
 
             }

@@ -28,7 +28,11 @@ import br.com.noartcode.theprice.ui.presentation.home.views.HomeToolbar
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentDateHeader
 import br.com.noartcode.theprice.ui.presentation.home.views.PaymentItemView
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import theprice.composeapp.generated.resources.Res
+import theprice.composeapp.generated.resources.add_new_bill_content_description
+import theprice.composeapp.generated.resources.ok
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +47,8 @@ fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val addNewBillDescription = stringResource(Res.string.add_new_bill_content_description)
+    val okLabel = stringResource(Res.string.ok)
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
@@ -55,7 +61,7 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick= onNavigateToAddBill
             ) {
-                Icon(Icons.Default.Add, "Add new Bill")
+                Icon(Icons.Default.Add, addNewBillDescription)
             }
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -105,7 +111,7 @@ fun HomeScreen(
                 val result = snackbarHostState
                     .showSnackbar(
                         message = state.errorMessage,
-                        actionLabel = "OK",
+                        actionLabel = okLabel,
                         duration = SnackbarDuration.Indefinite
                     )
                 when (result) {

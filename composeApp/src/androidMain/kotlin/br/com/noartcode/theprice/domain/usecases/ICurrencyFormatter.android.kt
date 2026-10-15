@@ -1,12 +1,17 @@
 package br.com.noartcode.theprice.domain.usecases
 
 import android.icu.text.DecimalFormatSymbols
+import br.com.noartcode.theprice.domain.model.AppCurrency
+import java.util.Locale
 
 
-actual class CurrencyFormatter(
+actual class CurrencyFormatter internal constructor(
     private val symbols: DecimalFormatSymbols
 ) : ICurrencyFormatter {
 
+    actual constructor(currency: AppCurrency) : this(
+        symbols = DecimalFormatSymbols(Locale.forLanguageTag(currency.localeTag))
+    )
 
     override fun format(value: Long): String {
         val decimalDigits = 2

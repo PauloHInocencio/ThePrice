@@ -1,7 +1,6 @@
 package br.com.noartcode.theprice.ui.di
 
 import android.content.Context
-import android.icu.text.DecimalFormat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.work.WorkManager
@@ -24,6 +23,7 @@ import br.com.noartcode.theprice.data.remote.workers.SyncDeletedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedBillWorker
 import br.com.noartcode.theprice.data.remote.workers.SyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.domain.model.AppCurrency
 import br.com.noartcode.theprice.domain.usecases.CurrencyFormatter
 import br.com.noartcode.theprice.domain.usecases.GetMonthName
 import br.com.noartcode.theprice.domain.usecases.ICurrencyFormatter
@@ -42,10 +42,13 @@ import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.util.Calendar
+import java.util.Locale
 
 actual fun platformModule() = module {
     single<ThePriceDatabase> { getDatabase(context = androidApplication(), ioDispatcher = get()) }
-    single<ICurrencyFormatter> { CurrencyFormatter(symbols = DecimalFormat().decimalFormatSymbols)}
+    single<ICurrencyFormatter> {
+        CurrencyFormatter(currency = AppCurrency.fromLocaleTag(Locale.getDefault().toLanguageTag()))
+    }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     factory<IAccountManager> { AccountManager(context = androidContext()) }
     single<DataStore<Preferences>> { createDataStore(context = get(), scope = get()) }
