@@ -61,7 +61,7 @@ actual fun platformModule() = module {
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     factory<IAccountManager> { AccountManager(context = androidContext()) }
     single<DataStore<Preferences>> { createDataStore(context = get(), scope = get()) }
-    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
+    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get(), sessionEvents = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(manager = WorkManager.getInstance(androidContext())) }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker(manager = WorkManager.getInstance(androidContext()))}
     single<ISyncUpdatedBillWorker> { SyncUpdatedBillWorker(manager = WorkManager.getInstance(androidContext()))}

@@ -612,7 +612,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
             ensureAllEventsConsumed()
 
             // WHEN
-            viewModel.onEvent(HomeEvent.OnLogoutUser)
+            viewModel.onEvent(HomeEvent.OnLogoutConfirmed)
 
             // THEN
             with(awaitItem()) {

@@ -27,6 +27,8 @@ import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePayment
 import br.com.noartcode.theprice.domain.usecases.payment.IUpdatePaymentStatus
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.sync.IGetPendingSyncCount
+import br.com.noartcode.theprice.ui.views.LogoutDialog
 import br.com.noartcode.theprice.ui.mapper.UiMapper
 import br.com.noartcode.theprice.ui.presentation.home.PaymentUi.Status.PAYED
 import br.com.noartcode.theprice.util.Resource
@@ -70,6 +72,7 @@ class HomeViewModel(
     private val insertPayments: IInsertPayments,
     private val eventSyncQueue: EventSyncQueue,
     private val logoutUser: ILogoutUser,
+    private val getPendingSyncCount: IGetPendingSyncCount,
 ): ViewModel() {
 
 
@@ -168,7 +171,8 @@ class HomeViewModel(
             paymentSection = paymentSection,
             errorMessage = (payments as? Resource.Error)?.message ?: state.errorMessage,
             loading = (payments is Resource.Loading) || state.loading,
-            loggedOut = state.loggedOut
+            loggedOut = state.loggedOut,
+            logoutDialog = state.logoutDialog,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -207,19 +211,36 @@ class HomeViewModel(
                 }
             }
 
-            HomeEvent.OnLogoutUser -> {
-                logoutUser()
-                    .onEach { result ->
-                        when(result) {
-                            is Resource.Success -> {
-                                _state.update { it.copy(loggedOut = true, loading = false) }
-                            }
-                            is Resource.Error -> _state.update { it.copy(errorMessage = result.message, loading = false) }
-                            is Resource.Loading -> _state.update { it.copy(loading = true) }
-                        }
-                    }.launchIn(viewModelScope)
+            HomeEvent.OnLogoutRequested -> {
+                _state.update { it.copy(logoutDialog = LogoutDialog.Confirm(getPendingSyncCount())) }
+            }
+
+            HomeEvent.OnLogoutConfirmed -> {
+                _state.update { it.copy(logoutDialog = null) }
+                runLogout(force = false)
+            }
+
+            HomeEvent.OnForceLogoutConfirmed -> {
+                _state.update { it.copy(logoutDialog = null) }
+                runLogout(force = true)
+            }
+
+            HomeEvent.OnLogoutDialogDismissed -> {
+                _state.update { it.copy(logoutDialog = null) }
             }
         }
+    }
+
+    private fun runLogout(force: Boolean) {
+        logoutUser(force)
+            .onEach { result ->
+                when (result) {
+                    is Resource.Success -> _state.update { it.copy(loggedOut = true, loading = false) }
+                    // Server unreachable (or 5xx): let the user choose to log out locally
+                    is Resource.Error -> _state.update { it.copy(logoutDialog = LogoutDialog.Offline, loading = false) }
+                    is Resource.Loading -> _state.update { it.copy(loading = true) }
+                }
+            }.launchIn(viewModelScope)
     }
 
     override fun onCleared() {

@@ -49,7 +49,7 @@ actual fun platformModule() = module {
     single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName>{ GetMonthName(calendar = NSCalendar.currentCalendar()) }
     single<DataStore<Preferences>> { createDataStore(scope = get()) }
-    single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get()) }
+    single<HttpClient> { createHttpClient(Darwin.create(), localDataSource = get(), sessionEvents = get()) }
     factory<IAccountManager> { AccountManager(signInProvider = get()) }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker() }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker()}

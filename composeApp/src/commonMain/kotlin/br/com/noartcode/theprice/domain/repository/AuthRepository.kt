@@ -8,4 +8,5 @@ interface AuthRepository {
     suspend fun getUserInfo() : Resource<User>
     suspend fun createUser(name:String, email:String, password:String) : Resource<User>
     suspend fun logoutUser() : Resource<Unit>
+    suspend fun clearSession()
 }

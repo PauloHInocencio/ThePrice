@@ -99,4 +99,11 @@
     <string name="settings_currency_brl">Real Brasileiro</string>
     <string name="settings_restart_required">Reinicie o aplicativo para aplicar esta alteração</string>
     <string name="settings_version_footer">%1$s • Versão %2$s (%3$s)</string>
+    <string name="session_expired">Sua sessão expirou. Entre novamente.</string>
+    <string name="logout_confirm_title">Sair da conta?</string>
+    <string name="logout_confirm_message">Você precisará entrar novamente para sincronizar suas contas.</string>
+    <string name="logout_pending_changes">Você tem %1$d alteração(ões) ainda não sincronizada(s). Elas serão perdidas.</string>
+    <string name="logout_offline_title">Não foi possível falar com o servidor</string>
+    <string name="logout_offline_message">Sair deste dispositivo mesmo assim? Alterações não sincronizadas serão perdidas.</string>
+    <string name="logout_anyway">Sair mesmo assim</string>
 </resources>

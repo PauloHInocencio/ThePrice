@@ -48,7 +48,7 @@ actual fun platformModule() = module {
     single<IOverduePaymentReminderWorker> { OverduePaymentReminderWorker() }
     single<IGetMonthName> { GetMonthName(calendar = Calendar.getInstance())}
     single<DataStore<Preferences>> { createDataStore(producePath = { DATA_STORE_FILE_NAME }, scope = get()) }
-    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get()) }
+    single<HttpClient> { createHttpClient(OkHttp.create(), localDataSource = get(), sessionEvents = get()) }
     factory<IAccountManager> { AccountManager() }
     single<ISyncPaymentsWorker> { SyncPaymentsWorker(paymentsRepository = get(), ioDispatcher = get()) }
     single<ISyncUpdatedPaymentWorker> { SyncUpdatedPaymentWorker(paymentsRepository = get(), ioDispatcher = get()) }

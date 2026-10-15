@@ -64,6 +64,10 @@ import br.com.noartcode.theprice.domain.usecases.bill.IInsertBillWithPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertMissingPayments
 import br.com.noartcode.theprice.domain.usecases.payment.IInsertPayments
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
+import br.com.noartcode.theprice.domain.usecases.user.IClearUserSession
+import br.com.noartcode.theprice.domain.usecases.user.ClearUserSession
+import br.com.noartcode.theprice.domain.usecases.sync.IGetPendingSyncCount
+import br.com.noartcode.theprice.data.remote.networking.SessionEvents
 import br.com.noartcode.theprice.domain.usecases.datetime.IMoveMonth
 import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBill
@@ -198,12 +202,24 @@ fun commonModule() = module {
             dispatcher = get(),
         )
     }
-    single<ILogoutUser> {
-        LogoutUser(
+    single { SessionEvents() }
+    single<IGetPendingSyncCount> {
+        val queue = get<EventSyncQueue>()
+        IGetPendingSyncCount { queue.size() }
+    }
+    single<IClearUserSession> {
+        ClearUserSession(
             authRepository = get(),
             billsRepository = get(),
             paymentsRepository = get(),
             eventSyncQueue = get(),
+            dispatcher = get(),
+        )
+    }
+    single<ILogoutUser> {
+        LogoutUser(
+            authRepository = get(),
+            clearUserSession = get(),
             dispatcher = get(),
         )
     }
@@ -241,6 +257,7 @@ fun viewModelsModule() = module {
             deleteBill = get(),
             eventSyncQueue = get(),
             logoutUser = get(),
+            getPendingSyncCount = get(),
         )
     }
     viewModel {
@@ -284,6 +301,7 @@ fun viewModelsModule() = module {
             signInUser = get(),
             getAccountInfo = get(),
             logOutUser = get(),
+            getPendingSyncCount = get(),
             getAppLanguage = get(),
             setAppLanguage = get(),
             getAppCurrency = get(),
