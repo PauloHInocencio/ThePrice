@@ -3,10 +3,14 @@ package br.com.noartcode.theprice.ui.di
 import androidx.lifecycle.SavedStateHandle
 import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
 import br.com.noartcode.theprice.data.remote.networking.createHttpClient
 import br.com.noartcode.theprice.data.remote.workers.ISyncPaymentsWorker
 import br.com.noartcode.theprice.data.remote.workers.ISyncUpdatedPaymentWorker
+import br.com.noartcode.theprice.domain.model.DataError
+import br.com.noartcode.theprice.domain.model.SyncEvent
 import br.com.noartcode.theprice.domain.usecases.bill.IUpdateBillAndApplyToPayments
 import br.com.noartcode.theprice.domain.usecases.datetime.IGetTodayDate
 import br.com.noartcode.theprice.domain.usecases.helpers.GetTodayDateStub
@@ -70,6 +74,24 @@ fun loginUserMockModule(result: Flow<Resource<Unit>>) = module {
     single<ILoginUser> {
         mock<ILoginUser>().apply {
             every { this@apply.invoke() } returns result
+        }
+    }
+}
+
+fun syncEventsUnauthorizedModule(event: SyncEvent) = module {
+    single<EventSyncQueue> {
+        mock<EventSyncQueue>().apply {
+            every { this@apply.isEmpty } returns flowOf(false)
+            everySuspend { this@apply.peek() } returns event
+        }
+    }
+    single<BillRemoteDataSource> {
+        mock<BillRemoteDataSource>().apply {
+            everySuspend { this@apply.delete(any()) } returns Resource.Error(
+                message = "token is expired",
+                code = 401,
+                exception = DataError.Unauthorized,
+            )
         }
     }
 }
