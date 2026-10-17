@@ -133,6 +133,35 @@ This is a **Kotlin Multiplatform** project using **Clean Architecture** with the
 - **Platform-specific test modules**: Platform-specific test setup
 - **StandardTestDispatcher**: Deterministic coroutine testing
 
+#### Testing Standards (follow these when writing tests)
+- **Never change production code while writing or validating tests.** This includes temporary "mutation checks". If a test exposes a bug, report it and leave the fix to a separate production change. Validate only by running Gradle test tasks.
+- **Koin setup for every test that needs dependencies.** Use `class XTest : KoinTest, RobolectricTests()` with:
+  ```kotlin
+  @BeforeTest fun before() {
+      startKoin { modules(platformTestModule(), commonModule(), dispatcherTestModule(), commonTestModule() /*, viewModelsModule(), extra test modules */) }
+      Dispatchers.setMain(testDispatcher)
+  }
+  @AfterTest fun after() {
+      Dispatchers.resetMain()
+      stopKoin()
+      currentTestFileName?.let { cleanupDataStoreFile(it) }
+  }
+  ```
+  Inject the unit under test with `by inject()` and mark it with a `// Unit Under Test` comment. ViewModels come from `viewModelsModule()`; never construct them by hand.
+- **Mocks live only in `ui/di/CommonTestModule.kt`.** Put each Mokkery mock inside a module function, for example `loginUserMockModule(result)`, `overdueReminderWorkerMockModule()`, `syncEventsUnauthorizedModule(event)` or `authLocalDataSourceMockModule()`. Add it to `startKoin` or load it with `loadKoinModules(...)` inside the test. Don't write hand-written fakes, `object :` fakes or inline `mock<>()` in test classes.
+- **Prefer the real chain.** Use the real DataStore test file, the in-memory Room database and `ThePriceApiMock`. Mock only platform components or anything that has to be deterministic (for example the worker's queue and remote data source).
+- **Mock server behavior comes from magic values in `ThePriceApiMock`.** For example `BILL_FAILED_ID`, `EXPIRED_TOKEN`, `EXPIRED_REFRESH_TOKEN` and `LOGOUT_FAILED_REFRESH_TOKEN`. Don't override the engine per test.
+- **No redundant tests.** Before adding a test, check that no existing test already covers the same behavior through another path. Fold extra assertions on the same flow (for example "dismiss") into one test. Don't test unreachable or dead code, framework or library behavior, or defaults that can't fail.
+- **Style:**
+  - backtick names: `` `When <condition> it should <outcome>` ``;
+  - `// GIVEN` / `// WHEN` / `// THEN` comments;
+  - Turbine (`test { awaitItem() }`, `skipItems`, `expectNoEvents`, `ensureAllEventsConsumed`) for flows;
+  - `verify`/`verifySuspend` with `VerifyMode` for mocks.
+- **Pure models** (enums, value classes) are plain test classes with no Koin, like `DayMonthAndYearTest`.
+- **Robolectric is required for Android framework classes.** A test that uses real Android or `java.text` classes, or `getString`, must extend `RobolectricTests()`. Otherwise Android unit tests see empty android.jar stubs.
+- **Emission counts depend on DataStore and `combine` timing.** Confirm `skipItems`/`awaitItem` sequences by running the test; don't guess.
+- **Validate on every platform:** `./gradlew :composeApp:desktopTest :composeApp:testDebugUnitTest :composeApp:iosSimulatorArm64Test`.
+
 ### Important Implementation Details
 
 #### Sync Event Structure

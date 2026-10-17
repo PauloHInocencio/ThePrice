@@ -2,9 +2,15 @@ package br.com.noartcode.theprice.ui.presentation.splash
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
+import br.com.noartcode.theprice.data.local.datasource.settings.AppSettingsCache
+import br.com.noartcode.theprice.data.local.datasource.settings.SettingsLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.data.local.workers.IOverduePaymentReminderWorker
+import br.com.noartcode.theprice.domain.model.AppCurrency
+import br.com.noartcode.theprice.domain.model.AppLanguage
+import br.com.noartcode.theprice.domain.model.AppSettings
 import br.com.noartcode.theprice.domain.model.User
+import br.com.noartcode.theprice.platform.locale.ILocaleManager
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
 import br.com.noartcode.theprice.ui.di.commonTestModule
@@ -32,6 +38,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SplashViewModelTest : KoinTest, RobolectricTests() {
@@ -39,6 +46,9 @@ class SplashViewModelTest : KoinTest, RobolectricTests() {
     private val testDispatcher: CoroutineDispatcher by inject()
     private val authLocalDataSource: AuthLocalDataSource by inject()
     private val worker: IOverduePaymentReminderWorker by inject()
+    private val settingsLocalDataSource: SettingsLocalDataSource by inject()
+    private val appSettingsCache: AppSettingsCache by inject()
+    private val localeManager: ILocaleManager by inject()
 
     // Unit Under Test
     private val viewModel: SplashViewModel by inject()
@@ -101,5 +111,23 @@ class SplashViewModelTest : KoinTest, RobolectricTests() {
             runCurrent()
             expectNoEvents()
         }
+    }
+
+    @Test
+    fun `When the session check finishes it should have applied the stored settings`() = runTest {
+        // GIVEN
+        settingsLocalDataSource.saveLanguage(AppLanguage.PORTUGUESE.code)
+        settingsLocalDataSource.saveCurrency(AppCurrency.BRL.code)
+
+        viewModel.uiState.test {
+            skipItems(1)
+
+            // WHEN
+            assertFalse(awaitItem().isCheckingSession)
+
+            // THEN: resolved before any localized screen is shown
+            assertEquals(AppSettings(AppLanguage.PORTUGUESE, AppCurrency.BRL), appSettingsCache.settings)
+        }
+        verify(VerifyMode.exactly(1)) { localeManager.apply(AppLanguage.PORTUGUESE) }
     }
 }

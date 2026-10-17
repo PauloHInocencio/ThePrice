@@ -1,5 +1,7 @@
 package br.com.noartcode.theprice.domain.usecases
 
+import br.com.noartcode.theprice.domain.model.AppCurrency
+import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -10,7 +12,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CurrencyFormatterTest : KoinTest {
+class CurrencyFormatterTest : KoinTest, RobolectricTests() {
 
     private val formatter: ICurrencyFormatter by inject()
 
@@ -100,7 +102,9 @@ class CurrencyFormatterTest : KoinTest {
         )
     }
 
-
-
-
+    @Test
+    fun `When created from a currency it should use that currency's symbol and separators`() {
+        assertEquals(expected = "$ 1,234.56", actual = CurrencyFormatter(AppCurrency.USD).format(123456))
+        assertEquals(expected = "R$ 1.234,56", actual = CurrencyFormatter(AppCurrency.BRL).format(123456))
+    }
 }
