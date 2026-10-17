@@ -1,6 +1,5 @@
 package br.com.noartcode.theprice.ui.presentation.account
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,19 +14,16 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,8 +32,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,8 +50,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import theprice.composeapp.generated.resources.Res
 import theprice.composeapp.generated.resources.app_name
 import theprice.composeapp.generated.resources.logout
-import theprice.composeapp.generated.resources.not_authenticated
-import theprice.composeapp.generated.resources.ok
 import theprice.composeapp.generated.resources.profile_picture
 import theprice.composeapp.generated.resources.settings_currency
 import theprice.composeapp.generated.resources.settings_currency_brl
@@ -68,7 +60,6 @@ import theprice.composeapp.generated.resources.settings_language_portuguese
 import theprice.composeapp.generated.resources.settings_restart_required
 import theprice.composeapp.generated.resources.settings_title
 import theprice.composeapp.generated.resources.settings_version_footer
-import theprice.composeapp.generated.resources.sign_in_with_google
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +72,6 @@ fun AccountScreen(
     onNavigateToLogin: () -> Unit
 ) {
 
-    val clipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -90,14 +80,7 @@ fun AccountScreen(
             TopAppBar(
                 title = { Text(stringResource(Res.string.settings_title)) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        if (state.user != null){
-                            onNavigateBack()
-                        } else {
-                          onNavigateToLogin()
-                        }
-
-                    }) {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null
@@ -124,26 +107,6 @@ fun AccountScreen(
             SnackbarHost(
                 modifier = Modifier.fillMaxWidth().padding(20.dp),
                 hostState = snackbarHostState,
-                snackbar = { data ->
-                    // Only the error snackbar has an action; the restart one dismisses itself
-                    val actionLabel = data.visuals.actionLabel
-                    Snackbar(
-                        action = actionLabel?.let {
-                            {
-                                TextButton(
-                                    onClick = {
-                                        data.dismiss()
-                                        onEvent(AccountEvent.ErrorMessageDismissed)
-                                    }
-                                ) {
-                                    Text(actionLabel)
-                                }
-                            }
-                        }
-                    ) {
-                        Text(data.visuals.message)
-                    }
-                }
             )
         },
     ) { innerPadding ->
@@ -155,21 +118,6 @@ fun AccountScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            val okLabel = stringResource(Res.string.ok)
-            LaunchedEffect(state.errorMessage) {
-                if (state.errorMessage != null) {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = state.errorMessage,
-                            actionLabel = okLabel,
-                            withDismissAction = false,
-                            duration = SnackbarDuration.Indefinite
-                        )
-                    }
-                }
-            }
-
 
             val restartRequiredMessage = stringResource(Res.string.settings_restart_required)
             LaunchedEffect(state.showRestartRequiredMessage) {
@@ -189,11 +137,12 @@ fun AccountScreen(
                 if (state.loggedOut) onNavigateToLogin()
             }
 
-            if (state.loading) {
+            val user = state.user
+            if (state.loading || user == null) {
                 CircularProgressIndicator()
-            } else if(state.user != null) {
+            } else {
                 UserProfileCard(
-                    user = state.user
+                    user = user
                 )
                 SpinnerSettingsRow(
                     icon = { Icon(imageVector = Icons.Default.Language, contentDescription = null) },
@@ -217,18 +166,6 @@ fun AccountScreen(
                     label = stringResource(Res.string.logout),
                     onClick = { onEvent(AccountEvent.LogoutRequested) },
                 )
-            } else {
-                val displayedStatus = state.singInStatus.ifBlank { stringResource(Res.string.not_authenticated) }
-                Text(
-                    modifier = Modifier.clickable(
-                        onClick = { clipboardManager.setText(AnnotatedString(displayedStatus)) }
-                    ),
-                    text = displayedStatus
-                )
-                Spacer(modifier.height(30.dp))
-                Button(onClick = { onEvent(AccountEvent.SignInWithGoogle)}) {
-                    Text(stringResource(Res.string.sign_in_with_google))
-                }
             }
         }
     }
@@ -285,17 +222,6 @@ fun UserProfileCard(user: User, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = user.email, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
-}
-
-@Preview
-@Composable
-internal fun AccountScreen_Preview() {
-    AccountScreen(
-        state = AccountUiState(),
-        onEvent = {},
-        onNavigateBack = {},
-        onNavigateToLogin = {}
-    )
 }
 
 @Preview

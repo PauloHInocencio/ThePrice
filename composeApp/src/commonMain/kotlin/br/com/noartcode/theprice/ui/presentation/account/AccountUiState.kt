@@ -7,9 +7,7 @@ import br.com.noartcode.theprice.ui.views.LogoutDialog
 
 data class AccountUiState(
     val user:User? = null,
-    val singInStatus:String = "",
     val loading:Boolean = false,
-    val errorMessage:String? = null,
     val selectedLanguage: AppLanguage = AppLanguage.ENGLISH,
     val selectedCurrency: AppCurrency = AppCurrency.USD,
     val showRestartRequiredMessage: Boolean = false,

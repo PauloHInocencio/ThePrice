@@ -1,5 +1,6 @@
 package br.com.noartcode.theprice.data.remote.networking
 
+import br.com.noartcode.theprice.data.remote.dtos.AccessTokenRequest
 import br.com.noartcode.theprice.data.remote.dtos.BillDto
 import br.com.noartcode.theprice.data.remote.dtos.PaymentDto
 import br.com.noartcode.theprice.data.remote.networking.MockedApiResponses.userCreationMockResponse
@@ -25,6 +26,11 @@ object ThePriceApiMock {
     const val PAYMENT_FAILED_ID = "payment_failed_id"
     const val MOCK_EMAIL = "mock_test@email"
     const val MOCK_NAME = "Test Silva"
+    const val EXPIRED_TOKEN = "expired_access_token"
+    const val RENEWED_TOKEN = "renewed_access_token"
+    const val EXPIRED_REFRESH_TOKEN = "expired_refresh_token"
+    const val REFRESH_SERVER_ERROR_TOKEN = "refresh_server_error_token"
+    const val LOGOUT_FAILED_REFRESH_TOKEN = "logout_failed_refresh_token"
 
     val engine = MockEngine { request ->
         mockResponse(request)
@@ -40,6 +46,7 @@ object ThePriceApiMock {
         data object PostPayments : ApiRoute, AuthorizedRoute
         data object PutPayment : ApiRoute, AuthorizedRoute
         data object LogoutUser : ApiRoute, AuthorizedRoute
+        data object RenewAccessToken : ApiRoute
         data object PostUser: ApiRoute
         data object LoginUser: ApiRoute
         data object Unknown : ApiRoute
@@ -55,6 +62,7 @@ object ThePriceApiMock {
         path.contains("api/v1/users/create") && method == HttpMethod.Post -> ApiRoute.PostUser
         path.contains("api/v1/users/login") && method == HttpMethod.Post -> ApiRoute.LoginUser
         path.contains("api/v1/users/logout") && method == HttpMethod.Post -> ApiRoute.LogoutUser
+        path.contains("api/v1/users/renew-access-token") && method == HttpMethod.Post -> ApiRoute.RenewAccessToken
         else -> ApiRoute.Unknown
     }
 
@@ -68,6 +76,9 @@ object ThePriceApiMock {
         val route = matchRoute(path, method)
         if (route is AuthorizedRoute && token.isNullOrBlank()) {
             return errorResponse("Unauthorized Request")
+        }
+        if (route is AuthorizedRoute && token == EXPIRED_TOKEN) {
+            return unauthorizedResponse()
         }
         return when (route) {
             // Bills endpoints
@@ -165,6 +176,9 @@ object ThePriceApiMock {
             ApiRoute.LogoutUser -> {
                 val payload = requestBody?.let {  Json.decodeFromString<LogoutUserPayloadDto>(it) }
                 if (payload == null ) return errorResponse("Invalid request body")
+                if (payload.refreshToken == LOGOUT_FAILED_REFRESH_TOKEN) {
+                    return errorResponse("Internal server error", HttpStatusCode.InternalServerError)
+                }
                 respond(
                     content = "",
                     status = HttpStatusCode.NoContent,
@@ -172,18 +186,47 @@ object ThePriceApiMock {
                 )
             }
 
+            ApiRoute.RenewAccessToken -> {
+                val payload = requestBody?.let { Json.decodeFromString<AccessTokenRequest>(it) }
+                when (payload?.refreshToken) {
+                    null -> errorResponse("Invalid request body")
+                    EXPIRED_REFRESH_TOKEN -> unauthorizedResponse()
+                    REFRESH_SERVER_ERROR_TOKEN -> errorResponse("Internal server error", HttpStatusCode.InternalServerError)
+                    else -> respond(
+                        content = """{"access_token":"$RENEWED_TOKEN"}""",
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+            }
+
             ApiRoute.Unknown -> errorResponse()
 
         }
     }
 
-    private fun MockRequestHandleScope.errorResponse(errorMessage:String = "Unknow API path"): HttpResponseData {
+    private fun MockRequestHandleScope.errorResponse(
+        errorMessage: String = "Unknow API path",
+        status: HttpStatusCode = HttpStatusCode.BadRequest,
+    ): HttpResponseData {
         return respond(
             content = """
                 {"message":"$errorMessage"}
             """.trimIndent(),
-            status = HttpStatusCode.BadRequest,
+            status = status,
             headers = headersOf(HttpHeaders.ContentType, "application/json")
+        )
+    }
+
+    // The WWW-Authenticate header makes Ktor's bearer provider try to refresh the token
+    private fun MockRequestHandleScope.unauthorizedResponse(): HttpResponseData {
+        return respond(
+            content = """{"message":"token is expired"}""",
+            status = HttpStatusCode.Unauthorized,
+            headers = headersOf(
+                HttpHeaders.ContentType to listOf("application/json"),
+                HttpHeaders.WWWAuthenticate to listOf("Bearer"),
+            )
         )
     }
 }

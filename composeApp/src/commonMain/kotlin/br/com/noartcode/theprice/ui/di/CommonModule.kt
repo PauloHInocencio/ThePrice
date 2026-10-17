@@ -298,7 +298,6 @@ fun viewModelsModule() = module {
 
     viewModel {
         AccountViewModel(
-            signInUser = get(),
             getAccountInfo = get(),
             logOutUser = get(),
             getPendingSyncCount = get(),

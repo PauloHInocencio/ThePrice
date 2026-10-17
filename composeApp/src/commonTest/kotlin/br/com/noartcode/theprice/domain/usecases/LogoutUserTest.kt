@@ -9,6 +9,9 @@ import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataS
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
 import br.com.noartcode.theprice.data.remote.datasource.bill.BillRemoteDataSource
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock.EXPIRED_REFRESH_TOKEN
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock.EXPIRED_TOKEN
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock.LOGOUT_FAILED_REFRESH_TOKEN
 import br.com.noartcode.theprice.data.remote.workers.ISyncEventsWorker
 import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.domain.repository.BillsRepository
@@ -40,6 +43,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -139,6 +143,59 @@ class LogoutUserTest: KoinTest, RobolectricTests() {
         }
     }
 
+    @Test
+    fun `When the server rejects the session on logout it should still clear the local session`() = runTest {
+        // GIVEN: access and refresh tokens are both expired
+        authLocalDataSource.saveCredentials(
+            user.copy(accessToken = EXPIRED_TOKEN, refreshToken = EXPIRED_REFRESH_TOKEN)
+        )
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
 
+        // WHEN
+        logoutUser().test {
 
+            // THEN
+            assertTrue(awaitItem() is Resource.Loading)
+            assertTrue(awaitItem() is Resource.Success)
+            awaitComplete()
+
+            assertNull(authLocalDataSource.getUser().first())
+        }
+    }
+
+    @Test
+    fun `When logout fails with a non auth error it should keep the local session`() = runTest {
+        // GIVEN: the server fails the logout request with a 500
+        authLocalDataSource.saveCredentials(user.copy(refreshToken = LOGOUT_FAILED_REFRESH_TOKEN))
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+
+        // WHEN
+        logoutUser().test {
+
+            // THEN
+            assertTrue(awaitItem() is Resource.Loading)
+            assertTrue(awaitItem() is Resource.Error)
+            awaitComplete()
+
+            assertNotNull(authLocalDataSource.getUser().first())
+        }
+    }
+
+    @Test
+    fun `When logout is forced it should clear the local session without calling the server`() = runTest {
+        // GIVEN: a server call would fail, so Success proves no remote call was made
+        authLocalDataSource.saveCredentials(user.copy(refreshToken = LOGOUT_FAILED_REFRESH_TOKEN))
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+
+        // WHEN
+        logoutUser(force = true).test {
+
+            // THEN
+            assertTrue(awaitItem() is Resource.Loading)
+            assertTrue(awaitItem() is Resource.Success)
+            awaitComplete()
+
+            assertNull(authLocalDataSource.getUser().first())
+        }
+    }
 }

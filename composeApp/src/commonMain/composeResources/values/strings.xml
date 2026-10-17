@@ -44,9 +44,6 @@
     <string name="bills_of_month_year">Bills of %1$s %2$s</string>
 
     <string name="profile_picture">Profile Picture</string>
-    <string name="sign_in_with_google">Sign in with Google</string>
-    <string name="not_authenticated">Not Authenticated</string>
-    <string name="user_login_succeed">User Login succeed</string>
 
     <string name="create_account">Create Account</string>
     <string name="create">Create</string>

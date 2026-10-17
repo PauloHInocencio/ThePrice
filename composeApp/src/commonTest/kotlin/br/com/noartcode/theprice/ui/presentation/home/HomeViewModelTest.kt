@@ -2,10 +2,13 @@ package br.com.noartcode.theprice.ui.presentation.home
 
 import app.cash.turbine.test
 import br.com.noartcode.theprice.data.helpers.stubBills
+import br.com.noartcode.theprice.data.helpers.stubSyncEvents
 import br.com.noartcode.theprice.data.local.ThePriceDatabase
 import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
 import br.com.noartcode.theprice.data.local.datasource.payment.PaymentLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
+import br.com.noartcode.theprice.data.local.queues.EventSyncQueue
+import br.com.noartcode.theprice.data.remote.networking.ThePriceApiMock.LOGOUT_FAILED_REFRESH_TOKEN
 import br.com.noartcode.theprice.domain.model.DayMonthAndYear
 import br.com.noartcode.theprice.domain.model.Payment
 import br.com.noartcode.theprice.domain.model.User
@@ -20,6 +23,7 @@ import br.com.noartcode.theprice.ui.di.currentTestFileName
 import br.com.noartcode.theprice.ui.di.dispatcherTestModule
 import br.com.noartcode.theprice.ui.di.platformTestModule
 import br.com.noartcode.theprice.ui.di.viewModelsModule
+import br.com.noartcode.theprice.ui.views.LogoutDialog
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +40,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -50,6 +55,7 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
     private val insertBill: IInsertBill by inject()
     private val insertBillWithPayments: IInsertBillWithPayments by inject()
     private val authLocalDataSource: AuthLocalDataSource by inject()
+    private val eventSyncQueue: EventSyncQueue by inject()
 
 
     // Unit Under Test
@@ -631,4 +637,88 @@ class HomeViewModelTest : KoinTest, RobolectricTests() {
         }
     }
 
+    private suspend fun saveSession(refreshToken: String = "fake_refresh_token") {
+        authLocalDataSource.saveCredentials(User(
+            name = "Test Silva",
+            email = "test@email.com",
+            picture = "",
+            accessToken = "fake_access_token",
+            refreshToken = refreshToken
+        ))
+        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
+        (getTodayDate as GetTodayDateStub).date = DayMonthAndYear(day = 2, month = 11, year = 2025)
+    }
+
+    @Test
+    fun `When logout is requested it should ask for confirmation showing the pending changes`() = runTest {
+        // GIVEN
+        saveSession()
+
+        viewModel.uiState.test {
+            skipItems(3)
+            ensureAllEventsConsumed()
+
+            // Init may enqueue missing-payment events; start from a known queue size
+            eventSyncQueue.clean()
+            repeat(2) { i -> eventSyncQueue.enqueue(stubSyncEvents[i]) }
+
+            // WHEN
+            viewModel.onEvent(HomeEvent.OnLogoutRequested)
+
+            // THEN
+            assertEquals(expected = LogoutDialog.Confirm(pendingChanges = 2), actual = awaitItem().logoutDialog)
+
+            // WHEN
+            viewModel.onEvent(HomeEvent.OnLogoutDialogDismissed)
+
+            // THEN
+            assertNull(awaitItem().logoutDialog)
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `When logout fails with a non auth error it should offer to log out offline`() = runTest {
+        // GIVEN
+        saveSession(refreshToken = LOGOUT_FAILED_REFRESH_TOKEN)
+
+        viewModel.uiState.test {
+            skipItems(3)
+            ensureAllEventsConsumed()
+
+            // WHEN
+            viewModel.onEvent(HomeEvent.OnLogoutConfirmed)
+
+            // THEN
+            assertEquals(expected = true, actual = awaitItem().loading)
+            with(awaitItem()) {
+                assertEquals(expected = LogoutDialog.Offline, actual = logoutDialog)
+                assertEquals(expected = false, actual = loggedOut)
+                assertEquals(expected = false, actual = loading)
+            }
+            ensureAllEventsConsumed()
+        }
+    }
+
+    @Test
+    fun `When logout is forced it should log out even if the server can't be reached`() = runTest {
+        // GIVEN: a normal logout would fail on the server
+        saveSession(refreshToken = LOGOUT_FAILED_REFRESH_TOKEN)
+
+        viewModel.uiState.test {
+            skipItems(3)
+            ensureAllEventsConsumed()
+
+            // WHEN
+            viewModel.onEvent(HomeEvent.OnForceLogoutConfirmed)
+
+            // THEN
+            assertEquals(expected = true, actual = awaitItem().loading)
+            with(awaitItem()) {
+                assertEquals(expected = true, actual = loggedOut)
+                assertEquals(expected = false, actual = loading)
+            }
+            ensureAllEventsConsumed()
+        }
+    }
 }
