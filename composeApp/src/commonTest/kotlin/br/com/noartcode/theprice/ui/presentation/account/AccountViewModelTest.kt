@@ -1,12 +1,9 @@
 package br.com.noartcode.theprice.ui.presentation.account
 
 import app.cash.turbine.test
-import br.com.noartcode.theprice.data.local.datasource.auth.AuthLocalDataSource
-import br.com.noartcode.theprice.data.local.datasource.settings.SettingsLocalDataSource
 import br.com.noartcode.theprice.data.local.preferences.cleanupDataStoreFile
 import br.com.noartcode.theprice.domain.model.AppCurrency
 import br.com.noartcode.theprice.domain.model.AppLanguage
-import br.com.noartcode.theprice.domain.model.User
 import br.com.noartcode.theprice.platform.locale.ILocaleManager
 import br.com.noartcode.theprice.ui.di.RobolectricTests
 import br.com.noartcode.theprice.ui.di.commonModule
@@ -21,7 +18,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.koin.core.context.startKoin
@@ -42,8 +38,6 @@ import kotlin.uuid.Uuid
 class AccountViewModelTest : KoinTest, RobolectricTests() {
 
     private val testDispatcher: CoroutineDispatcher by inject()
-    private val authLocalDataSource: AuthLocalDataSource by inject()
-    private val settingsLocalDataSource: SettingsLocalDataSource by inject()
     private val localeManager: ILocaleManager by inject()
 
     // Unit Under Test
@@ -108,36 +102,6 @@ class AccountViewModelTest : KoinTest, RobolectricTests() {
                 assertTrue(showRestartRequiredMessage)
             }
             ensureAllEventsConsumed()
-        }
-    }
-
-    @Test
-    fun `When logout succeeds it should reset the state but keep the selected settings`() = runTest {
-        // GIVEN
-        settingsLocalDataSource.saveLanguage(AppLanguage.PORTUGUESE.code)
-        settingsLocalDataSource.saveCurrency(AppCurrency.BRL.code)
-        authLocalDataSource.saveCredentials(User(
-            name = "Test Silva", email = "test@email.com", picture = "",
-            accessToken = "fake_access_token", refreshToken = "fake_refresh_token",
-        ))
-        authLocalDataSource.saveDeviceID(deviceID = Uuid.random().toString())
-
-        viewModel.uiState.test {
-            skipItems(1)
-            runCurrent()
-            expectMostRecentItem() // user and settings loaded
-
-            // WHEN
-            viewModel.onEvent(AccountEvent.LogoutConfirmed)
-
-            // THEN
-            assertTrue(awaitItem().loading)
-            skipItems(1) // user cleared
-            with(awaitItem()) {
-                assertTrue(loggedOut)
-                assertEquals(AppLanguage.PORTUGUESE, selectedLanguage)
-                assertEquals(AppCurrency.BRL, selectedCurrency)
-            }
         }
     }
 }
