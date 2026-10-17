@@ -11,7 +11,6 @@ import br.com.noartcode.theprice.domain.usecases.user.IGetUserAccountInfo
 import br.com.noartcode.theprice.domain.usecases.user.ILogoutUser
 import br.com.noartcode.theprice.domain.usecases.sync.IGetPendingSyncCount
 import br.com.noartcode.theprice.ui.views.LogoutDialog
-import br.com.noartcode.theprice.domain.usecases.user.ILoginUser
 import br.com.noartcode.theprice.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,12 +21,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
-import theprice.composeapp.generated.resources.Res
-import theprice.composeapp.generated.resources.user_login_succeed
 
 class AccountViewModel(
-    private val signInUser: ILoginUser,
     private val getAccountInfo: IGetUserAccountInfo,
     private val logOutUser: ILogoutUser,
     private val getPendingSyncCount: IGetPendingSyncCount,
@@ -61,22 +56,6 @@ class AccountViewModel(
 
     fun onEvent(event: AccountEvent) {
         when(event){
-            AccountEvent.SignInWithGoogle -> {
-                signInUser()
-                    .onEach { result ->
-                        when(result){
-                            is Resource.Success -> {
-                                val message = getString(Res.string.user_login_succeed)
-                                _uiState.update { it.copy(singInStatus = message, loading = false) }
-                            }
-                            is Resource.Error -> _uiState.update { it.copy(errorMessage = result.message, loading = false) }
-                            is Resource.Loading ->  {
-                                _uiState.update { it.copy(loading = true) }
-                            }
-                       }
-                   }.launchIn(viewModelScope)
-            }
-
             AccountEvent.LogoutRequested -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(logoutDialog = LogoutDialog.Confirm(getPendingSyncCount())) }
@@ -95,10 +74,6 @@ class AccountViewModel(
 
             AccountEvent.LogoutDialogDismissed -> {
                 _uiState.update { it.copy(logoutDialog = null) }
-            }
-
-            AccountEvent.ErrorMessageDismissed -> {
-                _uiState.update { it.copy(errorMessage = null) }
             }
 
             is AccountEvent.LanguageSelected -> {

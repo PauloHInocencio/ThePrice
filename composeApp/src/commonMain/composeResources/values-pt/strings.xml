@@ -44,9 +44,6 @@
     <string name="bills_of_month_year">Contas de %1$s %2$s</string>
 
     <string name="profile_picture">Foto de Perfil</string>
-    <string name="sign_in_with_google">Entrar com Google</string>
-    <string name="not_authenticated">Não Autenticado</string>
-    <string name="user_login_succeed">Login realizado com sucesso</string>
 
     <string name="create_account">Criar Conta</string>
     <string name="create">Criar</string>
