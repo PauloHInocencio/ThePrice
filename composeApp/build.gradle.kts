@@ -21,8 +21,10 @@ plugins {
     alias(libs.plugins.skie)
 }
 
-val appVersionName = "1.0"
-val appVersionCode = 1
+val appVersionName = providers.gradleProperty("appVersionName")
+    .orElse(providers.gradleProperty("versionMajorMinor"))
+    .getOrElse("1.0")
+val appVersionCode = providers.gradleProperty("appVersionCode").map(String::toInt).getOrElse(1)
 
 val localProps = Properties().apply {
     val localPropsFile = rootProject.file("local.properties")

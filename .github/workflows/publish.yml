@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -62,14 +65,15 @@ jobs:
         echo "$GS_JSON_BASE64" | base64 --decode > google-services.json
         mv google-services.json composeApp/google-services.json 
 
-    - name: Version Bump
-      uses: chkfung/android-version-actions@v1.2.3
-      with:
-        gradlePath: composeApp/build.gradle.kts
-        versionCode: ${{ github.run_number }}
+    - name: Compute version
+      id: version
+      run: |
+        MAJOR_MINOR=$(grep '^versionMajorMinor=' gradle.properties | cut -d'=' -f2 | tr -d ' \r')
+        echo "code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+        echo "name=${MAJOR_MINOR}.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
     - name: Build Release Bundle
-      run: ./gradlew :composeApp:bundleRelease
+      run: ./gradlew :composeApp:bundleRelease -PappVersionName=${{ steps.version.outputs.name }} -PappVersionCode=${{ steps.version.outputs.code }}
 
     - name: Sign Release
       uses: r0adkll/sign-android-release@v1
@@ -88,6 +92,11 @@ jobs:
         releaseFiles: composeApp/build/outputs/bundle/release/composeApp-release.aab
         track: internal
         status: draft
+
+    - name: Tag shipped version
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release create "v${{ steps.version.outputs.name }}" --target "$GITHUB_SHA" --title "v${{ steps.version.outputs.name }}" --generate-notes
 
     - name: Delete local.properties
       if: always()
