@@ -90,8 +90,8 @@ jobs:
         serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_KEY }}
         packageName: br.com.noartcode.theprice
         releaseFiles: composeApp/build/outputs/bundle/release/composeApp-release.aab
-        track: internal
-        status: draft
+        track: alpha
+        status: completed
 
     - name: Tag shipped version
       env:
